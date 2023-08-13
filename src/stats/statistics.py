@@ -62,7 +62,8 @@ def percent_selected(raw: Path, selected: Path) -> str:
 
 
 if __name__ == "__main__":
-    roots = "D:\\Users\\Wisdom\\Lernen\\Coding_Python\\Zlf_sort\\Dateien\\Test dateien\\2022\\Zeltlager 2022\\Zeltlagerfilm 2022\\Rohmaterial\\"
+    roots = "D:\\Users\\Wisdom\\Lernen\\Coding_Python\\Zlf_sort\\Dateien\\Test dateien" \
+            "\\2022\\Zeltlager 2022\\Zeltlagerfilm 2022\\Rohmaterial\\"
     total_duration, problems, duration_per_day = get_raw_material_duration(Path(roots))
     print(
         f'Summe: {total_duration}s | {time.strftime("%H:%M:%S", time.gmtime(total_duration))}\n'
