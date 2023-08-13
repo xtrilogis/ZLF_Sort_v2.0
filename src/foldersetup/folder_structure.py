@@ -32,10 +32,10 @@ def create_folder_structure(parent: str, date: QDate):
 def day_folder(date: QDate):
     """Creates a folder for every day with subfolders 'Bilder' and 'Videos'"""
     letter = 97  # kleines a
-    days = ["Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag", "Montag", "Dienstag"]
     day_folders = []
     for i in range(10):
         # ggf. Datum automatisch ausfüllen
-        day_folders.append(f'{chr(letter + i)}-Datum-{days[i % 7]}/Bilder')
-        day_folders.append(f'{chr(letter + i)}-Datum-{days[i % 7]}/Videos')
+        day_folders.append(f'{chr(letter + i)}-{date.toString("dd.MM")}-{date.toString("dddd")}/Bilder')
+        day_folders.append(f'{chr(letter + i)}-{date.toString("dd.MM")}-{date.toString("dddd")}/Videos')
+        date = date.addDays(1)
     return day_folders
