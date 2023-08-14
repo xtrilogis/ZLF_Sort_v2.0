@@ -38,4 +38,6 @@ def day_folder(date: QDate):
         day_folders.append(f'{chr(letter + i)}-{date.toString("dd.MM")}-{date.toString("dddd")}/Bilder')
         day_folders.append(f'{chr(letter + i)}-{date.toString("dd.MM")}-{date.toString("dddd")}/Videos')
         date = date.addDays(1)
+    day_folders.append(f'{chr(letter + 1)}-Sonstiges/Bilder')
+    day_folders.append(f'{chr(letter + 1)}-Sonstiges/Videos')
     return day_folders
