@@ -11,13 +11,9 @@ class Worker(QThread):
 
     @pyqtSlot(str, QDate)
     def setup_folder_structure(self, parent: str, date: QDate):
-        """"""
-        # add Date validation
-        print(1)
+        """Create the folder 'Zeltlagerfilm xxxx with all its Subfolders"""
         valid, error = validation.validate_setup(harddrive=parent, date=date)
-        print(2)
         if valid:
-            print(3)
             self.new_message_setup.emit("Input validiert.")
             folder_structure.create_folder_structure(parent=parent, date=date)
             self.new_message_setup.emit("Ordner erfolgreich erstellt.")

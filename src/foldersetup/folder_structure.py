@@ -1,6 +1,4 @@
 import os
-from datetime import datetime
-import pandas as pd
 from PyQt5.QtCore import QDate
 
 
@@ -10,6 +8,7 @@ def create_folder_structure(parent: str, date: QDate):
     raw_subfolder = day_folder(date=date)  # Subfolder for 'Rohmaterial'
     ext_m_subfolder = ["Dokumente", "Musik", "Grafiken"]  # Subfolder for 'ext. Material'
 
+    parent = os.path.join(parent, f'Zeltlagerfilm {date.year()}')
     if not os.path.exists(parent):
         os.makedirs(parent)
 
@@ -31,13 +30,12 @@ def create_folder_structure(parent: str, date: QDate):
 
 def day_folder(date: QDate):
     """Creates a folder for every day with subfolders 'Bilder' and 'Videos'"""
-    letter = 97  # kleines a
+    letter = 97  # char for 'a'
     day_folders = []
     for i in range(10):
-        # ggf. Datum automatisch ausfüllen
         day_folders.append(f'{chr(letter + i)}-{date.toString("dd.MM")}-{date.toString("dddd")}/Bilder')
         day_folders.append(f'{chr(letter + i)}-{date.toString("dd.MM")}-{date.toString("dddd")}/Videos')
         date = date.addDays(1)
-    day_folders.append(f'{chr(letter + 1)}-Sonstiges/Bilder')
-    day_folders.append(f'{chr(letter + 1)}-Sonstiges/Videos')
+    day_folders.append(f'{chr(letter + 11)}-Sonstiges/Bilder')
+    day_folders.append(f'{chr(letter + 11)}-Sonstiges/Videos')
     return day_folders
