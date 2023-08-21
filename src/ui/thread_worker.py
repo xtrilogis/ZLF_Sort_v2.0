@@ -1,4 +1,5 @@
-import time
+from pathlib import Path
+
 from PyQt5.QtCore import *
 
 from inputhandling import validation
@@ -8,6 +9,7 @@ from foldersetup import folder_structure
 class Worker(QThread):
     problem_with_input = pyqtSignal(str)
     new_message_setup = pyqtSignal(str)
+    process_finished = pyqtSignal()
 
     @pyqtSlot(str, QDate)
     def setup_folder_structure(self, parent: str, date: QDate):
@@ -19,35 +21,35 @@ class Worker(QThread):
             self.new_message_setup.emit("Ordner erfolgreich erstellt.")
         else:
             self.problem_with_input.emit(error)
+        self.process_finished.emit()
 
+    @pyqtSlot(Path)
+    def correct_file_structure(self, path: Path):
+        # check if in correct order?
+        # take all file, sort by date
+        # for every day in create folder with Bilder und Videos
+        # take Date for LKW einladen -> everything else in Sonstiges
+        pass
 
-    @pyqtSlot(str)
-    def some_process(self, msg):
-        print(msg)
-        print("Start processing")
-        self.do_task_one()
-        print("first block finished")
-        self.new_message.emit("partial")
-
-        self.do_task_tow()
-        print("finished processing")
-        self.new_message.emit("full")
+    @pyqtSlot(Path)
+    def rename_files(self, path: Path):
+        # Validation
+        # Format as so far
+        # enumeration per folder
+        pass
 
     @pyqtSlot()
-    def some_process2(self):
-        print("Start processing")
-        self.do_task_one()
-        print("first block finished")
-        self.new_message.emit("partial2")
+    def create_excel(self):
+        # validation
+        # take input an create accordinglly
+        # Enum ?
+        pass
 
-        self.do_task_tow()
-        print("finished processing")
-        self.new_message.emit("full2")
+    @pyqtSlot()
+    def fill_excel(self):
+        print("Test")
+        pass
 
-    @staticmethod
-    def do_task_one():
-        time.sleep(3)
-
-    @staticmethod
-    def do_task_tow():
-        time.sleep(4)
+    @pyqtSlot()
+    def create_picture_folder(self):
+        pass
