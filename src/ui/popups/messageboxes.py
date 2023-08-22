@@ -1,5 +1,6 @@
+from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtWidgets import QMessageBox
-from PyQt5.uic.properties import QtWidgets, QtGui
+
 from assethandling.asset_manager import window_icon
 from assethandling.stylesheets import msg_box_style
 
@@ -12,7 +13,7 @@ def basic_messagebox(title, message):
     msg.setWindowTitle(title)
     msg.setText(message)
     msg.setIcon(QMessageBox.Information)
-    msg.setWindowIcon(QtGui.QIcon(window_icon))
+    msg.setWindowIcon(QtGui.QIcon(str(window_icon)))
     msg.setStyleSheet(msg_box_style)
     msg.setStandardButtons(QMessageBox.Ok)
     msg.setDefaultButton(QMessageBox.Ok)
@@ -87,4 +88,20 @@ def handle_problem_mc():
     msg.addButton(QtWidgets.QPushButton('Eingeben'), QMessageBox.ActionRole)
     msg.addButton(QtWidgets.QPushButton('Ignorieren'), QMessageBox.RejectRole)
     msg.setDefaultButton(QMessageBox.No)
+    return msg
+
+
+def excel_exists(message):
+    """Creates a basic Messagebox with Information Icon and one "ok" button
+    :arg title is set as the window title
+    :arg message is set as the main text"""
+    msg = QMessageBox()
+    msg.setWindowTitle("Datei existiert")
+    msg.setText(message)
+    msg.setIcon(QMessageBox.Information)
+    msg.setWindowIcon(QtGui.QIcon(str(window_icon)))
+    msg.setStyleSheet(msg_box_style)
+    msg.addButton(QtWidgets.QPushButton('Überschreiben'), QMessageBox.RejectRole)
+    msg.setStandardButtons(QMessageBox.Abort)
+    msg.setDefaultButton(QMessageBox.Abort)
     return msg

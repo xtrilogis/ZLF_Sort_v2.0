@@ -5,18 +5,18 @@ import pandas as pd
 from assethandling.basemodels import SheetConfig
 
 
-def create_emtpy_excel(file_name, path, sheets: List[SheetConfig]):
+def create_emtpy_excel(file_name, path, sheets: List[SheetConfig], override=False):
     """Creates a new Excel file, at the given path, with the given sheets
     :raise FileExistsError, if the there already is a file with the same name
     :param file_name:
-    :param path:
+    :param path: folder where Excel should be saved
     :param sheets:
     :return:
     """
     if ".xlsx" not in file_name:
         file_name += ".xlsx"
     full_excel_path = os.path.join(path, file_name)
-    if os.path.exists(full_excel_path):
+    if os.path.exists(full_excel_path) and not override:
         raise FileExistsError
     else:
         with pd.ExcelWriter(full_excel_path, engine='xlsxwriter') as writer:

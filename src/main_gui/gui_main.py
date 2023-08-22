@@ -1,12 +1,19 @@
 """Start der App"""
-print("Python Code Starting")
+# print("Python Code Starting")
+from datetime import datetime
+from pathlib import Path
+from typing import List
+
+from PyQt5.QtWidgets import QMainWindow, QFileDialog, QLineEdit, QDialog
 from PyQt5.QtCore import QThread, pyqtSlot
 
+from assethandling.asset_manager import settings
+from assethandling.basemodels import ExcelOptions
+from ui.dialogs.selection_dialog import SelectionDialog
 from ui.thread_worker import Worker
 from ui.popups import messageboxes
 
-
-from PyQt5.QtWidgets import QMainWindow, QFileDialog, QLineEdit
+print("Imports done")
 
 
 class MainWindow(QMainWindow):
@@ -16,12 +23,22 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow(self)
         self.thread = QThread()
         self.worker = Worker()
+        self.setup_ui()
         self.setup_thread_connections()
         self.setup_button_connections()
         self.set_responsive_styles()
 
-    def set_responsive_styles(self):
+    def setup_ui(self):
         self.show_frame()
+        self.ui.vid_columns.setText(", ".join(settings["standard-video-columns"]))
+        self.ui.pic_columns.setPlainText(", ".join(settings["standard-picture-columns"]))
+        self.ui.lineEdit.setText(f"Zeltlagerfilm {datetime.now().date().year}.xlsx")
+        self.ui.rawpath_drop_2.textChanged.connect(
+            lambda: self.ui.excel_folder_drop_4.setText(str(Path(self.ui.rawpath_drop_2.text()).parent))
+        )
+
+
+    def set_responsive_styles(self):
         self.ui.comboBox.currentIndexChanged.connect(self.show_frame)
         # TODO
         self.ui.harddrive_drop_2.textChanged.connect(lambda text: self.ui.harddrive_drop_2.setStyleSheet(
@@ -29,19 +46,21 @@ class MainWindow(QMainWindow):
 
     def show_frame(self):
         text = self.ui.comboBox.currentText()
-        if text == "Standard":
+        if text == ExcelOptions.STANDARD.value:
             self.ui.help_standard_excel.show()
             self.ui.excel_path.hide()
             self.ui.manuel_columns.hide()
-
-        elif "Vorhanden" in text:
+            self.ui.frame_8.show()
+        elif text == ExcelOptions.EXISTING.value:
             self.ui.help_standard_excel.hide()
             self.ui.excel_path.show()
             self.ui.manuel_columns.hide()
+            self.ui.frame_8.hide()
         else:
             self.ui.excel_path.hide()
             self.ui.manuel_columns.show()
             self.ui.help_standard_excel.hide()
+            self.ui.frame_8.show()
 
     def setup_thread_connections(self):
         self.worker.moveToThread(self.thread)
@@ -50,6 +69,9 @@ class MainWindow(QMainWindow):
         self.worker.new_message_setup.connect(self.write_process_setup)
         self.worker.problem_with_input.connect(self.open_problem_input)
         self.worker.process_finished.connect(self.process_finished)
+
+        self.worker.new_message_raw.connect(self.write_process_raw)
+        self.worker.excel_exits_error.connect(self.open_excel_exists)
 
         self.thread.start()
 
@@ -72,11 +94,12 @@ class MainWindow(QMainWindow):
         # ### Excel File
         self.ui.excelpath_folder_tb_2.clicked.connect(
             lambda: self.show_filedialog_excel_file_path(self.ui.excelpath_drop_2))
+        self.ui.rawpath_folder_tb_4.clicked.connect(
+            lambda: self.show_filedialog_raw_material_path(self.ui.excel_folder_drop_4)
+        )
         self.ui.vid_sugestions_pb.clicked.connect(self.show_suggestions_video)
         self.ui.pic_sugestions_pb.clicked.connect(self.show_suggestions_pictures)
-        self.ui.create_excel_pb.clicked.connect(
-            lambda: self.worker.create_excel()  # TODO ggf. eigene Function, Variante übergeben
-        )
+        self.ui.create_excel_pb.clicked.connect(self.create_excel_file)
         self.ui.fill_excel_pb.clicked.connect(
             lambda: self.worker.fill_excel()  # TODO
         )
@@ -112,6 +135,13 @@ class MainWindow(QMainWindow):
     def open_problem_input(self, error: str):
         """Opens a message box displaying a given error"""
         msg = messageboxes.problem_with_input(error)
+        msg.exec()
+
+    @pyqtSlot()
+    def open_excel_exists(self):
+        """Opens a message box displaying a given error"""
+        msg = messageboxes.excel_exists("Die angegebene Excel-Datei existiert bereits.")
+        msg.buttonClicked.connect(self.handle_excel_choice)
         msg.exec()
 
     @pyqtSlot()
@@ -159,25 +189,57 @@ class MainWindow(QMainWindow):
         self.worker.setup_folder_structure(parent=harddrive, date=date)
 
     # ##### PART II: Raw Material / 'Rohmaterial verarbeiten' ##### #
+    def handle_excel_choice(self, i):
+        if "Überschreiben" in i.text():
+            self.create_excel_file(override=True)
+
     def get_raw_inputs(self):
         pass
-    
+
     def show_suggestions_video(self):
-        # TODO
-        # Pop up with select suggestions
-        # Fill them into the Line Edit
-        pass
+        dial = SelectionDialog("Vorschläge Video Spalten", "Spalten", settings["suggestions-video-columns"], self)
+        if dial.exec_() == QDialog.Accepted:
+            select = dial.itemsSelected()
+            columns: List[str] = settings["standard-video-columns"].copy()
+            columns.extend(select)
+            text = ", ".join(columns)
+            self.ui.vid_columns.setText(text)
 
     def show_suggestions_pictures(self):
-        # TODO
-        # Pop up with select suggestions
-        # Fill them into the Line Edit
-        pass
+        dial = SelectionDialog("Vorschläge Bilder Spalten", "Spalten", settings["suggestions-picture-columns"], self)
+        if dial.exec_() == QDialog.Accepted:
+            select = dial.itemsSelected()
+            columns: List[str] = settings["standard-picture-columns"].copy()
+            columns.extend(select)
+            text = ", ".join(columns)
+            self.ui.pic_columns.setPlainText(text)
 
-    def create_excel_file(self):
-        # variante, inputs
-        # set excel_file_path
-        pass
+    def create_excel_file(self, override=False):
+        text = self.ui.comboBox.currentText()
+        if text == ExcelOptions.EXISTING.value:
+            # set marker
+            pass
+        else:
+            if self.ui.excel_folder_drop_4.text() == "":
+                error = "Bitte gib einen Speicherort für die Excel-Datei an.\n" \
+                        "Dazu kannst du bei 'Excel-Datei' einen Ordner \n" \
+                        "angeben oder für den Standardweg den Rohmaterialorder \nangeben." \
+                        "Für Standards schau dir doch gerne die Anleitung an."
+                msg = messageboxes.problem_with_input(error)
+                msg.exec()
+            file_name = self.ui.lineEdit.text()
+            path = Path(self.ui.excel_folder_drop_4.text())
+            if text == ExcelOptions.STANDARD.value:
+                self.worker.create_excel(file_name=file_name, path=path, override=override)
+            else:
+                self.worker.create_excel(file_name=file_name,
+                                         path=path,
+                                         option=ExcelOptions.MANUAL,
+                                         columns=[
+                                             self.ui.vid_columns.text().split(", "),
+                                             self.ui.pic_columns.text().split(", ")
+                                         ],
+                                         override=override)
 
     def process_raw_full(self):
         pass
