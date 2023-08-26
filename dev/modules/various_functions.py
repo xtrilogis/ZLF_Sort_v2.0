@@ -94,7 +94,7 @@ def write_excel_without_delete(pfad_excel):
         df_videos.to_excel(writer, index=False, sheet_name='Videos')
 
 
-def test_os_join():
+def try_os_join():
     path_ziel = "D:/Users/Wisdom/Lernen/Coding_Python/Zlf_sort/Dateien/Level2/Schnittmaterial/"
     file = "07-25-Do_001.MTS"
     root = "D:/Users/Wisdom/Lernen/Coding_Python/Zlf_sort/Dateien/Level2/Rohmaterial/a Do 25.07"
@@ -144,9 +144,30 @@ def get_parent_folder(path: str):
     for root, _, files in os.walk(path):
         print(files)
 
+class Some:
+    one: str = None
+
+    def __init__(self):
+        self.two: str = None
+
+    def s(self):
+        if not self.one:
+            self.one = "sdf"
+
+        if not self.two:
+            self.two = "aes"
+
+    def up(self):
+        self.s()
+        print(self.two)
+        print(self.one)
+
 
 if __name__ == '__main__':
     # get_parent_folder("D:/Users/Wisdom/Allgemein/PJHF/2022_23/Zeltlager/Zeltlagerfilm/Rohmaterial")
     # get_image_date_properties("D:/Users/Wisdom/Allgemein/PJHF/2022_23/Zeltlager/Zeltlagerfilm/Rohmaterial/d-29.07-Samstag/Bilder/07-29-Sa_185.JPG")
 
-    get_video_date_properties("D:/Users/Wisdom/Lernen/Coding_Python/Zlf_sort/Dateien/Basic Tests/tag_pic_vid/Rohmaterial/a Donnerstag 25.07/Videos/sdg (5).MOV")
+    # get_video_date_properties("D:/Users/Wisdom/Lernen/Coding_Python/Zlf_sort/Dateien/Basic Tests/tag_pic_vid/Rohmaterial/a Donnerstag 25.07/Videos/sdg (5).MOV")
+    # print("".split(", "))
+    s = Some()
+    s.up()

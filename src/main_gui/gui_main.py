@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import QMainWindow, QFileDialog, QLineEdit, QDialog
 from PyQt5.QtCore import QThread, pyqtSlot
 
 from assethandling.asset_manager import settings
-from assethandling.basemodels import ExcelOptions
+from assethandling.basemodels import ExcelOptions, RawTabInput, UtilTabInput
 from ui.dialogs.selection_dialog import SelectionDialog
 from ui.thread_worker import Worker
 from ui.popups import messageboxes
@@ -18,6 +18,9 @@ print("Imports done")
 
 class MainWindow(QMainWindow):
     """Class handels UI interaction and input."""
+    raw_input: RawTabInput = None
+    util_input: UtilTabInput = None
+
     def __init__(self):
         super().__init__()
         self.ui = Ui_MainWindow(self)
@@ -30,13 +33,13 @@ class MainWindow(QMainWindow):
 
     def setup_ui(self):
         self.show_frame()
+        # TODO use basemodel input ??
         self.ui.vid_columns.setText(", ".join(settings["standard-video-columns"]))
         self.ui.pic_columns.setPlainText(", ".join(settings["standard-picture-columns"]))
         self.ui.lineEdit.setText(f"Zeltlagerfilm {datetime.now().date().year}.xlsx")
-        self.ui.rawpath_drop_2.textChanged.connect(
-            lambda: self.ui.excel_folder_drop_4.setText(str(Path(self.ui.rawpath_drop_2.text()).parent))
-        )
-
+        #self.ui.rawpath_drop_2.textChanged.connect(
+        #    lambda: self.ui.excel_folder_drop_4.setText(str(Path(self.ui.rawpath_drop_2.text()).parent))
+        #)
 
     def set_responsive_styles(self):
         self.ui.comboBox.currentIndexChanged.connect(self.show_frame)
@@ -111,6 +114,7 @@ class MainWindow(QMainWindow):
     def disable_work_buttons(self):
         """Disable all Buttons which would start another Thread execution."""
         # TODO
+        # Name Buttons with start_...
         pass
 
     def enable_work_buttons(self):
@@ -129,7 +133,7 @@ class MainWindow(QMainWindow):
 
     @pyqtSlot(str)
     def wirte_process_excel(self, msg):
-        pass
+        self.ui.print_label_2.setText(msg)
 
     @pyqtSlot(str)
     def open_problem_input(self, error: str):
