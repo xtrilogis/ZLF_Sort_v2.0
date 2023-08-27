@@ -1,15 +1,18 @@
 """Start der App"""
 # print("Python Code Starting")
+from PyQt5.QtWidgets import QApplication
+import sys
+from ui.first_draft import Ui_MainWindow
 from datetime import datetime
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 from pydantic import ValidationError
 
 from PyQt5.QtWidgets import QMainWindow, QFileDialog, QLineEdit, QDialog
 from PyQt5.QtCore import QThread, pyqtSlot, QDate
 
 from assethandling.asset_manager import settings
-from assethandling.basemodels import ExcelOptions, FolderTabInput, RawTabInput, UtilTabInput
+from assethandling.basemodels import ExcelOptions, FolderTabInput, RawTabStandardInput, UtilTabInput
 from ui.dialogs.selection_dialog import SelectionDialog
 from ui.thread_worker import Worker
 from ui.popups import messageboxes
@@ -19,9 +22,6 @@ print("Imports done")
 
 class MainWindow(QMainWindow):
     """Class handels UI interaction and input."""
-    raw_input: RawTabInput = None
-    util_input: UtilTabInput = None
-
     def __init__(self):
         super().__init__()
         self.ui = Ui_MainWindow(self)
@@ -36,7 +36,7 @@ class MainWindow(QMainWindow):
         # Setup Start
         self.ui.dateEdit.setDate(QDate.currentDate())
         # setup Raw
-        # self.ui.tabWidget_raw.setCurrentIndex(0)
+        self.ui.tabWidget_raw.setCurrentIndex(0)
         self.show_frame()
         self.ui.comboBox.currentIndexChanged.connect(self.show_frame)
         # TODO use basemodel input ??
@@ -53,16 +53,19 @@ class MainWindow(QMainWindow):
             self.ui.excel_path.hide()
             self.ui.manuel_columns.hide()
             self.ui.frame_8.show()
+            self.ui.create_excel_pb.show()
         elif text == ExcelOptions.EXISTING.value:
             self.ui.help_standard_excel.hide()
             self.ui.excel_path.show()
             self.ui.manuel_columns.hide()
             self.ui.frame_8.hide()
+            self.ui.create_excel_pb.hide()
         else:
             self.ui.excel_path.hide()
             self.ui.manuel_columns.show()
             self.ui.help_standard_excel.hide()
             self.ui.frame_8.show()
+            self.ui.create_excel_pb.show()
 
     def setup_responsive_styles(self):
         # TODO für alle wichtigen Input LineEdits
@@ -91,26 +94,47 @@ class MainWindow(QMainWindow):
         self.ui.rawpath_folder_tb_2.clicked.connect(
             lambda: self.show_filedialog_raw_material_path(self.ui.rawpath_drop_2))
         self.ui.execute_raw_pB.clicked.connect(self.process_raw_full)
-        self.ui.raw_help_pb.clicked.connect(self.show_help_raw)
 
-        self.ui.correct_fs.clicked.connect(
-            lambda: self.worker.correct_file_structure(path="")  # TODO
-        )
+        self.ui.correct_fs.clicked.connect(self.correct_structure)
+        self.ui.pushButton_7.clicked.connect(self.rename_files)
 
         # ### Excel File
-        self.ui.excelpath_folder_tb_2.clicked.connect(
-            lambda: self.show_filedialog_excel_file_path(self.ui.excelpath_drop_2))
+        self.ui.create_excel_pb.clicked.connect(self.create_excel_file)
+        self.ui.fill_excel_pb.clicked.connect(self.fill_excel)
+
+        self.ui.vid_sugestions_pb.clicked.connect(self.show_suggestions_video)
+        self.ui.pic_sugestions_pb.clicked.connect(self.show_suggestions_pictures)
         self.ui.rawpath_folder_tb_4.clicked.connect(
             lambda: self.show_filedialog_raw_material_path(self.ui.excel_folder_drop_4)
         )
-        self.ui.vid_sugestions_pb.clicked.connect(self.show_suggestions_video)
-        self.ui.pic_sugestions_pb.clicked.connect(self.show_suggestions_pictures)
-        self.ui.create_excel_pb.clicked.connect(self.create_excel_file)
-        self.ui.fill_excel_pb.clicked.connect(
-            lambda: self.worker.fill_excel()  # TODO
+        self.ui.excelpath_folder_tb_2.clicked.connect(
+            lambda: self.show_filedialog_excel_file_path(self.ui.excelpath_drop_2)
         )
-        self.ui.create_picture_folder_pb.clicked.connect(
-            lambda: self.worker.create_picture_folder()  # TODO
+        self.ui.picture_tb.clicked.connect(
+            lambda: self.show_filedialog_raw_material_path(self.ui.picture_drop)
+        )
+        self.ui.create_picture_folder_pb.clicked.connect(self.create_picture_folder)
+
+        # ##### BUTTONS "Auswertung" ##### #
+        self.ui.rawpath_folder_tb_3.clicked.connect(
+            lambda: self.show_filedialog_raw_material_path(self.ui.rawpath_drop_3)
+        )
+        self.ui.excelpath_folder_tb_3.clicked.connect(
+            lambda: self.show_filedialog_excel_file_path(self.ui.excelpath_drop_3)
+        )
+        self.ui.excel_start_pb_6.clicked.connect(self.create_sections)
+        self.ui.excel_start_pb_7.clicked.connect(self.create_selections)
+        self.ui.excel_start_pb_4.clicked.connect(self.search_excel)
+        self.ui.excel_start_pb_8.clicked.connect(self.create_rated_picture_folder)
+        self.ui.pushButton_5.clicked.connect(self.process_util_full)
+        self.ui.pushButton_6.clicked.connect(self.create_statistics)
+
+        self.ui.pushButton_3.clicked.connect(self.select_columns_pictures)
+        self.ui.pushButton_4.clicked.connect(self.select_columns_videos)
+        self.ui.pushButton.clicked.connect(self.select_columns_pictures)
+        self.ui.pushButton_2.clicked.connect(self.select_columns_videos)
+        self.ui.picture_tb_2.clicked.connect(
+            lambda: self.show_filedialog_raw_material_path(self.ui.picture_drop_2)
         )
 
     # ##### GENERAL METHODS ##### #
@@ -200,32 +224,29 @@ class MainWindow(QMainWindow):
             self.open_problem_input(msg=str(e))
 
     # ##### PART II: Raw Material / 'Rohmaterial verarbeiten' ##### #
-    def handle_excel_choice(self, i):
-        if "Überschreiben" in i.text():
-            self.create_excel_file(override=True)
+    # ### Button Methods ### #
+    def process_raw_full(self):
+        # TODO implementation
+        try:
+            data = self.get_raw_inputs()
+            print(data.model_dump_json(indent=4))
+        except ValidationError as e:
+            self.open_problem_input(error=str(e))
+        except ValueError as e:
+            self.open_problem_input(error=str(e))
 
-    def get_raw_inputs(self):
+    def correct_structure(self):
+        # TODO implementation
+        # get input
+        # self.worker.correct_file_structure(path="")
         pass
 
-    def show_suggestions_video(self):
-        dial = SelectionDialog("Vorschläge Video Spalten", "Spalten", settings["suggestions-video-columns"], self)
-        if dial.exec_() == QDialog.Accepted:
-            select = dial.itemsSelected()
-            columns: List[str] = settings["standard-video-columns"].copy()
-            columns.extend(select)
-            text = ", ".join(columns)
-            self.ui.vid_columns.setText(text)
-
-    def show_suggestions_pictures(self):
-        dial = SelectionDialog("Vorschläge Bilder Spalten", "Spalten", settings["suggestions-picture-columns"], self)
-        if dial.exec_() == QDialog.Accepted:
-            select = dial.itemsSelected()
-            columns: List[str] = settings["standard-picture-columns"].copy()
-            columns.extend(select)
-            text = ", ".join(columns)
-            self.ui.pic_columns.setPlainText(text)
+    def rename_files(self):
+        # TODO implementations
+        pass
 
     def create_excel_file(self, override=False):
+        # TODO Testing
         text = self.ui.comboBox.currentText()
         if text == ExcelOptions.EXISTING.value:
             # set marker
@@ -252,15 +273,154 @@ class MainWindow(QMainWindow):
                                          ],
                                          override=override)
 
-    def process_raw_full(self):
+    def handle_excel_choice(self, i):
+        if "Überschreiben" in i.text():
+            self.create_excel_file(override=True)
+
+    def fill_excel(self):
+        # TODO implementation
+        # self.worker.fill_excel()
+        # if mode == existing nur auslesen sonst, raw mat input
         pass
+
+    def show_suggestions_video(self):
+        dial = SelectionDialog("Vorschläge Video Spalten", "Spalten", settings["suggestions-video-columns"], self)
+        if dial.exec_() == QDialog.Accepted:
+            select = dial.itemsSelected()
+            # TODO append to existing, create minimum instead of standard
+            columns: List[str] = settings["standard-video-columns"].copy()
+            columns.extend(select)
+            text = ", ".join(columns)
+            self.ui.vid_columns.setText(text)
+
+    def show_suggestions_pictures(self):
+        dial = SelectionDialog("Vorschläge Bilder Spalten", "Spalten", settings["suggestions-picture-columns"], self)
+        if dial.exec_() == QDialog.Accepted:
+            select = dial.itemsSelected()
+            # TODO append to existing, create minimum instead of standard
+            columns: List[str] = settings["standard-picture-columns"].copy()
+            columns.extend(select)
+            text = ", ".join(columns)
+            self.ui.pic_columns.setPlainText(text)
+
+    def create_picture_folder(self):
+        # TODO implementation
+        # lambda: self.worker.create_picture_folder()  # TODO
+        pass
+
+    # ### Helper Methods ### #
+    def get_raw_inputs(self):
+        # Optional inputs like picture_folder besser handelen
+        if self.ui.rawpath_drop_2.text() == "":
+            raise ValueError("Bitte gib den Pfad zum Rohmaterialordner an.")
+        excel_option: ExcelOptions = ExcelOptions(self.ui.comboBox.currentText())
+        data = {
+            "do_structure": self.ui.structur_cB.isChecked(),
+            "do_rename": self.ui.rename_cB.isChecked(),
+            "fill_excel": self.ui.fill_excel_cB.isChecked(),
+            "create_picture_folder": self.ui.diashow_cB.isChecked(),
+            "raw_material_folder": Path(self.ui.rawpath_drop_2.text()),
+            "excel_option": excel_option,
+            "excel_full_filepath": None
+        }
+        if excel_option == ExcelOptions.EXISTING:
+            data['excel_full_filepath'] = Path(self.ui.excelpath_drop_2.text())
+            data["excel_folder"] = data.get('excel_full_filepath').parent
+        elif excel_option == ExcelOptions.MANUAL:
+            if self.ui.excel_folder_drop_4.text() == "":
+                raise ValueError("Bitte gib einen Speicherort für die Excel-Datei an.")
+            data["excel_folder"]: Path = Path(self.ui.excel_folder_drop_4.text())
+            data["excel_file_name"]: str = self.ui.lineEdit.text()
+            data["video_columns"]: List[str] = self.get_LineEdit_parts(self.ui.vid_columns)
+            data["picture_columns"]: List[str] = self.get_LineEdit_parts(self.ui.pic_columns)
+        else:
+            data["excel_folder"]: Path = data["raw_material_folder"].parent
+        if self.ui.groupBox_2.isChecked():
+            if self.ui.picture_drop.text() == "":
+                raise ValueError("Bitte gib einen Speicherort für den Bilderordner an.")
+            data["picture_folder"] = Path(self.ui.picture_drop.text())
+        else:
+            data["picture_folder"] = data["raw_material_folder"].parent
+
+        info = RawTabStandardInput(**data)
+        if info.excel_full_filepath is None:
+            info.excel_full_filepath = info.excel_folder / info.excel_file_name
+        return info
+
+    # ##### PART III: Util / '' ##### #
+    def create_sections(self):
+        # TODO implementation
+        pass
+
+    def create_selections(self):
+        # TODO implementation
+        pass
+
+    def search_excel(self):
+        # TODO implementation
+        pass
+
+    def create_rated_picture_folder(self):
+        # TODO implementation
+        pass
+
+    def process_util_full(self):
+        # TODO implementation
+        pass
+
+    def create_statistics(self):
+        # TODO connection
+        # location to safe file
+        pass
+
+    def select_columns_videos(self):
+        # TODO implementation
+        pass
+
+    def select_columns_pictures(self):
+        # TODO implementation
+        pass
+
+    def get_util_input(self):
+        if self.ui.rawpath_drop_3.text() == "" or \
+                self.ui.excelpath_drop_3.text() == "":
+            self.open_problem_input(error="Bitte fülle die Felder in 'Input' aus")
+        else:
+            try:
+                data = {
+                    "raw_material_folder": Path(self.ui.rawpath_drop_3.text()),
+                    "excel_full_filepath": Path(self.ui.excelpath_drop_3.text()),
+                    "do_sections": self.ui.segment.isChecked(),
+                    "do_video_sections": self.ui.segment_videos_checkB.isChecked(),
+                    "do_picture_sections": self.ui.segment_picture_checkB.isChecked(),
+                    "rating_section": self.ui.rating_limit_spinB.value(),
+                    "do_selections": self.ui.selection.isChecked(),
+                    "videos_columns_selection": self.get_LineEdit_parts(self.ui.column_videos_linee_3),
+                    "picture_columns_selection": self.get_LineEdit_parts(self.ui.column_pictures_linee_3),
+                    "marker": self.ui.marker_linee.text(),
+                    "do_search": self.ui.selection_2.isChecked(),
+                    "videos_columns_search": self.get_LineEdit_parts(self.ui.column_videos_linee_2),
+                    "picture_columns_search": self.get_LineEdit_parts(self.ui.column_videos_linee_2),
+                    "keywords": self.get_LineEdit_parts(self.ui.marker_linee_2),
+                    "rating_search": self.ui.rating_limit_spinB_3.value(),
+                    "create_picture_folder": self.ui.segment_2.isChecked(),
+                    "rating_pictures": self.ui.rating_limit_spinB_2.value(),
+                }
+                return UtilTabInput(**data)
+            except ValidationError as e:
+                self.open_problem_input(error=str(e))
+
+    @staticmethod
+    def get_LineEdit_parts(columns: QLineEdit) -> List[str]:
+        cols = []
+        for part in columns.text().split(','):
+            if part.strip():
+                cols.append(part.strip())
+        return cols
 
 
 if __name__ == '__main__':
-    from PyQt5.QtWidgets import QApplication
-    import sys
     app = QApplication(sys.argv)
-    from ui.first_draft import Ui_MainWindow
 
     window = MainWindow()
     window.show()

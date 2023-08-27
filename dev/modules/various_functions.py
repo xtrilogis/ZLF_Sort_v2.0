@@ -168,17 +168,30 @@ class Some:
         print(self.one)
 
 def create(par, *folders):
-    parent.joinpath(folders)
+    par.joinpath(folders)
 
-
+def get_column_list(columns: str): # -> List[str]:
+    cols = []
+    for part in columns.split(','):
+        if part.strip():
+            cols.append(part.strip())
+    return cols
 if __name__ == '__main__':
     # get_parent_folder("D:/Users/Wisdom/Allgemein/PJHF/2022_23/Zeltlager/Zeltlagerfilm/Rohmaterial")
     # get_image_date_properties("D:/Users/Wisdom/Allgemein/PJHF/2022_23/Zeltlager/Zeltlagerfilm/Rohmaterial/d-29.07-Samstag/Bilder/07-29-Sa_185.JPG")
 
     # get_video_date_properties("D:/Users/Wisdom/Lernen/Coding_Python/Zlf_sort/Dateien/Basic Tests/tag_pic_vid/Rohmaterial/a Donnerstag 25.07/Videos/sdg (5).MOV")
     # print("".split(", "))
-    date = datetime.datetime.now()
-    parent = Path(Path.cwd())
+    strin = "sadf, asf, ase, "
+    awe = ""
+    awfe = "asfe"
+    awef = "osf, "
+    ae = "osf"
+    aw = ae[:-1] if ae[-1] == "," else ae
 
-    s = Some()
-    s.up()
+    print([x.strip for x in strin.split(',') if x])
+    print([x.strip for x in awe.split(',') if x])
+    print([x.strip for x in awfe.split(',') if x])
+    print([x.strip for x in awef.split(',') if x])
+    print([x for x in ae.split(',') if x])
+    print([x for x in aw.split(',') if x])
