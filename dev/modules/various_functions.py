@@ -1,11 +1,16 @@
+import datetime
+import locale
 import os
 from datetime import date
 import time
+from pathlib import Path
+
 import pandas as pd
 import shutil
 import PIL.Image
 from hachoir.parser import createParser
 from hachoir.metadata import extractMetadata
+
 
 
 name = 97  # kleines a in ascii
@@ -162,6 +167,9 @@ class Some:
         print(self.two)
         print(self.one)
 
+def create(par, *folders):
+    parent.joinpath(folders)
+
 
 if __name__ == '__main__':
     # get_parent_folder("D:/Users/Wisdom/Allgemein/PJHF/2022_23/Zeltlager/Zeltlagerfilm/Rohmaterial")
@@ -169,5 +177,8 @@ if __name__ == '__main__':
 
     # get_video_date_properties("D:/Users/Wisdom/Lernen/Coding_Python/Zlf_sort/Dateien/Basic Tests/tag_pic_vid/Rohmaterial/a Donnerstag 25.07/Videos/sdg (5).MOV")
     # print("".split(", "))
+    date = datetime.datetime.now()
+    parent = Path(Path.cwd())
+
     s = Some()
     s.up()

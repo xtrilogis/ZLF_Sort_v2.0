@@ -2,7 +2,7 @@ from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtWidgets import QMessageBox
 
 from assethandling.asset_manager import window_icon
-from assethandling.stylesheets import msg_box_style
+from ui.stylesheets import msg_box_style
 
 
 def basic_messagebox(title, message):

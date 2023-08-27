@@ -1,18 +1,18 @@
 """Contains all methods for validation input"""
 import os
+from pathlib import Path
+
 import pandas as pd
-from PyQt5.QtCore import QDate
+from datetime import datetime
 
 
-def validate_setup(harddrive: str, date: QDate):
+def validate_setup(harddrive: Path, date: datetime):
     """Validates input for setting up the folders
     :arg harddrive
     :arg date
     """
-    if not date.isValid():
-        return False, "Kein valides Datum."
-    if os.path.exists(harddrive) and os.path.isdir(harddrive):
-        if "Rohmaterial" in harddrive:
+    if harddrive.exists() and harddrive.is_dir():
+        if "Rohmaterial" in harddrive.as_uri():
             return False, "Der Pfad enthält das Wort 'Rohmaterial'.\n" \
                           "Dies kann später zu Problemen führen.\n" \
                           "Bitte Ändern!"

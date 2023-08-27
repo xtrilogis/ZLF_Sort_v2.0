@@ -3,12 +3,13 @@
 from datetime import datetime
 from pathlib import Path
 from typing import List
+from pydantic import ValidationError
 
 from PyQt5.QtWidgets import QMainWindow, QFileDialog, QLineEdit, QDialog
-from PyQt5.QtCore import QThread, pyqtSlot
+from PyQt5.QtCore import QThread, pyqtSlot, QDate
 
 from assethandling.asset_manager import settings
-from assethandling.basemodels import ExcelOptions, RawTabInput, UtilTabInput
+from assethandling.basemodels import ExcelOptions, FolderTabInput, RawTabInput, UtilTabInput
 from ui.dialogs.selection_dialog import SelectionDialog
 from ui.thread_worker import Worker
 from ui.popups import messageboxes
@@ -29,23 +30,21 @@ class MainWindow(QMainWindow):
         self.setup_ui()
         self.setup_thread_connections()
         self.setup_button_connections()
-        self.set_responsive_styles()
 
     def setup_ui(self):
+        self.ui.tabWidget.setCurrentIndex(0)
+        # Setup Start
+        self.ui.dateEdit.setDate(QDate.currentDate())
+        # setup Raw
+        # self.ui.tabWidget_raw.setCurrentIndex(0)
         self.show_frame()
+        self.ui.comboBox.currentIndexChanged.connect(self.show_frame)
         # TODO use basemodel input ??
         self.ui.vid_columns.setText(", ".join(settings["standard-video-columns"]))
         self.ui.pic_columns.setPlainText(", ".join(settings["standard-picture-columns"]))
         self.ui.lineEdit.setText(f"Zeltlagerfilm {datetime.now().date().year}.xlsx")
-        #self.ui.rawpath_drop_2.textChanged.connect(
-        #    lambda: self.ui.excel_folder_drop_4.setText(str(Path(self.ui.rawpath_drop_2.text()).parent))
-        #)
 
-    def set_responsive_styles(self):
-        self.ui.comboBox.currentIndexChanged.connect(self.show_frame)
-        # TODO
-        self.ui.harddrive_drop_2.textChanged.connect(lambda text: self.ui.harddrive_drop_2.setStyleSheet(
-            "QLineEdit { background-color: %s}" % ('green' if text else 'red')))
+        self.setup_responsive_styles()
 
     def show_frame(self):
         text = self.ui.comboBox.currentText()
@@ -65,6 +64,11 @@ class MainWindow(QMainWindow):
             self.ui.help_standard_excel.hide()
             self.ui.frame_8.show()
 
+    def setup_responsive_styles(self):
+        # TODO für alle wichtigen Input LineEdits
+        self.ui.harddrive_drop_2.textChanged.connect(lambda text: self.ui.harddrive_drop_2.setStyleSheet(
+            "QLineEdit { background-color: %s}" % ('green' if text else 'red')))
+
     def setup_thread_connections(self):
         self.worker.moveToThread(self.thread)
 
@@ -80,7 +84,6 @@ class MainWindow(QMainWindow):
 
     def setup_button_connections(self):
         # ##### BUTTONS "Ordner erstellt" ##### #
-        self.ui.folder_help_pb_2.clicked.connect(self.show_help_folder)
         self.ui.harddrive_tb_2.clicked.connect(self.show_filedialog_harddrive_path)
         self.ui.folder_start_pb_2.clicked.connect(self.setup_folder_structure_new)
 
@@ -153,11 +156,6 @@ class MainWindow(QMainWindow):
         self.enable_work_buttons()
 
     # ##### HELP Button METHODS ##### #
-    @staticmethod
-    def show_help_folder():
-        """Opens a Pop-Up-Window with information about part 1 "Ordner erstellen" """
-        msg = messageboxes.help_folder_creation()
-        msg.exec()
 
     @staticmethod
     def show_help_raw():
@@ -188,9 +186,18 @@ class MainWindow(QMainWindow):
     # ##### PART I: Preset / 'Ordner erstellen' ##### #
     def setup_folder_structure_new(self):
         """Starts process of creating the necessary folders"""
-        harddrive = self.ui.harddrive_drop_2.text()
-        date = self.ui.dateEdit.date()
-        self.worker.setup_folder_structure(parent=harddrive, date=date)
+        try:
+            if self.ui.harddrive_drop_2.text() == "":
+                self.open_problem_input(msg="Bitte gib einen Dateipfad an.")
+            else:
+                data = FolderTabInput(
+                    folder=Path(self.ui.harddrive_drop_2.text()),
+                    date=self.ui.dateEdit.date().toPyDate()
+                )
+                self.worker.setup_folder_structure(inputs=data)
+        except ValidationError as e:
+            # TODO better error msg?
+            self.open_problem_input(msg=str(e))
 
     # ##### PART II: Raw Material / 'Rohmaterial verarbeiten' ##### #
     def handle_excel_choice(self, i):

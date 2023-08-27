@@ -1,17 +1,23 @@
+from datetime import datetime
 from typing import List
 from pathlib import Path
 from PyQt5.QtCore import QDate
-from assethandling.basemodels import ExcelOptions
+from assethandling.basemodels import ExcelOptions, FolderTabInput
 from assethandling.asset_manager import settings
 from ui import thread_worker as tw
 from assethandling import asset_manager
 
 ROOT = "../TestDateien"
+ROOT_absolute = "D:/Users/Wisdom/Lernen/Coding_Python/ZLF_Sort_v2.0/TestDateien"
 
 
 def create_folder_structure():
     worker = tw.Worker()
-    worker.setup_folder_structure(parent=ROOT, date=QDate(2023, 1, 1))
+    data = FolderTabInput(
+        folder=Path(ROOT_absolute),
+        date=datetime.now()
+    )
+    worker.setup_folder_structure(inputs=data)
 
 
 def process_raw_full():
@@ -46,5 +52,5 @@ def process_raw():
 
 
 if __name__ == "__main__":
-    # create_folder_structure()
-    process_raw()
+    create_folder_structure()
+    # process_raw()

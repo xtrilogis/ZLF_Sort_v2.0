@@ -3,6 +3,7 @@ from enum import Enum
 from pathlib import Path
 from typing import List
 
+from PyQt5.QtCore import QDate
 from pydantic import BaseModel
 
 from assethandling.asset_manager import settings
@@ -18,6 +19,11 @@ class ExcelOptions(Enum):
     STANDARD = "Standard"
     MANUAL = "Manuelle Einstellungen"
     EXISTING = "Vorhandene Excel-Datei"
+
+
+class FolderTabInput(BaseModel):
+    folder: Path
+    date: datetime
 
 
 class RawTabInput(BaseModel):
