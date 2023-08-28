@@ -1,7 +1,10 @@
 import os.path
-from typing import List
+from pathlib import Path
+from typing import List, Dict
 
 import pandas as pd
+from pandas import DataFrame
+
 from assethandling.basemodels import SheetConfig
 
 
@@ -29,9 +32,16 @@ def save_df_to_excel(df, path):
     pass
 
 
-def load_df_from_excel(path) -> list:
-    # liste aller sheets
-    pass
+def load_sheets_as_df(path: Path) -> Dict[str, DataFrame]:
+    return pd.read_excel(path, sheet_name=None)
+
+
+def get_columns(excel, sheet) -> List[str]:
+    """Extracts all columns the given sheet has
+        :param excel fullpath of the Excel file
+        :param sheet to search"""
+    df = pd.read_excel(excel, sheet_name=sheet)
+    return df.columns
 
 
 if __name__ == "__main__":

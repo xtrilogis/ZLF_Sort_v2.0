@@ -2,6 +2,9 @@
 # print("Python Code Starting")
 from PyQt5.QtWidgets import QApplication
 import sys
+
+from excel import excelmethods
+from inputhandling import validation
 from ui.first_draft import Ui_MainWindow
 from datetime import datetime
 from pathlib import Path
@@ -83,6 +86,7 @@ class MainWindow(QMainWindow):
         self.worker.new_message_raw.connect(self.write_process_raw)
         self.worker.excel_exits_error.connect(self.open_excel_exists)
 
+        self.worker.new_message_excel.connect(self.write_process_util)
         self.thread.start()
 
     def setup_button_connections(self):
@@ -129,10 +133,18 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_5.clicked.connect(self.process_util_full)
         self.ui.pushButton_6.clicked.connect(self.create_statistics)
 
-        self.ui.pushButton_3.clicked.connect(self.select_columns_pictures)
-        self.ui.pushButton_4.clicked.connect(self.select_columns_videos)
-        self.ui.pushButton.clicked.connect(self.select_columns_pictures)
-        self.ui.pushButton_2.clicked.connect(self.select_columns_videos)
+        self.ui.pushButton_3.clicked.connect(
+            lambda: self.select_columns(line_edit=self.ui.column_pictures_linee_3, sheet="Bilder")
+        )
+        self.ui.pushButton_4.clicked.connect(
+            lambda: self.select_columns(line_edit=self.ui.column_videos_linee_3, sheet="Videos")
+        )
+        self.ui.pushButton.clicked.connect(
+            lambda: self.select_columns(line_edit=self.ui.column_pictures_linee_2, sheet="Bilder")
+        )
+        self.ui.pushButton_2.clicked.connect(
+            lambda: self.select_columns(line_edit=self.ui.column_videos_linee_2, sheet="Videos")
+        )
         self.ui.picture_tb_2.clicked.connect(
             lambda: self.show_filedialog_raw_material_path(self.ui.picture_drop_2)
         )
@@ -159,7 +171,7 @@ class MainWindow(QMainWindow):
         self.ui.print_label.setText(msg)
 
     @pyqtSlot(str)
-    def wirte_process_excel(self, msg):
+    def write_process_util(self, msg):
         self.ui.print_label_2.setText(msg)
 
     @pyqtSlot(str)
@@ -365,6 +377,11 @@ class MainWindow(QMainWindow):
         pass
 
     def process_util_full(self):
+        try:
+            data: UtilTabInput = self.get_util_input()
+            self.worker.full_util_tab(inputs=data)
+        except ValidationError as e:
+            self.open_problem_input(error=str(e))
         # TODO implementation
         pass
 
@@ -373,42 +390,43 @@ class MainWindow(QMainWindow):
         # location to safe file
         pass
 
-    def select_columns_videos(self):
-        # TODO implementation
-        pass
-
-    def select_columns_pictures(self):
-        # TODO implementation
-        pass
+    def select_columns(self, line_edit: QLineEdit, sheet: str):
+        try:
+            path = Path(self.ui.excelpath_drop_3.text())
+            validation.validate_excel_file(excel_file=path)
+            items = excelmethods.get_columns(excel=path, sheet=sheet)
+            dial = SelectionDialog("Spalten Auswahl", "Spalten", items, self)
+            if dial.exec_() == QDialog.Accepted:
+                select = dial.itemsSelected()
+                text = ", ".join(select)
+                line_edit.setText(text)
+        except Exception as e:
+            self.open_problem_input(error=str(e))
 
     def get_util_input(self):
         if self.ui.rawpath_drop_3.text() == "" or \
                 self.ui.excelpath_drop_3.text() == "":
-            self.open_problem_input(error="Bitte fülle die Felder in 'Input' aus")
-        else:
-            try:
-                data = {
-                    "raw_material_folder": Path(self.ui.rawpath_drop_3.text()),
-                    "excel_full_filepath": Path(self.ui.excelpath_drop_3.text()),
-                    "do_sections": self.ui.segment.isChecked(),
-                    "do_video_sections": self.ui.segment_videos_checkB.isChecked(),
-                    "do_picture_sections": self.ui.segment_picture_checkB.isChecked(),
-                    "rating_section": self.ui.rating_limit_spinB.value(),
-                    "do_selections": self.ui.selection.isChecked(),
-                    "videos_columns_selection": self.get_LineEdit_parts(self.ui.column_videos_linee_3),
-                    "picture_columns_selection": self.get_LineEdit_parts(self.ui.column_pictures_linee_3),
-                    "marker": self.ui.marker_linee.text(),
-                    "do_search": self.ui.selection_2.isChecked(),
-                    "videos_columns_search": self.get_LineEdit_parts(self.ui.column_videos_linee_2),
-                    "picture_columns_search": self.get_LineEdit_parts(self.ui.column_videos_linee_2),
-                    "keywords": self.get_LineEdit_parts(self.ui.marker_linee_2),
-                    "rating_search": self.ui.rating_limit_spinB_3.value(),
-                    "create_picture_folder": self.ui.segment_2.isChecked(),
-                    "rating_pictures": self.ui.rating_limit_spinB_2.value(),
-                }
-                return UtilTabInput(**data)
-            except ValidationError as e:
-                self.open_problem_input(error=str(e))
+            raise ValueError("Bitte fülle die Felder in 'Input' aus")
+        data = {
+            "raw_material_folder": Path(self.ui.rawpath_drop_3.text()),
+            "excel_full_filepath": Path(self.ui.excelpath_drop_3.text()),
+            "do_sections": self.ui.segment.isChecked(),
+            "do_video_sections": self.ui.segment_videos_checkB.isChecked(),
+            "do_picture_sections": self.ui.segment_picture_checkB.isChecked(),
+            "rating_section": self.ui.rating_limit_spinB.value(),
+            "do_selections": self.ui.selection.isChecked(),
+            "videos_columns_selection": self.get_LineEdit_parts(self.ui.column_videos_linee_3),
+            "picture_columns_selection": self.get_LineEdit_parts(self.ui.column_pictures_linee_3),
+            "marker": self.ui.marker_linee.text(),
+            "do_search": self.ui.selection_2.isChecked(),
+            "videos_columns_search": self.get_LineEdit_parts(self.ui.column_videos_linee_2),
+            "picture_columns_search": self.get_LineEdit_parts(self.ui.column_videos_linee_2),
+            "keywords": self.get_LineEdit_parts(self.ui.marker_linee_2),
+            "rating_search": self.ui.rating_limit_spinB_3.value(),
+            "create_picture_folder": self.ui.segment_2.isChecked(),
+            "rating_pictures": self.ui.rating_limit_spinB_2.value(),
+        }
+        return UtilTabInput(**data)
 
     @staticmethod
     def get_LineEdit_parts(columns: QLineEdit) -> List[str]:
