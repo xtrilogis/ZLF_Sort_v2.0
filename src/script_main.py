@@ -2,13 +2,17 @@ from datetime import datetime
 from typing import List
 from pathlib import Path
 from PyQt5.QtCore import QDate
-from assethandling.basemodels import ExcelOptions, FolderTabInput
+from assethandling.basemodels import ExcelOptions, FolderTabInput, UtilTabInput
 from assethandling.asset_manager import settings
+from inputhandling import validation
 from ui import thread_worker as tw
 from assethandling import asset_manager
+from util import util_methods as eval
 
 ROOT = "../TestDateien"
 ROOT_absolute = "D:/Users/Wisdom/Lernen/Coding_Python/ZLF_Sort_v2.0/TestDateien"
+path = "D:/Users/Wisdom/Lernen/Coding_Python/ZLF_Sort_v2.0/TestDateien/Rohmaterial"
+pfad_excel = "D:/Users/Wisdom/Lernen/Coding_Python/ZLF_Sort_v2.0/TestDateien/Rohmaterial/Zeltlagerfilm 2022.xlsx"
 
 
 def create_folder_structure():
@@ -51,6 +55,68 @@ def process_raw():
     #worker.create_picture_folder()  # TODO
 
 
+def get_util_input():
+    data = {
+        "raw_material_folder": path,
+        "excel_full_filepath": pfad_excel,
+        "do_sections": True,
+        "do_video_sections": True,
+        "do_picture_sections": True,
+        "rating_section": 4,
+        "do_selections": False,
+        "videos_columns_selection": [],
+        "picture_columns_selection": [],
+        "marker": "x",
+        "do_search": False,
+        "videos_columns_search": [],
+        "picture_columns_search": [],
+        "keywords": [],
+        "rating_search": 3,
+        "create_picture_folder": False,
+        "rating_pictures": 4,
+    }
+    return UtilTabInput(**data)
+
+
+def process_util(inputs):
+    # TODO handle problem in one part of the execution
+    # Validate logic
+    valid, errors = validation.validate_util()  # TODO
+    if valid:
+        try:
+            sheets = eval.prepare_dataframes(excel_file=inputs.excel_full_filepath,
+                                             raw_path=inputs.raw_material_folder)
+            video_df = sheets["Videos"]
+            picture_df = sheets["Bilder"]
+
+            print("Inputs validiert und Excel eingelesen.")
+
+            if inputs.do_sections:
+                if inputs.do_video_sections and not video_df.empty:
+                    result = eval.copy_section(video_df, inputs.rating_section)
+                    print("Videoabschnitte erstellt.")
+                    [print(x) for x in result if x]
+                if inputs.do_picture_sections and not picture_df.empty:
+                    result = eval.copy_section(picture_df, inputs.rating_section)
+                    print("Bilderabschnitte erstellt.")
+                    [print(x) for x in result if x]
+            if inputs.do_selections:
+                pass
+            if inputs.do_search:
+                pass
+            if inputs.create_picture_folder:
+                pass
+            print("BlaBla: util gesamt fertig")
+
+        except (IndexError, KeyError) as e:
+            print("Fehler beim laden der Excel-Datei.")
+        except ValueError as e:
+            print(str(e))
+    else:
+        print(errors)
+
+
 if __name__ == "__main__":
-    create_folder_structure()
+    # create_folder_structure()
     # process_raw()
+    process_util(get_util_input())

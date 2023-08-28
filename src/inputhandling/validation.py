@@ -1,6 +1,7 @@
 """Contains all methods for validation input"""
 import os
 from pathlib import Path
+from typing import Tuple
 
 import pandas as pd
 from datetime import datetime
@@ -18,3 +19,18 @@ def validate_setup(harddrive: Path, date: datetime):
                           "Bitte Ändern!"
         return True, ""
     return False, "Der angegebene Pfad ist kein valider Ordnerpfad."
+
+
+def validate_excel_file(excel_file: Path):
+    # TODO
+    # exists
+    # Bilder und Videos !!!
+    # Spalten Name, Abschnitt, Bewertung
+    # empty wird wo anders geprüft
+    pass
+
+
+def validate_util() -> Tuple[bool, str]:
+    # TODO
+    # check if excel and raw correct
+    return True, ""

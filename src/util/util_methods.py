@@ -1,18 +1,22 @@
 from pathlib import Path
-from plistlib import Dict
+from typing import Dict, List
 
 from assets import constants
 from excel import excelmethods
 import pandas as pd
 
+from fileopertations import file_methods
 
-def prepare_dataframes(excel_file: Path, raw_path: Path) -> dict[str, pd.DataFrame]:
+
+def prepare_dataframes(excel_file: Path, raw_path: Path) -> Dict[str, pd.DataFrame]:
     sheets = excelmethods.load_sheets_as_df(path=excel_file)
+    if sheets["Videos"].empty and sheets["Bilder"].empty:
+        raise ValueError("Die Excel enthält keine Daten. Bitte ausfüllen")
     append_file_paths_to_df(sheets=sheets, raw_material_path=raw_path)
     return sheets
 
 
-def append_file_paths_to_df(sheets: dict[str, pd.DataFrame], raw_material_path: Path):
+def append_file_paths_to_df(sheets: Dict[str, pd.DataFrame], raw_material_path: Path):
     """Creates a new column 'Dateipfad' and fills it with the files fullpath
     :arg sheets pandas DataFrames with the all files and the markers
     :arg raw_material_path
@@ -32,3 +36,40 @@ def append_file_paths_to_df(sheets: dict[str, pd.DataFrame], raw_material_path: 
             if not match.empty:
                 row = match.index[0]
                 df.loc[row, "Dateipfad"] = element
+
+
+def copy_section(df: pd.DataFrame, rating) -> List[str]:
+    """Iterates through column 'Abschnitt'(Sections), sorts files into given sections
+    :arg df pandas DataFrame containing file information
+    :arg rating only file with a rating equal or higher will be copied"""
+    problems = []
+    for count, value in enumerate(df['Abschnitt']):
+        if pd.isnull(value):
+            continue
+        try:
+            if df.loc[count, 'Bewertung'] >= rating:
+                if pd.isnull(df.loc[count, 'Dateipfad']):
+                    raise ValueError(f"Datei konnte nicht kopiert werden: {df.loc[count, 'Datei']}")
+
+                file_fullpath = Path(df.loc[count, 'Dateipfad'])
+                destination_folder = get_section_dst_folder(file_fullpath=file_fullpath,
+                                                            section=value)
+                file_methods.copy_file(src_file=file_fullpath,
+                                       dst_folder=destination_folder)
+        except (AttributeError, ValueError) as e:
+            problems.append(str(e))
+        except FileNotFoundError:
+            problems.append(f"Datei nicht gefunden: {df.loc[count, 'Datei']}")
+    return problems
+
+
+def get_section_dst_folder(file_fullpath: Path, section: str) -> Path:
+    new_parts = []
+    for _, part in enumerate(file_fullpath.parent.parts):
+        if part == "Rohmaterial":
+            part = "Schnittmaterial"
+        new_parts.append(part)
+    destination = Path(*new_parts) / section
+    if not destination.exists():
+        destination.mkdir(parents=True)
+    return destination

@@ -11,14 +11,16 @@ import PIL.Image
 from hachoir.parser import createParser
 from hachoir.metadata import extractMetadata
 
-
+from assets import constants
+from excel import excelmethods
+from fileopertations.file_methods import copy_file
 
 name = 97  # kleines a in ascii
 # print(chr(name+1))
 
 file = "D:/Users/Wisdom/Lernen/Coding_Python/Zlf_sort/Dateien/Level1/Soll/Schnittmaterial/25-07-Do_1.MTS"
-path = "D:/Users/Wisdom/Lernen/Coding_Python/Zlf_sort/Dateien/Level1/Rohmaterial/07-25-Do_002.MOV"
-pfad_excel = "D:/Users/Wisdom/Lernen/Coding_Python/Zlf_sort/Dateien/Level1/Rohmaterial"
+path = "D:/Users/Wisdom/Lernen/Coding_Python/ZLF_Sort_v2.0/TestDateien/Rohmaterial - nach Nachschauen"
+pfad_excel = "D:/Users/Wisdom/Lernen/Coding_Python/ZLF_Sort_v2.0/TestDateien/Rohmaterial - nach Nachschauen/Zeltlagerfilm 2023.xlsx"
 
 
 def read_file_extensions(path):
@@ -50,6 +52,7 @@ def get_image_date_properties(file):
     print("ctime = Erstelldatum " + time.strftime("%m-%d", time.strptime(time.ctime(ti_c))))
     print("mtime = Änderungsdatum " + time.strftime("%m-%d", time.strptime(time.ctime(ti_m))))
     print("atime = letzter Zugriff o.s." + time.strftime("%m-%d", time.strptime(time.ctime(ti_a))))
+
 
 # general files
 def format_date(file):
@@ -89,6 +92,7 @@ def get_video_date_properties(file):
         print("mtime = Änderungsdatum " + time.ctime(ti_m))
         print("atime = letzter Zugriff o.s." + time.ctime(ti_a))
         return None
+
 
 def write_excel_without_delete(pfad_excel):
     df_videos = pd.read_excel(pfad_excel, sheet_name="Videos")
@@ -130,6 +134,7 @@ def convert_string_to_list(videos: str, pictures: str):
     pic_columns = pictures.split(",")
     return videos_columns, pic_columns
 
+
 def save_excel():
     """Saves Pandas DataFrames to Excel"""
     excel = "D:/Users/Wisdom/Lernen/Coding_Python/Zlf_sort/Dateien/Basic Tests/tag_pic_vid/Rohmaterial - Kopie/Zeltlagerfilm 2022.xlsx"
@@ -145,9 +150,14 @@ def save_excel():
     #writer.save()
 
 
+def load_excel():
+    result = pd.read_excel(pfad_excel)
+    print("")
+
 def get_parent_folder(path: str):
     for root, _, files in os.walk(path):
         print(files)
+
 
 class Some:
     one: str = None
@@ -167,8 +177,10 @@ class Some:
         print(self.two)
         print(self.one)
 
+
 def create(par, *folders):
     par.joinpath(folders)
+
 
 def get_column_list(columns: str): # -> List[str]:
     cols = []
@@ -176,22 +188,28 @@ def get_column_list(columns: str): # -> List[str]:
         if part.strip():
             cols.append(part.strip())
     return cols
+
+
+def os_walk(sheets):
+
+    sheets["Videos"]["Dateipfad"] = pd.Series(dtype='str')
+    sheets["Bilder"]["Dateipfad"] = pd.Series(dtype='str')
+    for element in Path(path).glob('**/*'):
+        if element.is_file():
+            if element.suffix in constants.video_extensions:
+                df = sheets["Videos"]
+            elif element.suffix in constants.image_extensions:
+                df = sheets["Bilder"]
+            else:
+                continue
+            match = df.loc[df['Datei'] == element.name]
+            if not match.empty:
+                row = match.index[0]
+                df.loc[row, "Dateipfad"] = element
+
+
 if __name__ == '__main__':
-    # get_parent_folder("D:/Users/Wisdom/Allgemein/PJHF/2022_23/Zeltlager/Zeltlagerfilm/Rohmaterial")
-    # get_image_date_properties("D:/Users/Wisdom/Allgemein/PJHF/2022_23/Zeltlager/Zeltlagerfilm/Rohmaterial/d-29.07-Samstag/Bilder/07-29-Sa_185.JPG")
-
-    # get_video_date_properties("D:/Users/Wisdom/Lernen/Coding_Python/Zlf_sort/Dateien/Basic Tests/tag_pic_vid/Rohmaterial/a Donnerstag 25.07/Videos/sdg (5).MOV")
-    # print("".split(", "))
-    strin = "sadf, asf, ase, "
-    awe = ""
-    awfe = "asfe"
-    awef = "osf, "
-    ae = "osf"
-    aw = ae[:-1] if ae[-1] == "," else ae
-
-    print([x.strip for x in strin.split(',') if x])
-    print([x.strip for x in awe.split(',') if x])
-    print([x.strip for x in awfe.split(',') if x])
-    print([x.strip for x in awef.split(',') if x])
-    print([x for x in ae.split(',') if x])
-    print([x for x in aw.split(',') if x])
+    path = "D:/Users/Wisdom/Lernen/Coding_Python/Zlf_sort/Dateien/Test dateien/2022/Zeltlager 2022/Zeltlagerfilm 2022/Testmaterial/Rohmaterial - nach Nachschauen"
+    excel = "D:/Users/Wisdom/Lernen/Coding_Python/Zlf_sort/Dateien/Test dateien/2022/Zeltlager 2022/Zeltlagerfilm 2022/Testmaterial/Rohmaterial - nach Nachschauen/Zeltlagerfilm 2022.xlsx"
+    copy_file(src_file=Path(excel),
+              dst_folder=Path("D:/Users/Wisdom/Lernen/Coding_Python/Zlf_sort/Dateien/Test dateien"))

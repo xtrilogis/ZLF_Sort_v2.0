@@ -52,7 +52,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>2</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="Start">
        <attribute name="title">
@@ -914,7 +914,7 @@ QCalendarWidget QToolButton#qt_calendar_nextmonth
                </rect>
               </property>
               <property name="text">
-               <string>Datein in Excel eintragen</string>
+               <string>Datein in Excel eintragen*</string>
               </property>
               <property name="checked">
                <bool>true</bool>
@@ -964,6 +964,19 @@ QCalendarWidget QToolButton#qt_calendar_nextmonth
                <string>Gesammelt ausführen</string>
               </property>
              </widget>
+             <widget class="QLabel" name="label_10">
+              <property name="geometry">
+               <rect>
+                <x>30</x>
+                <y>255</y>
+                <width>311</width>
+                <height>31</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>*Excel entsprechend der Einstellung</string>
+              </property>
+             </widget>
             </widget>
            </item>
            <item row="0" column="1" rowspan="2">
@@ -996,7 +1009,7 @@ QCalendarWidget QToolButton#qt_calendar_nextmonth
                  <enum>QTabWidget::North</enum>
                 </property>
                 <property name="currentIndex">
-                 <number>4</number>
+                 <number>3</number>
                 </property>
                 <property name="elideMode">
                  <enum>Qt::ElideNone</enum>
@@ -1494,7 +1507,7 @@ Vielleicht kommt hier mal noch eine Möglichkeit die Benennung anzupassen.</stri
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Georgia Pro Cond Semibold'; font-size:12pt; font-weight:600; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Die Standard Excel besteht aus 2 Excel Arbeitsmappen (die Seiten innerhalb einer Excel Datei).&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Gib den Rohmaterial ordner an!!&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Eine Arbeitsmappe für Videos mit den Spalten:&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;* Name (der Dateiname)&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;* Bewertung (Bewertung von 2-7)&lt;/p&gt;
@@ -3823,7 +3836,7 @@ für jeden Begriff wir ein Ordner in Schnittmaterial/Suche erstellt.</string>
                    <x>0</x>
                    <y>0</y>
                    <width>343</width>
-                   <height>246</height>
+                   <height>241</height>
                   </rect>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_18">
@@ -3916,122 +3929,6 @@ für jeden Begriff wir ein Ordner in Schnittmaterial/Suche erstellt.</string>
                    <property name="text">
                     <string>Erstellt versch Statistiken. Ergebnis Sats.txt</string>
                    </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QGroupBox" name="groupBox_4">
-                   <property name="title">
-                    <string>Individuellen Ordner nutzen</string>
-                   </property>
-                   <property name="checkable">
-                    <bool>true</bool>
-                   </property>
-                   <property name="checked">
-                    <bool>false</bool>
-                   </property>
-                   <layout class="QHBoxLayout" name="horizontalLayout_24">
-                    <item>
-                     <widget class="QLineEdit" name="picture_drop_2">
-                      <property name="minimumSize">
-                       <size>
-                        <width>100</width>
-                        <height>30</height>
-                       </size>
-                      </property>
-                      <property name="maximumSize">
-                       <size>
-                        <width>330</width>
-                        <height>30</height>
-                       </size>
-                      </property>
-                      <property name="baseSize">
-                       <size>
-                        <width>30</width>
-                        <height>0</height>
-                       </size>
-                      </property>
-                      <property name="font">
-                       <font>
-                        <family>Gill Sans Nova</family>
-                        <pointsize>12</pointsize>
-                        <weight>50</weight>
-                        <italic>false</italic>
-                        <bold>false</bold>
-                       </font>
-                      </property>
-                      <property name="toolTip">
-                       <string>Dateipfad den Rohmaterial-Ordners</string>
-                      </property>
-                      <property name="styleSheet">
-                       <string notr="true">QLineEdit {
-	color: &quot;red&quot;;
-}</string>
-                      </property>
-                      <property name="inputMask">
-                       <string/>
-                      </property>
-                      <property name="text">
-                       <string/>
-                      </property>
-                      <property name="frame">
-                       <bool>true</bool>
-                      </property>
-                      <property name="echoMode">
-                       <enum>QLineEdit::Normal</enum>
-                      </property>
-                      <property name="alignment">
-                       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-                      </property>
-                      <property name="placeholderText">
-                       <string>Zielordner</string>
-                      </property>
-                      <property name="clearButtonEnabled">
-                       <bool>true</bool>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QToolButton" name="picture_tb_2">
-                      <property name="enabled">
-                       <bool>true</bool>
-                      </property>
-                      <property name="minimumSize">
-                       <size>
-                        <width>30</width>
-                        <height>30</height>
-                       </size>
-                      </property>
-                      <property name="font">
-                       <font>
-                        <family>Gill Sans Nova</family>
-                        <pointsize>12</pointsize>
-                        <weight>50</weight>
-                        <italic>false</italic>
-                        <bold>false</bold>
-                       </font>
-                      </property>
-                      <property name="toolTip">
-                       <string>Ordnerauswahl</string>
-                      </property>
-                      <property name="styleSheet">
-                       <string notr="true"/>
-                      </property>
-                      <property name="text">
-                       <string>...</string>
-                      </property>
-                      <property name="icon">
-                       <iconset>
-                        <normaloff>../../../Zlf_sort/program/graphics/folder.png</normaloff>../../../Zlf_sort/program/graphics/folder.png</iconset>
-                      </property>
-                      <property name="iconSize">
-                       <size>
-                        <width>20</width>
-                        <height>20</height>
-                       </size>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
                   </widget>
                  </item>
                  <item>
@@ -4310,6 +4207,13 @@ für jeden Begriff wir ein Ordner in Schnittmaterial/Suche erstellt.</string>
                        </size>
                       </property>
                      </spacer>
+                    </item>
+                    <item>
+                     <widget class="QLabel" name="label_9">
+                      <property name="text">
+                       <string>Alle Ergebnisse dieser Seite landen in Schnittmat</string>
+                      </property>
+                     </widget>
                     </item>
                    </layout>
                   </widget>
