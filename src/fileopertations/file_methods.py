@@ -3,6 +3,8 @@ from pathlib import Path
 
 
 def copy_file(src_file: Path, dst_folder: Path):
+    if not dst_folder.exists():
+        dst_folder.mkdir(parents=True)
     file_dst = dst_folder / src_file.name
     counter = 1
     while file_dst.exists():

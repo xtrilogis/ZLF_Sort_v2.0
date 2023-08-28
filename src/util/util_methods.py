@@ -73,3 +73,26 @@ def get_section_dst_folder(file_fullpath: Path, section: str) -> Path:
     if not destination.exists():
         destination.mkdir(parents=True)
     return destination
+
+
+def copy_selections(df: pd.DataFrame, raw_path: Path, columns: List[str], marker: str):
+    problems = []
+    dst_folder = raw_path.parent / "Schnittmaterial" / "Selektionen"
+    for column in columns:
+
+        # -
+        if column in df.columns:
+            current_folder = dst_folder / column
+
+            for count, value in enumerate(df[column]):
+                if pd.isnull(value):
+                    pass
+                elif marker in value:
+                    if pd.isnull(df.loc[count, 'Dateipfad']):
+                        problems.append(f"Datei konnte nicht kopiert werden: {df.loc[count, 'Datei']}")
+                        continue
+                    file_fullpath = df.loc[count, "Dateipfad"]
+
+                    file_methods.copy_file(src_file=file_fullpath,
+                                           dst_folder=current_folder)
+    return problems

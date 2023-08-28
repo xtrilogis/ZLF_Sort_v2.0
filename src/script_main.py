@@ -59,13 +59,13 @@ def get_util_input():
     data = {
         "raw_material_folder": path,
         "excel_full_filepath": pfad_excel,
-        "do_sections": True,
+        "do_sections": False,
         "do_video_sections": True,
         "do_picture_sections": True,
         "rating_section": 4,
-        "do_selections": False,
-        "videos_columns_selection": [],
-        "picture_columns_selection": [],
+        "do_selections": True,
+        "videos_columns_selection": ["Outtakes"],
+        "picture_columns_selection": ["Outtakes", "Webseite", "Fotowand"],
         "marker": "x",
         "do_search": False,
         "videos_columns_search": [],
@@ -101,7 +101,20 @@ def process_util(inputs):
                     print("Bilderabschnitte erstellt.")
                     [print(x) for x in result if x]
             if inputs.do_selections:
-                pass
+                if inputs.videos_columns_selection and not video_df.empty:
+                    result = eval.copy_selections(df=video_df,
+                                                  raw_path=inputs.raw_material_folder,
+                                                  columns=inputs.videos_columns_selection,
+                                                  marker=inputs.marker)
+                    print("Videoselektionen erstellt.")
+                    [print(x) for x in result if x]
+                if inputs.picture_columns_selection and not picture_df.empty:
+                    result = eval.copy_selections(df=picture_df,
+                                                  raw_path=inputs.raw_material_folder,
+                                                  columns=inputs.picture_columns_selection,
+                                                  marker=inputs.marker)
+                    print("Bilderselektionen erstellt.")
+                    [print(x) for x in result if x]
             if inputs.do_search:
                 pass
             if inputs.create_picture_folder:
@@ -109,7 +122,7 @@ def process_util(inputs):
             print("BlaBla: util gesamt fertig")
 
         except (IndexError, KeyError) as e:
-            print("Fehler beim laden der Excel-Datei.")
+            print("Fehler beim Laden der Excel-Datei.")
         except ValueError as e:
             print(str(e))
     else:
