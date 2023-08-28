@@ -83,16 +83,33 @@ def copy_selections(df: pd.DataFrame, raw_path: Path, columns: List[str], marker
         # -
         if column in df.columns:
             current_folder = dst_folder / column
-
-            for count, value in enumerate(df[column]):
-                if pd.isnull(value):
-                    pass
-                elif marker in value:
-                    if pd.isnull(df.loc[count, 'Dateipfad']):
-                        problems.append(f"Datei konnte nicht kopiert werden: {df.loc[count, 'Datei']}")
-                        continue
-                    file_fullpath = df.loc[count, "Dateipfad"]
-
-                    file_methods.copy_file(src_file=file_fullpath,
-                                           dst_folder=current_folder)
+            copy_marked_files(df=df, column=column, marker=marker, problems=problems,
+                              current_folder=current_folder)
     return problems
+
+
+def search_columns(df: pd.DataFrame, raw_path: Path, columns: List[str], markers: List[str]):
+    problems = []
+    dst_folder = raw_path.parent / "Schnittmaterial" / "Suche"
+    for marker in markers:
+        current_folder = dst_folder / marker
+        for column in columns:
+            if column in df.columns:
+                copy_marked_files(df=df, column=column, marker=marker, problems=problems,
+                                  current_folder=current_folder)
+    return problems
+
+
+def copy_marked_files(df: pd.DataFrame, column: str, marker: str,
+                      problems: List[str], current_folder: Path):
+    for count, value in enumerate(df[column]):
+        if pd.isnull(value):
+            pass
+        elif marker in value:
+            if pd.isnull(df.loc[count, 'Dateipfad']):
+                problems.append(f"Datei konnte nicht kopiert werden: {df.loc[count, 'Datei']}")
+                continue
+            file_fullpath = df.loc[count, "Dateipfad"]
+
+            file_methods.copy_file(src_file=file_fullpath,
+                                   dst_folder=current_folder)

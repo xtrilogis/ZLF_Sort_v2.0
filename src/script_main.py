@@ -67,10 +67,10 @@ def get_util_input():
         "videos_columns_selection": ["Outtakes"],
         "picture_columns_selection": ["Outtakes", "Webseite", "Fotowand"],
         "marker": "x",
-        "do_search": False,
+        "do_search": True,
         "videos_columns_search": [],
-        "picture_columns_search": [],
-        "keywords": [],
+        "picture_columns_search": ["Outtakes"],
+        "keywords": ["x"],
         "rating_search": 3,
         "create_picture_folder": False,
         "rating_pictures": 4,
@@ -116,7 +116,21 @@ def process_util(inputs):
                     print("Bilderselektionen erstellt.")
                     [print(x) for x in result if x]
             if inputs.do_search:
-                pass
+                # TODO Validate correctness
+                if inputs.videos_columns_search and not video_df.empty:
+                    result = eval.search_columns(df=video_df,
+                                                 raw_path=inputs.raw_material_folder,
+                                                 columns=inputs.videos_columns_selection,
+                                                 markers=inputs.keywords)
+                    print("Videosuche erstellt.")
+                    [print(x) for x in result if x]
+                if inputs.picture_columns_search and not picture_df.empty:
+                    result = eval.search_columns(df=picture_df,
+                                                 raw_path=inputs.raw_material_folder,
+                                                 columns=inputs.picture_columns_selection,
+                                                 markers=inputs.keywords)
+                    print("Bildersuche erstellt.")
+                    [print(x) for x in result if x]
             if inputs.create_picture_folder:
                 pass
             print("BlaBla: util gesamt fertig")
