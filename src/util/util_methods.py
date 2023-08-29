@@ -38,16 +38,19 @@ def append_file_paths_to_df(sheets: Dict[str, pd.DataFrame], raw_material_path: 
                 df.loc[row, "Dateipfad"] = element
 
 
-def copy_section(df: pd.DataFrame, rating) -> List[str]:
+def copy_section(df: pd.DataFrame, rating_limit: int) -> List[str]:
     """Iterates through column 'Abschnitt'(Sections), sorts files into given sections
     :arg df pandas DataFrame containing file information
-    :arg rating only file with a rating equal or higher will be copied"""
+    :arg rating_limit only file with a rating equal or higher will be copied"""
     problems = []
     for count, value in enumerate(df['Abschnitt']):
-        if pd.isnull(value):
+        rating = df.loc[count, 'Bewertung']
+        if pd.isnull(value) and pd.isnull(rating):
             continue
+        if pd.isnull(value):
+            value = "Sonstiges"
         try:
-            if df.loc[count, 'Bewertung'] >= rating:
+            if rating >= rating_limit:
                 if pd.isnull(df.loc[count, 'Dateipfad']):
                     raise ValueError(f"Datei konnte nicht kopiert werden: {df.loc[count, 'Datei']}")
 
@@ -79,8 +82,6 @@ def copy_selections(df: pd.DataFrame, raw_path: Path, columns: List[str], marker
     problems = []
     dst_folder = raw_path.parent / "Schnittmaterial" / "Selektionen"
     for column in columns:
-
-        # -
         if column in df.columns:
             current_folder = dst_folder / column
             copy_marked_files(df=df, column=column, marker=marker, problems=problems,
@@ -88,7 +89,7 @@ def copy_selections(df: pd.DataFrame, raw_path: Path, columns: List[str], marker
     return problems
 
 
-def search_columns(df: pd.DataFrame, raw_path: Path, columns: List[str], markers: List[str]):
+def search_columns(df: pd.DataFrame, raw_path: Path, columns: List[str], markers: List[str], rating: int):
     problems = []
     dst_folder = raw_path.parent / "Schnittmaterial" / "Suche"
     for marker in markers:
@@ -96,16 +97,17 @@ def search_columns(df: pd.DataFrame, raw_path: Path, columns: List[str], markers
         for column in columns:
             if column in df.columns:
                 copy_marked_files(df=df, column=column, marker=marker, problems=problems,
-                                  current_folder=current_folder)
+                                  current_folder=current_folder, rating=rating)
     return problems
 
 
 def copy_marked_files(df: pd.DataFrame, column: str, marker: str,
-                      problems: List[str], current_folder: Path):
+                      problems: List[str], current_folder: Path,
+                      rating=0):
     for count, value in enumerate(df[column]):
         if pd.isnull(value):
             pass
-        elif marker in value:
+        elif marker in value and df.loc[count, 'Bewertung'] >= rating:
             if pd.isnull(df.loc[count, 'Dateipfad']):
                 problems.append(f"Datei konnte nicht kopiert werden: {df.loc[count, 'Datei']}")
                 continue
@@ -113,3 +115,16 @@ def copy_marked_files(df: pd.DataFrame, column: str, marker: str,
 
             file_methods.copy_file(src_file=file_fullpath,
                                    dst_folder=current_folder)
+
+
+def copy_pictures_with_rating(df: pd.DataFrame, raw_path: Path, rating_limit: int) -> List[str]:
+    problems = []
+    dst_folder = raw_path.parent / "Schnittmaterial" / f"Bilder bw{rating_limit}"
+    for count, value in enumerate(df['Dateipfad']):
+        if pd.isnull(value):
+            problems.append(f"Datei konnte nicht ausgewertet werden: {df.loc[count, 'Datei']}")
+            continue
+        if df.loc[count, 'Bewertung'] >= rating_limit:
+            file_methods.copy_file(src_file=value,
+                                   dst_folder=dst_folder)
+    return problems

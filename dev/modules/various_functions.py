@@ -1,4 +1,5 @@
 import datetime
+import filecmp
 import locale
 import os
 from datetime import date
@@ -108,7 +109,7 @@ def try_os_join():
     file = "07-25-Do_001.MTS"
     root = "D:/Users/Wisdom/Lernen/Coding_Python/Zlf_sort/Dateien/Level2/Rohmaterial/a Do 25.07"
     root2 = "D:/Users/Wisdom/Lernen/Coding_Python/Zlf_sort/Dateien/Level2/Rohmaterial/a Do 25.07/"
-    root3 = "D:/Users/Wisdom/Lernen/Coding_Python/Zlf_sort/Dateien/Level2/Rohmaterial/a Do 25.07\\"
+    root3 = "D:/Users/Wisdom/Lernen/Coding_Python/Zlf_sort/Dateien/Level2/Rohmaterial/a Do 25.07//"
     full_file_path1 = os.path.join(root, file)
     full_file_path2 = os.path.join(root2, file)
     full_file_path3 = os.path.join(root3, file)
@@ -211,5 +212,5 @@ def os_walk(sheets):
 if __name__ == '__main__':
     path = "D:/Users/Wisdom/Lernen/Coding_Python/Zlf_sort/Dateien/Test dateien/2022/Zeltlager 2022/Zeltlagerfilm 2022/Testmaterial/Rohmaterial - nach Nachschauen"
     excel = "D:/Users/Wisdom/Lernen/Coding_Python/Zlf_sort/Dateien/Test dateien/2022/Zeltlager 2022/Zeltlagerfilm 2022/Testmaterial/Rohmaterial - nach Nachschauen/Zeltlagerfilm 2022.xlsx"
-    copy_file(src_file=Path(excel),
-              dst_folder=Path("D:/Users/Wisdom/Lernen/Coding_Python/Zlf_sort/Dateien/Test dateien"))
+    # copy_file(src_file=Path(excel),
+              # dst_folder=Path("D:/Users/Wisdom/Lernen/Coding_Python/Zlf_sort/Dateien/Test dateien"))

@@ -63,16 +63,16 @@ def get_util_input():
         "do_video_sections": True,
         "do_picture_sections": True,
         "rating_section": 4,
-        "do_selections": True,
+        "do_selections": False,
         "videos_columns_selection": ["Outtakes"],
         "picture_columns_selection": ["Outtakes", "Webseite", "Fotowand"],
         "marker": "x",
-        "do_search": True,
+        "do_search": False,
         "videos_columns_search": [],
-        "picture_columns_search": ["Outtakes"],
+        "picture_columns_search": ["Outtakes", "Webseite", "Fotowand"],
         "keywords": ["x"],
         "rating_search": 3,
-        "create_picture_folder": False,
+        "create_picture_folder": True,
         "rating_pictures": 4,
     }
     return UtilTabInput(**data)
@@ -116,23 +116,28 @@ def process_util(inputs):
                     print("Bilderselektionen erstellt.")
                     [print(x) for x in result if x]
             if inputs.do_search:
-                # TODO Validate correctness
                 if inputs.videos_columns_search and not video_df.empty:
                     result = eval.search_columns(df=video_df,
                                                  raw_path=inputs.raw_material_folder,
                                                  columns=inputs.videos_columns_selection,
-                                                 markers=inputs.keywords)
+                                                 markers=inputs.keywords,
+                                                 rating=inputs.rating_search)
                     print("Videosuche erstellt.")
                     [print(x) for x in result if x]
                 if inputs.picture_columns_search and not picture_df.empty:
                     result = eval.search_columns(df=picture_df,
                                                  raw_path=inputs.raw_material_folder,
                                                  columns=inputs.picture_columns_selection,
-                                                 markers=inputs.keywords)
+                                                 markers=inputs.keywords,
+                                                 rating=inputs.rating_search)
                     print("Bildersuche erstellt.")
                     [print(x) for x in result if x]
             if inputs.create_picture_folder:
-                pass
+                result = eval.copy_pictures_with_rating(df=picture_df,
+                                                        raw_path=inputs.raw_material_folder,
+                                                        rating_limit=inputs.rating_pictures)
+                print("Bilderordner erstellt.")
+                [print(x) for x in result if x]
             print("BlaBla: util gesamt fertig")
 
         except (IndexError, KeyError) as e:

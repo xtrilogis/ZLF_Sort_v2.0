@@ -25,6 +25,7 @@ def validate_excel_file(excel_file: Path):
     # TODO
     # exists
     # Bilder und Videos !!!
+    # check for double Filenames
     # Spalten Name, Abschnitt, Bewertung
     # empty wird wo anders geprüft
     pass
