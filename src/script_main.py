@@ -1,15 +1,10 @@
 from datetime import datetime
 from typing import List
 from pathlib import Path
-from PyQt5.QtCore import QDate, QThread, pyqtSlot
-from PyQt5.QtWidgets import QMainWindow
 
 from assethandling.basemodels import ExcelOptions, FolderTabInput, UtilTabInput
-from assethandling.asset_manager import settings
 from inputhandling import validation
 from ui import thread_worker as tw
-from assethandling import asset_manager
-from ui.thread_worker import Worker
 from util import util_methods as eval
 
 ROOT = "../TestDateien"
@@ -27,35 +22,9 @@ def create_folder_structure():
     worker.setup_folder_structure(inputs=data)
 
 
-def process_raw_full():
-    pass
-
-
-def create_excel_from_sug():
-    pass
-
-
-def create_standard_excel():
-    pass
-
-
 def process_raw():
-    worker = tw.Worker()
-    #process_raw_full()
-
-    #worker.correct_file_structure(path="")  # TODO
-
-    # ### Excel File
-    # vorhandene Excel einfach übernehmen
-    # create excel
-    #create_excel_from_sug()  # TODO
-    #create_standard_excel()  # TODO
-    # path standard Rohmaterial.parent
-    worker.create_excel(file_name="test", path=Path(ROOT), option=ExcelOptions.MANUAL)  # TODO
-
-    #worker.fill_excel()  # TODO
-
-    #worker.create_picture_folder()  # TODO
+    # TODO implementaiton
+    pass
 
 
 def get_util_input():
@@ -81,6 +50,7 @@ def get_util_input():
     return UtilTabInput(**data)
 
 
+# Abgleichen mit thread worker
 def process_util(inputs):
     # TODO handle problem in one part of the execution
     valid, errors = validation.validate_util_paths(inputs.raw_material_folder,

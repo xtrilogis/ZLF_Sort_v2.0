@@ -100,37 +100,37 @@ class Worker(QThread):
 
     @pyqtSlot(UtilTabInput)
     def full_util_tab(self, inputs: UtilTabInput):
-        # TODO handle problem in one part of the execution
-        # Validate logic
-        valid, errors = validation.validate_util_paths()  # TODO
-        if valid:
+        # TODO test
+        try:
+            sheets = self._validate_and_prepare(raw_material_folder=inputs.raw_material_folder,
+                                                excel_full_filepath=inputs.excel_full_filepath)
+        except Exception as e:
+            self.problem_with_input.emit(str(e))
+            return
+        self.new_message_excel.emit("Inputs validiert und Excel eingelesen.")
+
+        if inputs.do_sections:
             try:
-                sheets = eval.prepare_dataframes(excel_file=inputs.excel_full_filepath,
-                                                 raw_path=inputs.raw_material_folder)
-                video_df = sheets["Videos"]
-                picture_df = sheets["Bilder"]
+                self._handle_section(sheets=sheets, inputs=inputs)
+            except Exception as e:
+                self.problem_with_input.emit(str(e))
+        if inputs.do_selections:
+            try:
+                self._handle_selection(sheets=sheets, inputs=inputs)
+            except Exception as e:
+                self.problem_with_input.emit(str(e))
+        if inputs.do_search:
+            try:
+                self._handle_search(sheets=sheets, inputs=inputs)
+            except Exception as e:
+                self.problem_with_input.emit(str(e))
+        if inputs.create_picture_folder:
+            try:
+                self._handle_picture_folder(sheets=sheets, inputs=inputs)
+            except Exception as e:
+                self.problem_with_input.emit(str(e))
 
-                self.new_message_excel.emit("Inputs validiert und Excel eingelesen.")
-
-                if inputs.do_sections:
-                    if inputs.do_video_sections:
-                        eval.copy_section(video_df, inputs.rating_section)
-                        self.new_message_excel.emit("Videoabschnitte erstellt.")
-                    if inputs.do_picture_sections:
-                        eval.copy_section(picture_df, inputs.rating_section)
-                        self.new_message_excel.emit("Bilderabschnitte erstellt.")
-                if inputs.do_selections:
-                    pass
-                if inputs.do_search:
-                    pass
-                if inputs.create_picture_folder:
-                    pass
-                self.process_finished.emit("BlaBla: util gesamt fertig")
-
-            except (IndexError, KeyError):
-                self.problem_with_input.emit("Fehler beim laden der Excel-Datei.")
-        else:
-            self.problem_with_input.emit(errors)
+        self.process_finished.emit("BlaBla: util gesamt fertig")
 
     @pyqtSlot(UtilTabInput)
     def run_copy_sections(self, inputs: UtilTabInput):
@@ -141,6 +141,9 @@ class Worker(QThread):
             self.problem_with_input.emit(str(e))
             return
         self.new_message_excel.emit("Inputs validiert und Excel eingelesen.")
+        self._handle_selection(sheets=sheets, inputs=inputs)
+
+    def _handle_section(self, sheets: Dict[str, pd.DataFrame], inputs: UtilTabInput):
         self._section_per_sheet(df=sheets["Videos"],
                                 do_sections=inputs.do_video_sections,
                                 rating=inputs.rating_section,
@@ -164,6 +167,10 @@ class Worker(QThread):
         except Exception as e:
             self.problem_with_input.emit(str(e))
             return
+        self.new_message_excel.emit("Inputs validiert und Excel eingelesen.")
+        self._handle_selection(sheets=sheets, inputs=inputs)
+
+    def _handle_selection(self, sheets: Dict[str, pd.DataFrame], inputs: UtilTabInput):
         self._selection_per_sheet(df=sheets["Videos"],
                                   columns=inputs.videos_columns_selection,
                                   raw_path=inputs.raw_material_folder,
@@ -193,6 +200,10 @@ class Worker(QThread):
         except Exception as e:
             self.problem_with_input.emit(str(e))
             return
+        self.new_message_excel.emit("Inputs validiert und Excel eingelesen.")
+        self._handle_search(sheets=sheets, inputs=inputs)
+
+    def _handle_search(self, sheets: Dict[str, pd.DataFrame], inputs: UtilTabInput):
         self._search_per_sheet(df=sheets["Videos"],
                                columns=inputs.videos_columns_search,
                                raw_path=inputs.raw_material_folder,
@@ -225,6 +236,10 @@ class Worker(QThread):
         except Exception as e:
             self.problem_with_input.emit(str(e))
             return
+        self._handle_picture_folder(sheets=sheets, inputs=inputs)
+
+    def _handle_picture_folder(self, sheets: Dict[str, pd.DataFrame], inputs: UtilTabInput):
+        self.new_message_excel.emit("Inputs validiert und Excel eingelesen.")
         result = eval.copy_pictures_with_rating(df=sheets["Bilder"],
                                                 raw_path=inputs.raw_material_folder,
                                                 rating_limit=inputs.rating_pictures)
@@ -234,6 +249,7 @@ class Worker(QThread):
     @pyqtSlot(Path)
     def run_statistics(self, raw_path):
         # TODO test
+        self.new_message_excel.emit("Inputs validiert und Excel eingelesen.")
         try:
             select = raw_path.parent / "Schnittmaterial"
             total_duration, problems, duration_per_day = statistics.get_raw_material_duration(path=raw_path)

@@ -233,7 +233,6 @@ class MainWindow(QMainWindow):
                 )
                 self.worker.setup_folder_structure(inputs=data)
         except ValidationError as e:
-            # TODO better error msg?
             self.open_problem_input(msg=str(e))
 
     # ##### PART II: Raw Material / 'Rohmaterial verarbeiten' ##### #
