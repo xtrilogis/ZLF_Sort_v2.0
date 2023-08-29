@@ -1,22 +1,21 @@
 from pathlib import Path
 from typing import Dict, List
+import pandas as pd
 
 from assets import constants
 from excel import excelmethods
-import pandas as pd
-
-from fileopertations import file_methods
+from fileopertations import filemethods
 
 
 def prepare_dataframes(excel_file: Path, raw_path: Path) -> Dict[str, pd.DataFrame]:
     sheets = excelmethods.load_sheets_as_df(path=excel_file)
     if sheets["Videos"].empty and sheets["Bilder"].empty:
         raise ValueError("Die Excel enthält keine Daten. Bitte ausfüllen")
-    append_file_paths_to_df(sheets=sheets, raw_material_path=raw_path)
+    _append_file_paths_to_df(sheets=sheets, raw_material_path=raw_path)
     return sheets
 
 
-def append_file_paths_to_df(sheets: Dict[str, pd.DataFrame], raw_material_path: Path):
+def _append_file_paths_to_df(sheets: Dict[str, pd.DataFrame], raw_material_path: Path):
     """Creates a new column 'Dateipfad' and fills it with the files fullpath
     :arg sheets pandas DataFrames with the all files and the markers
     :arg raw_material_path
@@ -55,10 +54,10 @@ def copy_section(df: pd.DataFrame, rating_limit: int) -> List[str]:
                     raise ValueError(f"Datei konnte nicht kopiert werden: {df.loc[count, 'Datei']}")
 
                 file_fullpath = Path(df.loc[count, 'Dateipfad'])
-                destination_folder = get_section_dst_folder(file_fullpath=file_fullpath,
-                                                            section=value)
-                file_methods.copy_file(src_file=file_fullpath,
-                                       dst_folder=destination_folder)
+                destination_folder = _get_section_dst_folder(file_fullpath=file_fullpath,
+                                                             section=value)
+                filemethods.copy_file(src_file=file_fullpath,
+                                      dst_folder=destination_folder)
         except (AttributeError, ValueError) as e:
             problems.append(str(e))
         except FileNotFoundError:
@@ -66,7 +65,7 @@ def copy_section(df: pd.DataFrame, rating_limit: int) -> List[str]:
     return problems
 
 
-def get_section_dst_folder(file_fullpath: Path, section: str) -> Path:
+def _get_section_dst_folder(file_fullpath: Path, section: str) -> Path:
     new_parts = []
     for _, part in enumerate(file_fullpath.parent.parts):
         if part == "Rohmaterial":
@@ -84,8 +83,10 @@ def copy_selections(df: pd.DataFrame, raw_path: Path, columns: List[str], marker
     for column in columns:
         if column in df.columns:
             current_folder = dst_folder / column
-            copy_marked_files(df=df, column=column, marker=marker, problems=problems,
-                              current_folder=current_folder)
+            _copy_marked_files(df=df, column=column, marker=marker, problems=problems,
+                               current_folder=current_folder)
+        else:
+            problems.append(f"Spalte {column} nicht gefunden.")
     return problems
 
 
@@ -96,14 +97,14 @@ def search_columns(df: pd.DataFrame, raw_path: Path, columns: List[str], markers
         current_folder = dst_folder / marker
         for column in columns:
             if column in df.columns:
-                copy_marked_files(df=df, column=column, marker=marker, problems=problems,
-                                  current_folder=current_folder, rating=rating)
+                _copy_marked_files(df=df, column=column, marker=marker, problems=problems,
+                                   current_folder=current_folder, rating=rating)
     return problems
 
 
-def copy_marked_files(df: pd.DataFrame, column: str, marker: str,
-                      problems: List[str], current_folder: Path,
-                      rating=0):
+def _copy_marked_files(df: pd.DataFrame, column: str, marker: str,
+                       problems: List[str], current_folder: Path,
+                       rating=0):
     for count, value in enumerate(df[column]):
         if pd.isnull(value):
             pass
@@ -113,8 +114,8 @@ def copy_marked_files(df: pd.DataFrame, column: str, marker: str,
                 continue
             file_fullpath = df.loc[count, "Dateipfad"]
 
-            file_methods.copy_file(src_file=file_fullpath,
-                                   dst_folder=current_folder)
+            filemethods.copy_file(src_file=file_fullpath,
+                                  dst_folder=current_folder)
 
 
 def copy_pictures_with_rating(df: pd.DataFrame, raw_path: Path, rating_limit: int) -> List[str]:
@@ -122,9 +123,10 @@ def copy_pictures_with_rating(df: pd.DataFrame, raw_path: Path, rating_limit: in
     dst_folder = raw_path.parent / "Schnittmaterial" / f"Bilder bw{rating_limit}"
     for count, value in enumerate(df['Dateipfad']):
         if pd.isnull(value):
-            problems.append(f"Datei konnte nicht ausgewertet werden: {df.loc[count, 'Datei']}")
+            if not pd.isnull(df.loc[count, 'Bewertung']):
+                problems.append(f"Datei konnte nicht ausgewertet werden: {df.loc[count, 'Datei']}")
             continue
         if df.loc[count, 'Bewertung'] >= rating_limit:
-            file_methods.copy_file(src_file=value,
-                                   dst_folder=dst_folder)
+            filemethods.copy_file(src_file=value,
+                                  dst_folder=dst_folder)
     return problems
