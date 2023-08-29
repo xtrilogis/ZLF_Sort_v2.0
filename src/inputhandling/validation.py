@@ -20,7 +20,7 @@ def validate_setup_path(path: Path):
     return False, "Der angegebene Pfad ist kein valider Ordnerpfad."
 
 
-def _validate_excel_file(excel_file: Path) -> List[str]:
+def validate_excel_file(excel_file: Path) -> List[str]:
     errors: List[str] = []
     try:
         sheets = excelmethods.load_sheets_as_df(excel_file)
@@ -67,6 +67,6 @@ def validate_util_paths(raw_material_folder: Path, excel_full_filepath: Path) ->
     if not excel_full_filepath.exists():
         errors.append("Bitte gib eine gültige Exceldatei an.")
     else:
-        errors.extend(_validate_excel_file(excel_full_filepath))
+        errors.extend(validate_excel_file(excel_full_filepath))
 
     return len(errors) == 0, errors

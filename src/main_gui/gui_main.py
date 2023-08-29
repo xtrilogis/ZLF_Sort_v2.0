@@ -3,12 +3,13 @@
 from PyQt5.QtWidgets import QApplication
 import sys
 
+from assets import constants
 from excel import excelmethods
 from inputhandling import validation
 from ui.first_draft import Ui_MainWindow
 from datetime import datetime
 from pathlib import Path
-from typing import List, Optional
+from typing import List
 from pydantic import ValidationError
 
 from PyQt5.QtWidgets import QMainWindow, QFileDialog, QLineEdit, QDialog
@@ -310,7 +311,8 @@ class MainWindow(QMainWindow):
         if dial.exec_() == QDialog.Accepted:
             select = dial.itemsSelected()
             # TODO append to existing, create minimum instead of standard
-            columns: List[str] = settings["standard-picture-columns"].copy()
+            columns: List[str] = constants.minimal_columns.copy()
+            columns.extend(self.ui.pic_columns.document().toRawText().split(", "))
             columns.extend(select)
             text = ", ".join(columns)
             self.ui.pic_columns.setPlainText(text)
@@ -361,38 +363,53 @@ class MainWindow(QMainWindow):
 
     # ##### PART III: Util / '' ##### #
     def create_sections(self):
-        # TODO implementation
-        pass
+        try:
+            data: UtilTabInput = self.get_util_input()
+            self.worker.run_copy_sections(inputs=data)
+        except (ValidationError, ValueError) as e:
+            self.open_problem_input(error=str(e))
 
     def create_selections(self):
-        # TODO implementation
-        pass
+        try:
+            data: UtilTabInput = self.get_util_input()
+            self.worker.run_selection(inputs=data)
+        except (ValidationError, ValueError) as e:
+            self.open_problem_input(error=str(e))
 
     def search_excel(self):
-        # TODO implementation
-        pass
+        try:
+            data: UtilTabInput = self.get_util_input()
+            self.worker.run_search(inputs=data)
+        except (ValidationError, ValueError) as e:
+            self.open_problem_input(error=str(e))
 
     def create_rated_picture_folder(self):
-        # TODO implementation
-        pass
+        try:
+            data: UtilTabInput = self.get_util_input()
+            self.worker.run_copy_picture_folder(inputs=data)
+        except (ValidationError, ValueError) as e:
+            self.open_problem_input(error=str(e))
 
     def process_util_full(self):
         try:
             data: UtilTabInput = self.get_util_input()
             self.worker.full_util_tab(inputs=data)
-        except ValidationError as e:
+        except (ValidationError, ValueError) as e:
             self.open_problem_input(error=str(e))
         # TODO implementation
         pass
 
     def create_statistics(self):
-        # TODO connection
-        # location to safe file
-        pass
+        try:
+            data: UtilTabInput = self.get_util_input()
+            self.worker.run_statistics(raw_path=data.raw_material_folder)
+        except (ValidationError, ValueError) as e:
+            self.open_problem_input(error=str(e))
 
     def select_columns(self, line_edit: QLineEdit, sheet: str):
         try:
             path = Path(self.ui.excelpath_drop_3.text())
+            # TODO file path errors etc
             validation.validate_excel_file(excel_file=path)
             items = excelmethods.get_columns(excel=path, sheet=sheet)
             dial = SelectionDialog("Spalten Auswahl", "Spalten", items, self)

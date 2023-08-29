@@ -14,7 +14,7 @@ from hachoir.metadata import extractMetadata
 
 from assets import constants
 from excel import excelmethods
-from fileopertations.file_methods import copy_file
+from fileopertations.filemethods import copy_file
 
 name = 97  # kleines a in ascii
 # print(chr(name+1))
@@ -214,3 +214,6 @@ if __name__ == '__main__':
     excel = "D:/Users/Wisdom/Lernen/Coding_Python/Zlf_sort/Dateien/Test dateien/2022/Zeltlager 2022/Zeltlagerfilm 2022/Testmaterial/Rohmaterial - nach Nachschauen/Zeltlagerfilm 2022.xlsx"
     # copy_file(src_file=Path(excel),
               # dst_folder=Path("D:/Users/Wisdom/Lernen/Coding_Python/Zlf_sort/Dateien/Test dateien"))
+    lis = [1, 2, 4]
+    lis.extend([3, 4])
+    print("")

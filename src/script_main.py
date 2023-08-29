@@ -1,12 +1,15 @@
 from datetime import datetime
 from typing import List
 from pathlib import Path
-from PyQt5.QtCore import QDate
+from PyQt5.QtCore import QDate, QThread, pyqtSlot
+from PyQt5.QtWidgets import QMainWindow
+
 from assethandling.basemodels import ExcelOptions, FolderTabInput, UtilTabInput
 from assethandling.asset_manager import settings
 from inputhandling import validation
 from ui import thread_worker as tw
 from assethandling import asset_manager
+from ui.thread_worker import Worker
 from util import util_methods as eval
 
 ROOT = "../TestDateien"
@@ -72,7 +75,7 @@ def get_util_input():
         "picture_columns_search": ["Outtakes", "Webseite", "Fotowand"],
         "keywords": ["x"],
         "rating_search": 3,
-        "create_picture_folder": True,
+        "create_picture_folder": False,
         "rating_pictures": 4,
     }
     return UtilTabInput(**data)
@@ -80,9 +83,12 @@ def get_util_input():
 
 def process_util(inputs):
     # TODO handle problem in one part of the execution
-    # Validate logic
-    valid, errors = validation.validate_util()  # TODO
-    if valid:
+    valid, errors = validation.validate_util_paths(inputs.raw_material_folder,
+                                                   inputs.excel_full_filepath)
+
+    if not valid:
+        print(errors)
+    else:
         try:
             sheets = eval.prepare_dataframes(excel_file=inputs.excel_full_filepath,
                                              raw_path=inputs.raw_material_folder)
@@ -119,7 +125,7 @@ def process_util(inputs):
                 if inputs.videos_columns_search and not video_df.empty:
                     result = eval.search_columns(df=video_df,
                                                  raw_path=inputs.raw_material_folder,
-                                                 columns=inputs.videos_columns_selection,
+                                                 columns=inputs.videos_columns_search,
                                                  markers=inputs.keywords,
                                                  rating=inputs.rating_search)
                     print("Videosuche erstellt.")
@@ -127,7 +133,7 @@ def process_util(inputs):
                 if inputs.picture_columns_search and not picture_df.empty:
                     result = eval.search_columns(df=picture_df,
                                                  raw_path=inputs.raw_material_folder,
-                                                 columns=inputs.picture_columns_selection,
+                                                 columns=inputs.picture_columns_search,
                                                  markers=inputs.keywords,
                                                  rating=inputs.rating_search)
                     print("Bildersuche erstellt.")
@@ -144,8 +150,6 @@ def process_util(inputs):
             print("Fehler beim Laden der Excel-Datei.")
         except ValueError as e:
             print(str(e))
-    else:
-        print(errors)
 
 
 if __name__ == "__main__":
