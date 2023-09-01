@@ -173,7 +173,8 @@ class MainWindow(QMainWindow):
 
     @pyqtSlot(str)
     def write_process_util(self, msg):
-        self.ui.print_label_2.setText(msg)
+        text = self.ui.print_label_2.text()
+        self.ui.print_label_2.setText(f"{text}\n{msg}")
 
     @pyqtSlot(str)
     def open_problem_input(self, error: str):
@@ -395,8 +396,6 @@ class MainWindow(QMainWindow):
             self.worker.full_util_tab(inputs=data)
         except (ValidationError, ValueError) as e:
             self.open_problem_input(error=str(e))
-        # TODO implementation
-        pass
 
     def create_statistics(self):
         try:
@@ -407,9 +406,12 @@ class MainWindow(QMainWindow):
 
     def select_columns(self, line_edit: QLineEdit, sheet: str):
         try:
+            if self.ui.excelpath_drop_3.text() == "":
+                raise ValueError("Bitte gib eine Excel-Datei an.")
             path = Path(self.ui.excelpath_drop_3.text())
-            # TODO file path errors etc
-            validation.validate_excel_file(excel_file=path)
+            errors = validation.validate_excel_file(excel_file=path)
+            if errors:
+                raise ValueError('\n'.join(errors))
             items = excelmethods.get_columns(excel=path, sheet=sheet)
             dial = SelectionDialog("Spalten Auswahl", "Spalten", items, self)
             if dial.exec_() == QDialog.Accepted:

@@ -100,7 +100,6 @@ class Worker(QThread):
 
     @pyqtSlot(UtilTabInput)
     def full_util_tab(self, inputs: UtilTabInput):
-        # TODO test
         try:
             sheets = self._validate_and_prepare(raw_material_folder=inputs.raw_material_folder,
                                                 excel_full_filepath=inputs.excel_full_filepath)
@@ -141,7 +140,7 @@ class Worker(QThread):
             self.problem_with_input.emit(str(e))
             return
         self.new_message_excel.emit("Inputs validiert und Excel eingelesen.")
-        self._handle_selection(sheets=sheets, inputs=inputs)
+        self._handle_section(sheets=sheets, inputs=inputs)
 
     def _handle_section(self, sheets: Dict[str, pd.DataFrame], inputs: UtilTabInput):
         self._section_per_sheet(df=sheets["Videos"],
@@ -156,8 +155,7 @@ class Worker(QThread):
     def _section_per_sheet(self, df: pd.DataFrame, do_sections: bool, rating: int, part: str):
         if do_sections and not df.empty:
             result = eval.copy_section(df=df, rating_limit=rating)
-            self.new_message_excel.emit(f"{part}abschnitte erstellt.")
-            [self.new_message_excel.emit(x) for x in result if x]
+            self._send_results(part=f"{part}abschnitte erstellt.", result=result)
 
     @pyqtSlot(UtilTabInput)
     def run_selection(self, inputs: UtilTabInput):
@@ -189,8 +187,7 @@ class Worker(QThread):
                                           raw_path=raw_path,
                                           columns=columns,
                                           marker=marker)
-            self.new_message_excel.emit(f"{part}abschnitte erstellt.")
-            [self.new_message_excel.emit(x) for x in result if x]
+            self._send_results(part=f"{part}selektionen erstellt.", result=result)
 
     @pyqtSlot(UtilTabInput)
     def run_search(self, inputs: UtilTabInput):
@@ -225,8 +222,7 @@ class Worker(QThread):
                                          columns=columns,
                                          markers=keywords,
                                          rating=rating)
-            self.new_message_excel.emit(f"{part}suche erstellt.")
-            [self.new_message_excel.emit(x) for x in result if x]
+            self._send_results(part=f"{part}suche erstellt.", result=result)
 
     @pyqtSlot(UtilTabInput)
     def run_copy_picture_folder(self, inputs):
@@ -236,19 +232,17 @@ class Worker(QThread):
         except Exception as e:
             self.problem_with_input.emit(str(e))
             return
+        self.new_message_excel.emit("Inputs validiert und Excel eingelesen.")
         self._handle_picture_folder(sheets=sheets, inputs=inputs)
 
     def _handle_picture_folder(self, sheets: Dict[str, pd.DataFrame], inputs: UtilTabInput):
-        self.new_message_excel.emit("Inputs validiert und Excel eingelesen.")
         result = eval.copy_pictures_with_rating(df=sheets["Bilder"],
                                                 raw_path=inputs.raw_material_folder,
                                                 rating_limit=inputs.rating_pictures)
-        self.new_message_excel.emit("Bilderordner erstellt.")
-        [self.new_message_excel.emit(x) for x in result if x]
+        self._send_results(part="Bilderordner erstellt.", result=result)
 
     @pyqtSlot(Path)
     def run_statistics(self, raw_path):
-        # TODO test
         self.new_message_excel.emit("Inputs validiert und Excel eingelesen.")
         try:
             select = raw_path.parent / "Schnittmaterial"
@@ -267,3 +261,9 @@ class Worker(QThread):
         except Exception as e:
             self.problem_with_input.emit(str(e))
             return
+
+    def _send_results(self, part: str, result: List[str]):
+        self.new_message_excel.emit(part)
+        if result:
+            self.new_message_excel.emit("Probleme:")
+        [self.new_message_excel.emit(f"- {x}") for x in result if x]

@@ -2,10 +2,9 @@ from datetime import datetime
 from typing import List
 from pathlib import Path
 
+from ui.thread_worker import Worker
 from assethandling.basemodels import ExcelOptions, FolderTabInput, UtilTabInput
-from inputhandling import validation
 from ui import thread_worker as tw
-from util import util_methods as eval
 
 ROOT = "../TestDateien"
 ROOT_absolute = "D:/Users/Wisdom/Lernen/Coding_Python/ZLF_Sort_v2.0/TestDateien"
@@ -22,8 +21,13 @@ def create_folder_structure():
     worker.setup_folder_structure(inputs=data)
 
 
+def get_raw_input():
+    # TODO implementation
+    pass
+
+
 def process_raw():
-    # TODO implementaiton
+    # TODO implementation
     pass
 
 
@@ -50,76 +54,43 @@ def get_util_input():
     return UtilTabInput(**data)
 
 
-# Abgleichen mit thread worker
-def process_util(inputs):
-    # TODO handle problem in one part of the execution
-    valid, errors = validation.validate_util_paths(inputs.raw_material_folder,
-                                                   inputs.excel_full_filepath)
+def process_util(inputs: UtilTabInput):
+    wk = Worker()
+    try:
+        sheets = wk._validate_and_prepare(raw_material_folder=inputs.raw_material_folder,
+                                          excel_full_filepath=inputs.excel_full_filepath)
+    except Exception as e:
+        print(str(e))
+        return
+    print("Inputs validiert und Excel eingelesen.")
 
-    if not valid:
-        print(errors)
-    else:
+    if inputs.do_sections:
         try:
-            sheets = eval.prepare_dataframes(excel_file=inputs.excel_full_filepath,
-                                             raw_path=inputs.raw_material_folder)
-            video_df = sheets["Videos"]
-            picture_df = sheets["Bilder"]
-
-            print("Inputs validiert und Excel eingelesen.")
-
-            if inputs.do_sections:
-                if inputs.do_video_sections and not video_df.empty:
-                    result = eval.copy_section(video_df, inputs.rating_section)
-                    print("Videoabschnitte erstellt.")
-                    [print(x) for x in result if x]
-                if inputs.do_picture_sections and not picture_df.empty:
-                    result = eval.copy_section(picture_df, inputs.rating_section)
-                    print("Bilderabschnitte erstellt.")
-                    [print(x) for x in result if x]
-            if inputs.do_selections:
-                if inputs.videos_columns_selection and not video_df.empty:
-                    result = eval.copy_selections(df=video_df,
-                                                  raw_path=inputs.raw_material_folder,
-                                                  columns=inputs.videos_columns_selection,
-                                                  marker=inputs.marker)
-                    print("Videoselektionen erstellt.")
-                    [print(x) for x in result if x]
-                if inputs.picture_columns_selection and not picture_df.empty:
-                    result = eval.copy_selections(df=picture_df,
-                                                  raw_path=inputs.raw_material_folder,
-                                                  columns=inputs.picture_columns_selection,
-                                                  marker=inputs.marker)
-                    print("Bilderselektionen erstellt.")
-                    [print(x) for x in result if x]
-            if inputs.do_search:
-                if inputs.videos_columns_search and not video_df.empty:
-                    result = eval.search_columns(df=video_df,
-                                                 raw_path=inputs.raw_material_folder,
-                                                 columns=inputs.videos_columns_search,
-                                                 markers=inputs.keywords,
-                                                 rating=inputs.rating_search)
-                    print("Videosuche erstellt.")
-                    [print(x) for x in result if x]
-                if inputs.picture_columns_search and not picture_df.empty:
-                    result = eval.search_columns(df=picture_df,
-                                                 raw_path=inputs.raw_material_folder,
-                                                 columns=inputs.picture_columns_search,
-                                                 markers=inputs.keywords,
-                                                 rating=inputs.rating_search)
-                    print("Bildersuche erstellt.")
-                    [print(x) for x in result if x]
-            if inputs.create_picture_folder:
-                result = eval.copy_pictures_with_rating(df=picture_df,
-                                                        raw_path=inputs.raw_material_folder,
-                                                        rating_limit=inputs.rating_pictures)
-                print("Bilderordner erstellt.")
-                [print(x) for x in result if x]
-            print("BlaBla: util gesamt fertig")
-
-        except (IndexError, KeyError) as e:
-            print("Fehler beim Laden der Excel-Datei.")
-        except ValueError as e:
+            wk._handle_section(sheets=sheets, inputs=inputs)
+        except Exception as e:
             print(str(e))
+    if inputs.do_selections:
+        try:
+            wk._handle_selection(sheets=sheets, inputs=inputs)
+        except Exception as e:
+            print(str(e))
+    if inputs.do_search:
+        try:
+            wk._handle_search(sheets=sheets, inputs=inputs)
+        except Exception as e:
+            print(str(e))
+    if inputs.create_picture_folder:
+        try:
+            wk._handle_picture_folder(sheets=sheets, inputs=inputs)
+        except Exception as e:
+            print(str(e))
+
+    print("BlaBla: util gesamt fertig")
+
+
+def stats():
+    wk = Worker()
+    wk.run_statistics()
 
 
 if __name__ == "__main__":
