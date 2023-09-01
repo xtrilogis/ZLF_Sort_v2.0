@@ -8,7 +8,7 @@ import time
 from assets.constants import video_extensions
 
 
-def get_raw_material_duration(path: Path) -> Tuple[float, List[str], List[List[Any]]]:
+def get_raw_material_duration(path: Path) -> Tuple[str, List[str], List[List[Any]]]:
     total_duration = 0.0
     problems: List[str] = []
     duration_per_day: List[List[Any]] = []
@@ -26,11 +26,11 @@ def get_raw_material_duration(path: Path) -> Tuple[float, List[str], List[List[A
                         problems.append(element.name)
             duration_per_day.append(
                     [
-                        folder,
+                        folder.name,
                         time.strftime("%H:%M:%S", time.gmtime(current_day_duration)),
                     ]
                 )
-    return total_duration, problems, duration_per_day
+    return time.strftime("%H:%M:%S", time.gmtime(total_duration)), problems, duration_per_day
 
 
 def _get_duration(file_fullpath: Path):
