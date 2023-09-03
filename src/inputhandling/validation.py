@@ -20,6 +20,13 @@ def validate_setup_path(path: Path):
     return False, "Der angegebene Pfad ist kein valider Ordnerpfad."
 
 
+def validate_raw() -> Tuple[bool, List[str]]:
+    errors = []
+    # check paths exist (except excel full)
+    # check if excel has column Datei
+    return len(errors) == 0, errors
+
+
 def validate_excel_file(excel_file: Path) -> List[str]:
     errors: List[str] = []
     try:

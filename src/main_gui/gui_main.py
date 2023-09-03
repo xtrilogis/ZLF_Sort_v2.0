@@ -295,27 +295,6 @@ class MainWindow(QMainWindow):
         # lambda: self.worker.create_picture_folder()  # TODO
         pass
 
-    def show_suggestions_video(self):
-        dial = SelectionDialog("Vorschläge Video Spalten", "Spalten", settings["suggestions-video-columns"], self)
-        if dial.exec_() == QDialog.Accepted:
-            select = dial.itemsSelected()
-            # TODO append to existing, create minimum instead of standard
-            columns: List[str] = settings["standard-video-columns"].copy()
-            columns.extend(select)
-            text = ", ".join(columns)
-            self.ui.vid_columns.setText(text)
-
-    def show_suggestions_pictures(self):
-        dial = SelectionDialog("Vorschläge Bilder Spalten", "Spalten", settings["suggestions-picture-columns"], self)
-        if dial.exec_() == QDialog.Accepted:
-            select = dial.itemsSelected()
-            # TODO append to existing, create minimum instead of standard
-            columns: List[str] = constants.minimal_columns.copy()
-            columns.extend(self.ui.pic_columns.document().toRawText().split(", "))
-            columns.extend(select)
-            text = ", ".join(columns)
-            self.ui.pic_columns.setPlainText(text)
-
     def show_suggestions(self, text_edit: QPlainTextEdit, suggestions: List[str]):
         dial = SelectionDialog("Spaltenvorschläge", "Spalten", suggestions, self)
         if dial.exec_() == QDialog.Accepted:

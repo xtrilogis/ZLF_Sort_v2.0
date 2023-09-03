@@ -2,8 +2,11 @@ from datetime import datetime
 from typing import List
 from pathlib import Path
 
+from assethandling.asset_manager import settings
+from inputhandling import validation
+from rawmaterial import raw_material
 from ui.thread_worker import Worker
-from assethandling.basemodels import ExcelOptions, FolderTabInput, UtilTabInput
+from assethandling.basemodels import ExcelOptions, FolderTabInput, UtilTabInput, RawTabStandardInput
 from ui import thread_worker as tw
 
 ROOT = "../TestDateien"
@@ -22,14 +25,55 @@ def create_folder_structure():
 
 
 def get_raw_input():
+    root = Path(ROOT_absolute)
+    data = {
+        "do_structure": False,
+        "do_rename": False,
+        "fill_excel": False,
+        "create_picture_folder": False,
+        "raw_material_folder": root / "Rohmaterial",
+        "excel_option": ExcelOptions.EXISTING,
+        "video_columns":  settings["standard-video-columns"],
+        "picture_columns":  settings["standard-picture-columns"],
+        "excel_file_name":  f"Zeltlagerfilm {datetime.now().date().year}.xlsx",
+        "excel_folder": root,
+        "excel_full_filepath": root / f"Zeltlagerfilm {datetime.now().date().year}.xlsx",
+        "picture_folder": root
+    }
+    return RawTabStandardInput(**data)
+
+
+def process_raw(inputs: RawTabStandardInput):
     # TODO implementation
-    pass
+    wk = Worker()
+    try:
+        valid, errors = validation.validate_raw()
+        # i excel don't exist create
+        pass
+        # validate inputs
+        # check Excel methods -> if not exists create with setting
+    except Exception as e:
+        print(str(e))
+        return
+    print("Inputs validiert und Excel eingelesen.")
 
+    if inputs.do_structure:
+        try:
+            raw_material.correct_file_structure(
+                raw_material_folder=inputs.raw_material_folder,
+                dst_folder=inputs.raw_material_folder.parent / "New",
+            )
+        except Exception as e:
+            print(str(e))
+        pass
+    if inputs.do_rename:
+        pass
+    if inputs.fill_excel:
+        pass
+    if inputs.create_picture_folder:
+        pass
 
-def process_raw():
-    # TODO implementation
-    pass
-
+    print("BlaBla: raw gesamt fertig")
 
 def get_util_input():
     data = {

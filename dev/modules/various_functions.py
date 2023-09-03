@@ -11,6 +11,7 @@ import shutil
 import PIL.Image
 from hachoir.parser import createParser
 from hachoir.metadata import extractMetadata
+from pydantic import BaseModel
 
 from assets import constants
 from excel import excelmethods
@@ -24,28 +25,26 @@ path = "D:/Users/Wisdom/Lernen/Coding_Python/ZLF_Sort_v2.0/TestDateien/Rohmateri
 pfad_excel = "D:/Users/Wisdom/Lernen/Coding_Python/ZLF_Sort_v2.0/TestDateien/Rohmaterial - nach Nachschauen/Zeltlagerfilm 2023.xlsx"
 
 
-def read_file_extensions(path):
-    """Prints all file extensions"""
-
-    for root, _, files in os.walk(path):
-        for f in files:
-            filename, file_ext = os.path.splitext(f)
-            print(file_ext)
-
-
 def get_image_date_properties(file):
     img = PIL.Image.open(file)
     exif_data = img._getexif()
-    print(exif_data)
+    # print(file.name)
+    # print(exif_data)
     try:
         img = PIL.Image.open(file)
         exif_data = img._getexif()
 
         for tag, value in exif_data.items():
             tag_name = PIL.ExifTags.TAGS.get(tag, tag)
-            if tag_name == "DateTimeOriginal":
-                print(value)
-    except (AttributeError, KeyError, IndexError):
+            # print(tag_name, value)
+            if tag_name == "DateTimeOriginal" or tag_name == "DateTime":
+                print(datetime.datetime.strptime(value, "%Y:%m:%d %H:%M:%S"))
+        # print("...")
+        # for tag, value in img.getexif().items():
+        #     tag_name = PIL.ExifTags.TAGS.get(tag, tag)
+        #     print(tag_name, value)
+    except (AttributeError, KeyError, IndexError) as e:
+        print(e)
         pass
     ti_c = os.path.getctime(file)  # Creation time
     ti_m = os.path.getmtime(file)  # Änderungsdatum
@@ -155,33 +154,6 @@ def load_excel():
     result = pd.read_excel(pfad_excel)
     print("")
 
-def get_parent_folder(path: str):
-    for root, _, files in os.walk(path):
-        print(files)
-
-
-class Some:
-    one: str = None
-
-    def __init__(self):
-        self.two: str = None
-
-    def s(self):
-        if not self.one:
-            self.one = "sdf"
-
-        if not self.two:
-            self.two = "aes"
-
-    def up(self):
-        self.s()
-        print(self.two)
-        print(self.one)
-
-
-def create(par, *folders):
-    par.joinpath(folders)
-
 
 def get_column_list(columns: str): # -> List[str]:
     cols = []
@@ -208,12 +180,15 @@ def os_walk(sheets):
                 row = match.index[0]
                 df.loc[row, "Dateipfad"] = element
 
+class Sub(BaseModel):
+    name: str
+    path: bool
+
+class Naes(BaseModel):
+    blas: bool
+    sub: Sub
 
 if __name__ == '__main__':
-    path = "D:/Users/Wisdom/Lernen/Coding_Python/Zlf_sort/Dateien/Test dateien/2022/Zeltlager 2022/Zeltlagerfilm 2022/Testmaterial/Rohmaterial - nach Nachschauen"
-    excel = "D:/Users/Wisdom/Lernen/Coding_Python/Zlf_sort/Dateien/Test dateien/2022/Zeltlager 2022/Zeltlagerfilm 2022/Testmaterial/Rohmaterial - nach Nachschauen/Zeltlagerfilm 2022.xlsx"
-    # copy_file(src_file=Path(excel),
-              # dst_folder=Path("D:/Users/Wisdom/Lernen/Coding_Python/Zlf_sort/Dateien/Test dateien"))
-    lis = [1, 2, 4]
-    lis.extend([3, 4])
+    sub = Sub(name="sdf", path=True)
+    net = Naes(blas=True, sub=sub)
     print("")

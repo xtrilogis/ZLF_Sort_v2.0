@@ -6,7 +6,7 @@ from PyQt5.QtCore import *
 
 from assethandling.asset_manager import settings
 from inputhandling import validation
-from foldersetup import folder_structure
+from foldersetup import folder_setup
 from excel.excelmethods import create_emtpy_excel
 from assethandling.basemodels import ExcelOptions, SheetConfig, FolderTabInput, UtilTabInput
 from stats import statistics
@@ -30,7 +30,7 @@ class Worker(QThread):
         valid, error = validation.validate_setup_path(path=inputs.folder)
         if valid:
             self.new_message_setup.emit("Input validiert.")
-            folder_structure.create_folder_structure(parent=inputs.folder, date=inputs.date)
+            folder_setup.create_folder_structure(parent=inputs.folder, date=inputs.date)
             self.new_message_setup.emit("Ordner erfolgreich erstellt.")
         else:
             self.problem_with_input.emit(error)
