@@ -1,6 +1,6 @@
 """Start der App"""
 # print("Python Code Starting")
-from PyQt5.QtWidgets import QApplication
+from PyQt5.QtWidgets import QApplication, QPlainTextEdit
 import sys
 
 from assets import constants
@@ -43,8 +43,7 @@ class MainWindow(QMainWindow):
         self.ui.tabWidget_raw.setCurrentIndex(0)
         self.show_frame()
         self.ui.comboBox.currentIndexChanged.connect(self.show_frame)
-        # TODO use basemodel input ??
-        self.ui.vid_columns.setText(", ".join(settings["standard-video-columns"]))
+        self.ui.vid_columns.setPlainText(", ".join(settings["standard-video-columns"]))
         self.ui.pic_columns.setPlainText(", ".join(settings["standard-picture-columns"]))
         self.ui.lineEdit.setText(f"Zeltlagerfilm {datetime.now().date().year}.xlsx")
 
@@ -107,8 +106,14 @@ class MainWindow(QMainWindow):
         self.ui.create_excel_pb.clicked.connect(self.create_excel_file)
         self.ui.fill_excel_pb.clicked.connect(self.fill_excel)
 
-        self.ui.vid_sugestions_pb.clicked.connect(self.show_suggestions_video)
-        self.ui.pic_sugestions_pb.clicked.connect(self.show_suggestions_pictures)
+        self.ui.vid_sugestions_pb.clicked.connect(
+            lambda: self.show_suggestions(text_edit=self.ui.vid_columns,
+                                          suggestions=settings["suggestions-video-columns"])
+        )
+        self.ui.pic_sugestions_pb.clicked.connect(
+            lambda: self.show_suggestions(text_edit=self.ui.pic_columns,
+                                          suggestions=settings["suggestions-picture-columns"])
+        )
         self.ui.rawpath_folder_tb_4.clicked.connect(
             lambda: self.show_filedialog_raw_material_path(self.ui.excel_folder_drop_4)
         )
@@ -145,9 +150,6 @@ class MainWindow(QMainWindow):
         )
         self.ui.pushButton_2.clicked.connect(
             lambda: self.select_columns(line_edit=self.ui.column_videos_linee_2, sheet="Videos")
-        )
-        self.ui.picture_tb_2.clicked.connect(
-            lambda: self.show_filedialog_raw_material_path(self.ui.picture_drop_2)
         )
 
     # ##### GENERAL METHODS ##### #
@@ -192,14 +194,6 @@ class MainWindow(QMainWindow):
     @pyqtSlot()
     def process_finished(self):
         self.enable_work_buttons()
-
-    # ##### HELP Button METHODS ##### #
-
-    @staticmethod
-    def show_help_raw():
-        """Opens a Pop-Up-Window with information about part 1 "Ordner erstellen" """
-        msg = messageboxes.help_raw_material()
-        msg.exec()
 
     # ##### FileDialogs ##### #
     def show_filedialog_harddrive_path(self):
@@ -296,6 +290,11 @@ class MainWindow(QMainWindow):
         # if mode == existing nur auslesen sonst, raw mat input
         pass
 
+    def create_picture_folder(self):
+        # TODO implementation
+        # lambda: self.worker.create_picture_folder()  # TODO
+        pass
+
     def show_suggestions_video(self):
         dial = SelectionDialog("Vorschläge Video Spalten", "Spalten", settings["suggestions-video-columns"], self)
         if dial.exec_() == QDialog.Accepted:
@@ -317,14 +316,18 @@ class MainWindow(QMainWindow):
             text = ", ".join(columns)
             self.ui.pic_columns.setPlainText(text)
 
-    def create_picture_folder(self):
-        # TODO implementation
-        # lambda: self.worker.create_picture_folder()  # TODO
-        pass
+    def show_suggestions(self, text_edit: QPlainTextEdit, suggestions: List[str]):
+        dial = SelectionDialog("Spaltenvorschläge", "Spalten", suggestions, self)
+        if dial.exec_() == QDialog.Accepted:
+            select: List[str] = dial.itemsSelected()
+            previous_columns: List[str] = self.get_PlainTextEdit_parts(text_edit)
+            previous_columns.extend(select)
+            text = ", ".join(previous_columns)
+            text_edit.setPlainText(text)
 
     # ### Helper Methods ### #
     def get_raw_inputs(self):
-        # Optional inputs like picture_folder besser handelen
+        # Optional inputs like picture_folder besser handle
         if self.ui.rawpath_drop_2.text() == "":
             raise ValueError("Bitte gib den Pfad zum Rohmaterialordner an.")
         excel_option: ExcelOptions = ExcelOptions(self.ui.comboBox.currentText())
@@ -349,6 +352,7 @@ class MainWindow(QMainWindow):
             data["picture_columns"]: List[str] = self.get_LineEdit_parts(self.ui.pic_columns)
         else:
             data["excel_folder"]: Path = data["raw_material_folder"].parent
+
         if self.ui.groupBox_2.isChecked():
             if self.ui.picture_drop.text() == "":
                 raise ValueError("Bitte gib einen Speicherort für den Bilderordner an.")
@@ -447,9 +451,17 @@ class MainWindow(QMainWindow):
         return UtilTabInput(**data)
 
     @staticmethod
-    def get_LineEdit_parts(columns: QLineEdit) -> List[str]:
+    def get_LineEdit_parts(element: QLineEdit) -> List[str]:
         cols = []
-        for part in columns.text().split(','):
+        for part in element.text().split(','):
+            if part.strip():
+                cols.append(part.strip())
+        return cols
+
+    @staticmethod
+    def get_PlainTextEdit_parts(element: QPlainTextEdit) -> List[str]:
+        cols = []
+        for part in element.document().toRawText().split(','):
             if part.strip():
                 cols.append(part.strip())
         return cols
