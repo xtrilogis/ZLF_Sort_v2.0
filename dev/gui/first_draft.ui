@@ -1009,7 +1009,7 @@ QCalendarWidget QToolButton#qt_calendar_nextmonth
                  <enum>QTabWidget::North</enum>
                 </property>
                 <property name="currentIndex">
-                 <number>3</number>
+                 <number>1</number>
                 </property>
                 <property name="elideMode">
                  <enum>Qt::ElideNone</enum>
@@ -1306,6 +1306,9 @@ Diese Aktion wird auch durchgeführt, wenn du links den Haken bei &quot;Richtige
                      </item>
                     </layout>
                    </widget>
+                  </item>
+                  <item>
+                   <widget class="QDateEdit" name="dateEdit_2"/>
                   </item>
                   <item>
                    <widget class="QFrame" name="frame_24">
