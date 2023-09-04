@@ -42,7 +42,7 @@ def validate_excel_file(excel_file: Path) -> List[str]:
                 errors.extend(result)
             result = _validate_sheet(sheets["Bilder"])
             if result:
-                errors.append("Fehler mit 'Videos' Mappe")
+                errors.append("Fehler mit 'Bilder' Mappe")
                 errors.extend(result)
     except Exception as e:
         return [str(e)]

@@ -421,7 +421,7 @@ class MainWindow(QMainWindow):
             "marker": self.ui.marker_linee.text(),
             "do_search": self.ui.selection_2.isChecked(),
             "videos_columns_search": self.get_LineEdit_parts(self.ui.column_videos_linee_2),
-            "picture_columns_search": self.get_LineEdit_parts(self.ui.column_videos_linee_2),
+            "picture_columns_search": self.get_LineEdit_parts(self.ui.column_pictures_linee_2),
             "keywords": self.get_LineEdit_parts(self.ui.marker_linee_2),
             "rating_search": self.ui.rating_limit_spinB_3.value(),
             "create_picture_folder": self.ui.segment_2.isChecked(),

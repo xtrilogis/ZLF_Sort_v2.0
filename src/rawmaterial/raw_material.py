@@ -27,6 +27,7 @@ class File(BaseModel):
 
 
 def correct_file_structure(raw_material_folder: Path, dst_folder: Path, start: datetime):
+    # TODO clean, test, check Änderungsdatum, nach kopieren !! wichtig für rename
     errors = []
     check_if_right_structure()
     # sort into day folders, sort into Bilder, Videos
@@ -123,9 +124,9 @@ def _get_video_captured_date(file: Path) -> Optional[datetime]:
 
 
 def get_file_type(file: Path) -> FileType:
-    if file.suffix in constants.video_extensions:
+    if file.suffix.upper() in constants.video_extensions:
         return FileType.VIDEO
-    if file.suffix in constants.image_extensions:
+    if file.suffix.upper() in constants.image_extensions:
         return FileType.IMAGE
     return FileType.OTHER
 

@@ -141,6 +141,7 @@ class Worker(QThread):
             return
         self.new_message_excel.emit("Inputs validiert und Excel eingelesen.")
         self._handle_section(sheets=sheets, inputs=inputs)
+        self.process_finished.emit("Abschnitte abgeschlossen.")
 
     def _handle_section(self, sheets: Dict[str, pd.DataFrame], inputs: UtilTabInput):
         self._section_per_sheet(df=sheets["Videos"],
@@ -167,6 +168,7 @@ class Worker(QThread):
             return
         self.new_message_excel.emit("Inputs validiert und Excel eingelesen.")
         self._handle_selection(sheets=sheets, inputs=inputs)
+        self.process_finished.emit("Selektionen abgeschlossen.")
 
     def _handle_selection(self, sheets: Dict[str, pd.DataFrame], inputs: UtilTabInput):
         self._selection_per_sheet(df=sheets["Videos"],
@@ -199,6 +201,7 @@ class Worker(QThread):
             return
         self.new_message_excel.emit("Inputs validiert und Excel eingelesen.")
         self._handle_search(sheets=sheets, inputs=inputs)
+        self.process_finished.emit("Suche abgeschlossen.")
 
     def _handle_search(self, sheets: Dict[str, pd.DataFrame], inputs: UtilTabInput):
         self._search_per_sheet(df=sheets["Videos"],
@@ -234,6 +237,7 @@ class Worker(QThread):
             return
         self.new_message_excel.emit("Inputs validiert und Excel eingelesen.")
         self._handle_picture_folder(sheets=sheets, inputs=inputs)
+        self.process_finished.emit("Bilderordner abgeschlossen.")
 
     def _handle_picture_folder(self, sheets: Dict[str, pd.DataFrame], inputs: UtilTabInput):
         result = eval.copy_pictures_with_rating(df=sheets["Bilder"],
@@ -258,6 +262,7 @@ class Worker(QThread):
             # with open(select / "statistics.txt", 'w') as outfile:
                 # outfile.write('\n'.join(result))
 
+            self.process_finished.emit("Statistik fertig.")
         except Exception as e:
             self.problem_with_input.emit(str(e))
             return
