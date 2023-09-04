@@ -59,3 +59,16 @@ class UtilTabInput(BaseModel):
     rating_search: int
     create_picture_folder: bool
     rating_pictures: int
+
+
+class FileType(Enum):
+    VIDEO = "Video"
+    IMAGE = "Image"
+    OTHER = "other"
+
+
+class File(BaseModel):
+    full_path: Path
+    date: datetime
+    dst_folder: Path | None
+    type: FileType

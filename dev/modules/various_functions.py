@@ -169,9 +169,9 @@ def os_walk(sheets):
     sheets["Bilder"]["Dateipfad"] = pd.Series(dtype='str')
     for element in Path(path).glob('**/*'):
         if element.is_file():
-            if element.suffix in constants.video_extensions:
+            if element.suffix.upper() in constants.video_extensions:
                 df = sheets["Videos"]
-            elif element.suffix in constants.image_extensions:
+            elif element.suffix.upper() in constants.image_extensions:
                 df = sheets["Bilder"]
             else:
                 continue
@@ -180,13 +180,16 @@ def os_walk(sheets):
                 row = match.index[0]
                 df.loc[row, "Dateipfad"] = element
 
+
 class Sub(BaseModel):
     name: str
     path: bool
 
+
 class Naes(BaseModel):
     blas: bool
     sub: Sub
+
 
 if __name__ == '__main__':
     sub = Sub(name="sdf", path=True)

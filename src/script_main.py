@@ -31,7 +31,7 @@ def get_raw_input():
         "do_rename": False,
         "fill_excel": False,
         "create_picture_folder": False,
-        "raw_material_folder": root / "Rohmaterial",
+        "raw_material_folder": root / "Rohmaterial",  # TODO good??
         "excel_option": ExcelOptions.EXISTING,
         "video_columns":  settings["standard-video-columns"],
         "picture_columns":  settings["standard-picture-columns"],
@@ -59,6 +59,7 @@ def process_raw(inputs: RawTabStandardInput):
 
     if inputs.do_structure:
         try:
+
             raw_material.correct_file_structure(
                 raw_material_folder=inputs.raw_material_folder,
                 dst_folder=inputs.raw_material_folder.parent / "New",
