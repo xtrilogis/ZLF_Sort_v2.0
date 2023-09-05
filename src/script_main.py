@@ -5,6 +5,7 @@ from pathlib import Path
 from assethandling.asset_manager import settings
 from inputhandling import validation
 from rawmaterial import raw_material
+from rawmaterial.raw_material import rename_files
 from ui.thread_worker import Worker
 from assethandling.basemodels import ExcelOptions, FolderTabInput, UtilTabInput, RawTabStandardInput
 from ui import thread_worker as tw
@@ -141,4 +142,5 @@ def stats():
 if __name__ == "__main__":
     # create_folder_structure()
     # process_raw()
-    process_util(get_util_input())
+    # process_util(get_util_input())
+    print("")

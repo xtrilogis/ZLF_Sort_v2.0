@@ -181,17 +181,5 @@ def os_walk(sheets):
                 df.loc[row, "Dateipfad"] = element
 
 
-class Sub(BaseModel):
-    name: str
-    path: bool
-
-
-class Naes(BaseModel):
-    blas: bool
-    sub: Sub
-
-
 if __name__ == '__main__':
-    sub = Sub(name="sdf", path=True)
-    net = Naes(blas=True, sub=sub)
-    print("")
+    pass

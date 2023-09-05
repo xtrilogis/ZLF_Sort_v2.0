@@ -52,27 +52,26 @@ def get_file_captured_date(file: Path, file_type) -> datetime:
 def _get_image_captured_date(file: Path) -> Optional[datetime]:
     captured_date: Optional[datetime] = None
 
-    image = PIL.Image.open(file)
-    exif_data = image._getexif()
-    for tag, value in exif_data.items():
-        tag_name = PIL.ExifTags.TAGS.get(tag, tag)
-        if tag_name == "DateTimeOriginal" or tag_name == "DateTime":
-            extracted_date: datetime = datetime.strptime(value, "%Y:%m:%d %H:%M:%S")
-            if captured_date is None or extracted_date < captured_date:
-                captured_date = extracted_date
+    with PIL.Image.open(file) as image:
+        exif_data = image._getexif()
+        for tag, value in exif_data.items():
+            tag_name = PIL.ExifTags.TAGS.get(tag, tag)
+            if tag_name == "DateTimeOriginal" or tag_name == "DateTime":
+                extracted_date: datetime = datetime.strptime(value, "%Y:%m:%d %H:%M:%S")
+                if captured_date is None or extracted_date < captured_date:
+                    captured_date = extracted_date
 
     return captured_date
 
 
 def _get_video_captured_date(file: Path) -> Optional[datetime]:
     captured_date: Optional[datetime] = None
-
-    parser = createParser(str(file))
-    metadata = extractMetadata(parser)
-    if metadata:
-        for line in metadata.exportPlaintext():
-            if "Creation date" in line:
-                result = line.split(": ")[1].strip()
-                captured_date: datetime = datetime.fromisoformat(result)
+    with createParser(str(file)) as parser:
+        metadata = extractMetadata(parser)
+        if metadata:
+            for line in metadata.exportPlaintext():
+                if "Creation date" in line:
+                    result = line.split(": ")[1].strip()
+                    captured_date: datetime = datetime.fromisoformat(result)
 
     return captured_date
