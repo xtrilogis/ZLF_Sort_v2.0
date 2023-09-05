@@ -33,6 +33,7 @@ def get_raw_input():
         "fill_excel": False,
         "create_picture_folder": False,
         "raw_material_folder": root / "Rohmaterial",  # TODO good??
+        "first_folder_date": datetime(2023, 7, 26),
         "excel_option": ExcelOptions.EXISTING,
         "video_columns":  settings["standard-video-columns"],
         "picture_columns":  settings["standard-picture-columns"],
@@ -60,22 +61,27 @@ def process_raw(inputs: RawTabStandardInput):
 
     if inputs.do_structure:
         try:
-
-            raw_material.correct_file_structure(
+            result = raw_material.correct_file_structure(
                 raw_material_folder=inputs.raw_material_folder,
                 dst_folder=inputs.raw_material_folder.parent / "New",
+                start=inputs.first_folder_date
             )
+            print(result)
         except Exception as e:
             print(str(e))
-        pass
     if inputs.do_rename:
-        pass
+        try:
+            result = raw_material.run_rename(raw_material_folder=inputs.raw_material_folder)
+            print(result)
+        except Exception as e:
+            print(str(e))
     if inputs.fill_excel:
         pass
     if inputs.create_picture_folder:
         pass
 
     print("BlaBla: raw gesamt fertig")
+
 
 def get_util_input():
     data = {

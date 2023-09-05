@@ -14,7 +14,7 @@ from fileopertations.filemethods import get_file_type, copy_file, get_file_captu
 locale.setlocale(locale.LC_TIME, 'de_DE.utf8')
 
 
-def correct_file_structure(raw_material_folder: Path, dst_folder: Path, start: datetime):
+def correct_file_structure(raw_material_folder: Path, dst_folder: Path, start: datetime) -> List[str]:
     errors = []
     print("Start")
     check_if_right_structure()
@@ -107,7 +107,7 @@ def run_rename(raw_material_folder: Path) -> List[str]:
                 _add_file_object(file=child, all_files=all_files, errors=errors)
             all_files.sort(key=lambda x: x.date, reverse=False)
 
-            rename_files(folder=element, all_files=all_files, errors=errors)
+            _rename_files(folder=element, all_files=all_files, errors=errors)
     return errors
 
 
@@ -121,7 +121,7 @@ def _is_folder_with_material(path: Path) -> bool:
 
 
 # Move to filemethods?
-def rename_files(folder: Path, all_files: List[File], errors: List[str]):
+def _rename_files(folder: Path, all_files: List[File], errors: List[str]):
     length = 3 if len(all_files) < 999 else 4
 
     do = ("sonstiges" in folder.parent.name.lower() or

@@ -32,6 +32,7 @@ class RawTabStandardInput(BaseModel):
     fill_excel: bool
     create_picture_folder: bool
     raw_material_folder: Path
+    first_folder_date: datetime
     excel_option: ExcelOptions
     video_columns: List[str] = settings["standard-video-columns"]
     picture_columns: List[str] = settings["standard-picture-columns"]
