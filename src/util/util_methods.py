@@ -10,7 +10,7 @@ from fileopertations import filemethods
 def prepare_dataframes(excel_file: Path, raw_path: Path) -> Dict[str, pd.DataFrame]:
     sheets = excelmethods.load_sheets_as_df(path=excel_file)
     if sheets["Videos"].empty and sheets["Bilder"].empty:
-        raise ValueError("Die Excel enthält keine Daten. Bitte ausfüllen")
+        raise ValueError("Die Excel enthält keine Daten. Bitte ausfüllen.")
     _append_file_paths_to_df(sheets=sheets, raw_material_path=raw_path)
     return sheets
 

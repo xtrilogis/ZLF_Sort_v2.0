@@ -28,6 +28,8 @@ def validate_raw() -> Tuple[bool, List[str]]:
 
 
 def validate_excel_file(excel_file: Path) -> List[str]:
+    if not excel_file.exists():
+        return ["Bitte gültige Excel angeben."]
     errors: List[str] = []
     try:
         sheets = excelmethods.load_sheets_as_df(excel_file)

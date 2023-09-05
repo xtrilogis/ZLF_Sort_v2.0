@@ -3,7 +3,6 @@ from enum import Enum
 from pathlib import Path
 from typing import List
 
-from PyQt5.QtCore import QDate
 from pydantic import BaseModel
 
 from assethandling.asset_manager import settings
