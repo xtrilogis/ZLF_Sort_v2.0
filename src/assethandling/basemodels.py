@@ -25,6 +25,15 @@ class FolderTabInput(BaseModel):
     date: datetime
 
 
+class ExcelConfig(BaseModel):
+    excel_option: ExcelOptions
+    video_columns: List[str] = settings["standard-video-columns"]
+    picture_columns: List[str] = settings["standard-picture-columns"]
+    excel_file_name: str = f"Zeltlagerfilm {datetime.now().date().year}.xlsx"
+    excel_folder: Path | None
+    excel_full_filepath: Path | None
+
+
 class RawTabStandardInput(BaseModel):
     do_structure: bool
     do_rename: bool
@@ -32,12 +41,7 @@ class RawTabStandardInput(BaseModel):
     create_picture_folder: bool
     raw_material_folder: Path
     first_folder_date: datetime
-    excel_option: ExcelOptions
-    video_columns: List[str] = settings["standard-video-columns"]
-    picture_columns: List[str] = settings["standard-picture-columns"]
-    excel_file_name: str = f"Zeltlagerfilm {datetime.now().date().year}.xlsx"
-    excel_folder: Path | None
-    excel_full_filepath: Path | None
+    excel_config: ExcelConfig
     picture_folder: Path
 
 

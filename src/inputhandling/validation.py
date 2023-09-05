@@ -3,8 +3,10 @@ from pathlib import Path
 from typing import Tuple, List
 import pandas as pd
 
+from assethandling.basemodels import RawTabStandardInput
 from assets import constants
 from excel import excelmethods
+
 
 
 def validate_setup_path(path: Path):
@@ -20,8 +22,11 @@ def validate_setup_path(path: Path):
     return False, "Der angegebene Pfad ist kein valider Ordnerpfad."
 
 
-def validate_raw() -> Tuple[bool, List[str]]:
+def validate_raw(inputs: RawTabStandardInput) -> Tuple[bool, List[str]]:
     errors = []
+    inputs.picture_folder.exists() # if do
+    inputs.raw_material_folder.exists()
+    inputs.excel_full_filepath.exists() # if do
     # check paths exist (except excel full)
     # check if excel has column Datei
     return len(errors) == 0, errors

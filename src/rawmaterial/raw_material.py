@@ -141,7 +141,7 @@ def _rename_files(folder: Path, all_files: List[File], errors: List[str]):
 
 def fill_excel(excel: Path, raw_material_folder: Path) -> List[str]:
     errors: List[str] = []
-    res = validate_excel_file(excel)  # Todo use
+    # Todo clean up
     sheets = load_sheets_as_df(excel)
     if not sheets["Videos"].empty or not sheets["Bilder"].empty:
         raise ValueError("Die Excel enthält bereits Daten.")
@@ -150,19 +150,33 @@ def fill_excel(excel: Path, raw_material_folder: Path) -> List[str]:
         video_folder_written = False
         if _is_folder_with_material(element):
             for child in element.iterdir():
-                if child.suffix.upper() in constants.video_extensions:
-                    if not video_folder_written:
-                        sheets["Videos"].loc[len(sheets["Videos"]), "Datei"] = element.name
-                        video_folder_written = True
-                    sheets["Videos"].loc[len(sheets["Videos"]), "Datei"] = child.name
+                try:
+                    if child.suffix.upper() in constants.video_extensions:
+                        if not video_folder_written:
+                            sheets["Videos"].loc[len(sheets["Videos"]), "Datei"] = element.name
+                            video_folder_written = True
+                        sheets["Videos"].loc[len(sheets["Videos"]), "Datei"] = child.name
 
-                if child.suffix.upper() in constants.image_extensions:
-                    if not picture_folder_written:
-                        sheets["Bilder"].loc[len(sheets["Bilder"]), "Datei"] = element.name
-                        picture_folder_written = True
-                    sheets["Bilder"].loc[len(sheets["Bilder"]), "Datei"] = child.name
+                    if child.suffix.upper() in constants.image_extensions:
+                        if not picture_folder_written:
+                            sheets["Bilder"].loc[len(sheets["Bilder"]), "Datei"] = element.name
+                            picture_folder_written = True
+                        sheets["Bilder"].loc[len(sheets["Bilder"]), "Datei"] = child.name
+                except IndexError as e:
+                    errors.append(child.name)
 
     save_sheets_to_excel(sheets=sheets, path=excel)
+    return errors
+
+
+def create_picture_folder(picture_folder: Path, raw_material_folder: Path) -> List[str]:
+    errors: List[str] = []
+    for element in raw_material_folder.glob('**/*'):
+        if element.suffix.upper() in constants.image_extensions:
+            try:
+                copy_file(element, picture_folder)
+            except (FileNotFoundError, FileExistsError) as e:
+                errors.append(element.name)
     return errors
 
 
@@ -177,3 +191,4 @@ if __name__ == "__main__":
     # correct_file_structure(Path("D:/Users/Wisdom/Lernen/Coding_Python/ZLF_Sort_v2.0/TestDateien/roh/"),
     #                        Path("D:/Users/Wisdom/Lernen/Coding_Python/TestDateien/"),
     #                        datetime(2023, 7, 26))
+    print(create_picture_folder(Path("D:/Users/Wisdom/Lernen/Coding_Python/TestDateien/n"), Path("D:/Users/Wisdom/Lernen/Coding_Python/TestDateien/")))

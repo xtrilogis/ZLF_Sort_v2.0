@@ -3,9 +3,10 @@ from typing import List
 from pathlib import Path
 
 from assethandling.asset_manager import settings
+from excel.excelmethods import create_emtpy_excel
 from inputhandling import validation
 from rawmaterial import raw_material
-from assethandling.basemodels import ExcelOptions, FolderTabInput, UtilTabInput, RawTabStandardInput
+from assethandling.basemodels import ExcelOptions, FolderTabInput, UtilTabInput, RawTabStandardInput, SheetConfig
 from ui import thread_worker as tw
 
 ROOT = "../TestDateien"
@@ -33,9 +34,9 @@ def get_raw_input():
         "raw_material_folder": root / "Rohmaterial",  # TODO good??
         "first_folder_date": datetime(2023, 7, 26),
         "excel_option": ExcelOptions.EXISTING,
-        "video_columns":  settings["standard-video-columns"],
-        "picture_columns":  settings["standard-picture-columns"],
-        "excel_file_name":  f"Zeltlagerfilm {datetime.now().date().year}.xlsx",
+        "video_columns": settings["standard-video-columns"],
+        "picture_columns": settings["standard-picture-columns"],
+        "excel_file_name": f"Zeltlagerfilm {datetime.now().date().year}.xlsx",
         "excel_folder": root,
         "excel_full_filepath": root / f"Zeltlagerfilm {datetime.now().date().year}.xlsx",
         "picture_folder": root
@@ -44,14 +45,9 @@ def get_raw_input():
 
 
 def process_raw(inputs: RawTabStandardInput):
-    # TODO implementation
     wk = tw.Worker()
     try:
-        valid, errors = validation.validate_raw()
-        # i excel don't exist create
-        pass
-        # validate inputs
-        # check Excel methods -> if not exists create with setting
+        validate_and_prepare(inputs=inputs) # TODO implementation
     except Exception as e:
         print(str(e))
         return
@@ -74,7 +70,6 @@ def process_raw(inputs: RawTabStandardInput):
         except Exception as e:
             print(str(e))
     if inputs.fill_excel:
-        # TODO make sure execl exists or is created if not exists
         try:
             result = raw_material.fill_excel(excel=inputs.excel_full_filepath,
                                              raw_material_folder=inputs.raw_material_folder)
@@ -83,11 +78,73 @@ def process_raw(inputs: RawTabStandardInput):
             print(str(e))
     if inputs.create_picture_folder:
         try:
-            pass
+            result = raw_material.create_picture_folder(picture_folder=inputs.picture_folder,
+                                                        raw_material_folder=inputs.raw_material_folder)
+            print(result)
         except Exception as e:
             print(str(e))
 
     print("BlaBla: raw gesamt fertig")
+
+
+def validate_and_prepare(inputs: RawTabStandardInput):
+    # TODO clean up excel creation
+    # check if all is validated
+    # add in complete process
+    # add gui connection
+    errors = []
+    if not inputs.raw_material_folder.exists():
+        errors.append("Bitte einen validen Pfad zum Rohmaterial angeben.")
+
+    if inputs.fill_excel:
+        if inputs.excel_option == ExcelOptions.EXISTING:
+            # check exists, check is empty
+            # res = validate_excel_file(excel)  # Todo use
+            pass
+        else:
+            create_excel(file_name=inputs.excel_config.excel_file_name,
+                         path=inputs.excel_config.excel_folder,
+                         option=inputs.excel_config.excel_option,
+                         columns=[inputs.excel_config.video_columns, inputs.excel_config.picture_columns],
+                         override=False)
+            # set excel_full_path
+
+    if inputs.create_picture_folder:
+        if not inputs.picture_folder.exists():
+            errors.append("Bitte einen validen Pfad für den Bilderordner angeben.")
+
+    valid, errors = validation.validate_raw(inputs=inputs)  # TODO implement
+    if not valid:
+        raise ValueError('\n'.join(errors))
+    pass
+
+
+def create_excel(file_name: str,
+                 path: Path,
+                 option=ExcelOptions.STANDARD,
+                 columns=None,
+                 override=False):
+    try:
+        if file_name is None or not isinstance(path, Path) or not path.exists():
+            raise AttributeError("Incorrect Input.")
+
+        print("Starte Excel erstellen.")
+        if option == ExcelOptions.STANDARD:
+            sheets: List[SheetConfig] = [SheetConfig(name="Videos", columns=settings["standard-video-columns"]),
+                                         SheetConfig(name="Bilder", columns=settings["standard-picture-columns"])]
+        elif option == ExcelOptions.MANUAL and columns is not None:
+            sheets: List[SheetConfig] = [SheetConfig(name="Videos", columns=columns[0]),
+                                         SheetConfig(name="Bilder", columns=columns[1])]
+        else:
+            print("Called Function with incorrect parameters. \n"
+                                         "Don't call with EXISTING or forget columns for manual.")
+            return
+        create_emtpy_excel(file_name=file_name, folder=path, sheet_configs=sheets, override=override)
+        print("Excel-Datei erfolgreich erstellt")
+    except FileExistsError:
+        print("execl exists")
+    except Exception as e:
+        print(e)
 
 
 def get_util_input():
