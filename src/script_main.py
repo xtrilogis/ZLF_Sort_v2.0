@@ -5,8 +5,6 @@ from pathlib import Path
 from assethandling.asset_manager import settings
 from inputhandling import validation
 from rawmaterial import raw_material
-from rawmaterial.raw_material import rename_files
-from ui.thread_worker import Worker
 from assethandling.basemodels import ExcelOptions, FolderTabInput, UtilTabInput, RawTabStandardInput
 from ui import thread_worker as tw
 
@@ -47,7 +45,7 @@ def get_raw_input():
 
 def process_raw(inputs: RawTabStandardInput):
     # TODO implementation
-    wk = Worker()
+    wk = tw.Worker()
     try:
         valid, errors = validation.validate_raw()
         # i excel don't exist create
@@ -76,9 +74,18 @@ def process_raw(inputs: RawTabStandardInput):
         except Exception as e:
             print(str(e))
     if inputs.fill_excel:
-        pass
+        # TODO make sure execl exists or is created if not exists
+        try:
+            result = raw_material.fill_excel(excel=inputs.excel_full_filepath,
+                                             raw_material_folder=inputs.raw_material_folder)
+            print(result)
+        except Exception as e:
+            print(str(e))
     if inputs.create_picture_folder:
-        pass
+        try:
+            pass
+        except Exception as e:
+            print(str(e))
 
     print("BlaBla: raw gesamt fertig")
 
@@ -107,7 +114,7 @@ def get_util_input():
 
 
 def process_util(inputs: UtilTabInput):
-    wk = Worker()
+    wk = tw.Worker()
     try:
         sheets = wk._validate_and_prepare(raw_material_folder=inputs.raw_material_folder,
                                           excel_full_filepath=inputs.excel_full_filepath)
@@ -141,7 +148,7 @@ def process_util(inputs: UtilTabInput):
 
 
 def stats():
-    wk = Worker()
+    wk = tw.Worker()
     wk.run_statistics()
 
 
@@ -150,3 +157,5 @@ if __name__ == "__main__":
     # process_raw()
     # process_util(get_util_input())
     print("")
+    # print(fill_excel(Path("D:/Users/Wisdom/Lernen/Coding_Python/TestDateien/Zeltlagerfilm 2022.xlsx"),
+    #                  Path("D:/Users/Wisdom/Lernen/Coding_Python/TestDateien/")))
