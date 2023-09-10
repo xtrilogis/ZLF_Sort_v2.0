@@ -10,8 +10,7 @@ from pydantic import ValidationError
 from assethandling.basemodels import File, FileType
 from assets import constants
 from excel.excelmethods import load_sheets_as_df, save_sheets_to_excel
-from fileopertations.filemethods import get_file_type, copy_file, get_file_captured_date, _get_video_captured_date, \
-    _get_image_captured_date
+from fileopertations.filemethods import get_file_type, copy_file, get_file_captured_date, rename_files
 from inputhandling.validation import validate_excel_file
 
 locale.setlocale(locale.LC_TIME, 'de_DE.utf8')
@@ -110,7 +109,7 @@ def run_rename(raw_material_folder: Path) -> List[str]:
                 _add_file_object(file=child, all_files=all_files, errors=errors)
             all_files.sort(key=lambda x: x.date, reverse=False)
 
-            _rename_files(folder=element, all_files=all_files, errors=errors)
+            rename_files(folder=element, all_files=all_files, errors=errors)
     return errors
 
 
@@ -123,50 +122,38 @@ def _is_folder_with_material(path: Path) -> bool:
     return False
 
 
-# Move to filemethods?
-def _rename_files(folder: Path, all_files: List[File], errors: List[str]):
-    length = 3 if len(all_files) < 999 else 4
-
-    do = ("sonstiges" in folder.parent.name.lower() or
-          "sonstiges" in folder.parent.parent.name.lower())
-    for index, file in enumerate(all_files):
-        try:
-            name = "Sonstiges" if do else file.date.strftime('%m_%d_%a')
-            new_filepath = file.full_path.with_name(
-                name=f"{name}-{format(index + 1).zfill(length)}{file.full_path.suffix}")
-            file.full_path.rename(new_filepath)
-        except (FileNotFoundError, FileExistsError, WindowsError) as e:
-            errors.append(f"{file.full_path.name}, Fehler: {type(e).__name__}")
-
-
 def fill_excel(excel: Path, raw_material_folder: Path) -> List[str]:
     errors: List[str] = []
-    # Todo clean up
-    sheets = load_sheets_as_df(excel)
+    sheets: Dict[str, pd.DataFrame] = load_sheets_as_df(excel)
     if not sheets["Videos"].empty or not sheets["Bilder"].empty:
         raise ValueError("Die Excel enthält bereits Daten.")
-    for element in raw_material_folder.glob('**/*'):
-        picture_folder_written = False
-        video_folder_written = False
-        if _is_folder_with_material(element):
-            for child in element.iterdir():
-                try:
-                    if child.suffix.upper() in constants.video_extensions:
-                        if not video_folder_written:
-                            sheets["Videos"].loc[len(sheets["Videos"]), "Datei"] = element.name
-                            video_folder_written = True
-                        sheets["Videos"].loc[len(sheets["Videos"]), "Datei"] = child.name
 
-                    if child.suffix.upper() in constants.image_extensions:
-                        if not picture_folder_written:
-                            sheets["Bilder"].loc[len(sheets["Bilder"]), "Datei"] = element.name
-                            picture_folder_written = True
-                        sheets["Bilder"].loc[len(sheets["Bilder"]), "Datei"] = child.name
-                except IndexError as e:
-                    errors.append(child.name)
+    for element in raw_material_folder.glob('**/*'):
+        if _is_folder_with_material(element):
+            _add_child_files(folder=element, sheets=sheets, errors=errors)
 
     save_sheets_to_excel(sheets=sheets, path=excel)
     return errors
+
+
+def _add_child_files(folder: Path, sheets: Dict[str, pd.DataFrame], errors: List[str]):
+    picture_folder_written = False
+    video_folder_written = False
+    for child in folder.iterdir():
+        try:
+            if child.suffix.upper() in constants.video_extensions:
+                if not video_folder_written:
+                    sheets["Videos"].loc[len(sheets["Videos"]), "Datei"] = folder.name
+                    video_folder_written = True
+                sheets["Videos"].loc[len(sheets["Videos"]), "Datei"] = child.name
+
+            if child.suffix.upper() in constants.image_extensions:
+                if not picture_folder_written:
+                    sheets["Bilder"].loc[len(sheets["Bilder"]), "Datei"] = folder.name
+                    picture_folder_written = True
+                sheets["Bilder"].loc[len(sheets["Bilder"]), "Datei"] = child.name
+        except IndexError as e:
+            errors.append(child.name)
 
 
 def create_picture_folder(picture_folder: Path, raw_material_folder: Path) -> List[str]:

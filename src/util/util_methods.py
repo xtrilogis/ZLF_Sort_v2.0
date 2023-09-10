@@ -24,9 +24,9 @@ def _append_file_paths_to_df(sheets: Dict[str, pd.DataFrame], raw_material_path:
     sheets["Bilder"]["Dateipfad"] = pd.Series(dtype='str')
     for element in raw_material_path.glob('**/*'):
         if element.is_file():
-            if element.suffix in constants.video_extensions:
+            if element.suffix.upper() in constants.video_extensions:
                 df = sheets["Videos"]
-            elif element.suffix in constants.image_extensions:
+            elif element.suffix.upper() in constants.image_extensions:
                 df = sheets["Bilder"]
             else:
                 continue

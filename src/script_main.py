@@ -102,6 +102,7 @@ def validate_and_prepare(inputs: RawTabStandardInput):
             # res = validate_excel_file(excel)  # Todo use
             pass
         else:
+            # TODO cleaner
             create_excel(file_name=inputs.excel_config.excel_file_name,
                          path=inputs.excel_config.excel_folder,
                          option=inputs.excel_config.excel_option,
@@ -116,7 +117,7 @@ def validate_and_prepare(inputs: RawTabStandardInput):
     valid, errors = validation.validate_raw(inputs=inputs)  # TODO implement
     if not valid:
         raise ValueError('\n'.join(errors))
-    pass
+    return errors
 
 
 def create_excel(file_name: str,

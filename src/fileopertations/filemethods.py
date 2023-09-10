@@ -3,13 +3,13 @@ import shutil
 import os
 from pathlib import Path
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 
 import PIL.Image
 from hachoir.parser import createParser
 from hachoir.metadata import extractMetadata
 
-from assethandling.basemodels import FileType
+from assethandling.basemodels import FileType, File
 from assets import constants
 
 
@@ -25,6 +25,21 @@ def copy_file(src_file: Path, dst_folder: Path):
         counter += 1
     shutil.copy(src=src_file, dst=file_dst)
     # return new location
+
+
+def rename_files(folder: Path, all_files: List[File], errors: List[str]):
+    length = 3 if len(all_files) < 999 else 4
+
+    do = ("sonstiges" in folder.parent.name.lower() or
+          "sonstiges" in folder.parent.parent.name.lower())
+    for index, file in enumerate(all_files):
+        try:
+            name = "Sonstiges" if do else file.date.strftime('%m_%d_%a')
+            new_filepath = file.full_path.with_name(
+                name=f"{name}-{format(index + 1).zfill(length)}{file.full_path.suffix}")
+            file.full_path.rename(new_filepath)
+        except (FileNotFoundError, FileExistsError, WindowsError) as e:
+            errors.append(f"{file.full_path.name}, Fehler: {type(e).__name__}")
 
 
 def get_file_type(file: Path) -> FileType:
