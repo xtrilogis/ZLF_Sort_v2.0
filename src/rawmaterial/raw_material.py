@@ -1,5 +1,4 @@
 import locale
-import os
 from pathlib import Path
 from datetime import datetime, timedelta, date
 from typing import List, Dict
@@ -11,7 +10,6 @@ from assethandling.basemodels import File, FileType
 from assets import constants
 from excel.excelmethods import load_sheets_as_df, save_sheets_to_excel
 from fileopertations.filemethods import get_file_type, copy_file, get_file_captured_date, rename_files
-from inputhandling.validation import validate_excel_file
 
 locale.setlocale(locale.LC_TIME, 'de_DE.utf8')
 

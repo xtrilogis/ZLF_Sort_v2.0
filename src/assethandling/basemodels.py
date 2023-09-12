@@ -27,7 +27,7 @@ class FolderTabInput(BaseModel):
 
 class ExcelInput(BaseModel):
     excel_folder: Path | None
-    excel_file_name: str = f"Zeltlagerfilm {datetime.now().date().year}.xlsx"  # TODO in settings speichern
+    excel_file_name: str = f"Zeltlagerfilm {datetime.now().date().year}.xlsx"
     video_columns: List[str] = settings["standard-video-columns"]
     picture_columns: List[str] = settings["standard-picture-columns"]
 

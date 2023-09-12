@@ -3,7 +3,6 @@
 from PyQt5.QtWidgets import QApplication, QPlainTextEdit
 import sys
 
-from assets import constants
 from excel import excelmethods
 from inputhandling import validation
 from ui.first_draft import Ui_MainWindow
@@ -16,8 +15,7 @@ from PyQt5.QtWidgets import QMainWindow, QFileDialog, QLineEdit, QDialog
 from PyQt5.QtCore import QThread, pyqtSlot, QDate
 
 from assethandling.asset_manager import settings
-from assethandling.basemodels import ExcelOptions, FolderTabInput, RawTabStandardInput, UtilTabInput, ExcelConfig, \
-    ExcelInput
+from assethandling.basemodels import ExcelOptions, FolderTabInput, UtilTabInput, ExcelInput, RawTabInput
 from ui.dialogs.selection_dialog import SelectionDialog
 from ui.thread_worker import Worker
 from ui.popups import messageboxes
@@ -86,6 +84,8 @@ class MainWindow(QMainWindow):
 
         self.worker.new_message_raw.connect(self.write_process_raw)
         self.worker.excel_exits_error.connect(self.open_excel_exists)
+        self.worker.excel_exits_in_process_error.connect(self.open_excel_in_process_exists)
+        self.worker.excel_created.connect(self.continue_processing_raw)
 
         self.worker.new_message_excel.connect(self.write_process_util)
         self.thread.start()
@@ -98,7 +98,7 @@ class MainWindow(QMainWindow):
         # ##### BUTTONS "Rohmaterial verarbeiten" ##### #
         self.ui.rawpath_folder_tb_2.clicked.connect(
             lambda: self.show_filedialog_raw_material_path(self.ui.rawpath_drop_2))
-        self.ui.execute_raw_pB.clicked.connect(self.process_raw_full)
+        self.ui.execute_raw_pB.clicked.connect(self.start_raw_process)
 
         self.ui.correct_fs.clicked.connect(self.correct_structure)
         self.ui.pushButton_7.clicked.connect(self.rename_files)
@@ -193,6 +193,13 @@ class MainWindow(QMainWindow):
         msg.exec()
 
     @pyqtSlot()
+    def open_excel_in_process_exists(self):
+        """Opens a message box displaying a given error"""
+        msg = messageboxes.excel_exists("Die angegebene Excel-Datei existiert bereits.")
+        msg.buttonClicked.connect(self.handle_excel_choice)
+        msg.exec()
+
+    @pyqtSlot()
     def process_finished(self):
         self.enable_work_buttons()
 
@@ -232,41 +239,117 @@ class MainWindow(QMainWindow):
             self.open_problem_input(msg=str(e))
 
     # ##### PART II: Raw Material / 'Rohmaterial verarbeiten' ##### #
+    # TODO Verbessern wie inputs gehandhabt werden, damit bei ui Änderungen nicht alles abgelesen werden muss
+        # z.B. handle input, dass alles macht?
     # ### Button Methods ### #
-    def process_raw_full(self):
-        # TODO implementation
+
+    def get_raw_input(self, excel_file_fullpath: Path) -> RawTabInput:
+        # TODO Testing
+        # Optional inputs like picture_folder besser handle
+        data = {
+            "do_structure": self.ui.structur_cB.isChecked(),
+            "do_rename": self.ui.rename_cB.isChecked(),
+            "fill_excel": self.ui.fill_excel_cB.isChecked(),
+            "create_picture_folder": self.ui.diashow_cB.isChecked(),
+            "raw_material_folder": Path(self.ui.rawpath_drop_2.text()),
+            "first_folder_date": self.ui.dateEdit_2.date().toPyDate(),
+            "excel_full_filepath": excel_file_fullpath,
+        }
+        if self.ui.groupBox_2.isChecked():
+            if self.ui.picture_drop.text() == "":
+                raise ValueError("Bitte gib einen Speicherort für den Bilderordner an.")
+            data["picture_folder"] = Path(self.ui.picture_drop.text())
+        else:
+            data["picture_folder"] = data["raw_material_folder"].parent
+
+        return RawTabInput(**data)
+
+    def start_raw_process(self, override=False):
+        # TODO Testing
+        if self.ui.rawpath_drop_2.text() == "":
+            raise ValueError("Bitte gib den Pfad zum Rohmaterialordner an.")
+        excel_option: ExcelOptions = ExcelOptions(self.ui.comboBox.currentText())
+        if excel_option == ExcelOptions.EXISTING:
+            self.continue_processing_raw(excel_file_fullpath=Path(self.ui.excelpath_drop_2.text()))
+        else:
+            try:
+                config: ExcelInput = self._get_excel_input()
+                self.worker.create_excel_in_process(conf=config, override=override)
+            except Exception as e:
+                self.open_problem_input(str(e))
+
+    def continue_processing_raw(self, excel_file_fullpath):
+        # TODO Testing
         try:
-            data = self.get_raw_inputs()
-            print(data.model_dump_json(indent=4))
+            info = self.get_raw_input(excel_file_fullpath=excel_file_fullpath)
+            self.worker.run_raw_full(inputs=info)
         except ValidationError as e:
             self.open_problem_input(error=str(e))
-        except ValueError as e:
+        except Exception as e:
             self.open_problem_input(error=str(e))
 
     def correct_structure(self):
-        # TODO implementation
-        # get input
-        # self.worker.correct_file_structure(path="")
-        pass
+        # TODO Testing
+        try:
+            self.worker.run_correct_file_structure(path=Path(self.ui.rawpath_drop_2.text()),
+                                                   start=self.ui.dateEdit_2.date().toPyDate())
+        except (ValidationError, ValueError) as e:
+            self.open_problem_input(error=str(e))
 
     def rename_files(self):
-        # TODO implementations
-        pass
+        # TODO Testing
+        try:
+            self.worker.rename_files(path=Path(self.ui.rawpath_drop_2.text()))
+        except (ValidationError, ValueError) as e:
+            self.open_problem_input(error=str(e))
 
     def create_excel_file(self, override=False):
+
+        try:
+            config: ExcelInput = self._get_excel_input()
+            self.worker.create_excel_normal(conf=config, override=override)
+        except Exception as e:
+            self.open_problem_input(str(e))
+
+    def fill_excel(self):
+        # TODO implementation
+        # je nach Option excel erstellen
+        try:
+            self.worker.fill_excel(raw=Path(self.ui.rawpath_drop_2.text()),
+                                   excel=Path(self.ui.rawpath_drop_2.text()))
+        except (ValidationError, ValueError) as e:
+            self.open_problem_input(error=str(e))
+
+    def create_picture_folder(self):
         # TODO Testing
+        try:
+            self.worker.create_picture_folder(raw=Path(self.ui.rawpath_drop_2.text()),
+                                              folder=Path(self.ui.rawpath_drop_2.text()).parent)  # TODO
+        except (ValidationError, ValueError) as e:
+            self.open_problem_input(error=str(e))
+
+    def show_suggestions(self, text_edit: QPlainTextEdit, suggestions: List[str]):
+        dial = SelectionDialog("Spaltenvorschläge", "Spalten", suggestions, self)
+        if dial.exec_() == QDialog.Accepted:
+            select: List[str] = dial.itemsSelected()
+            previous_columns: List[str] = self.get_PlainTextEdit_parts(text_edit)
+            previous_columns.extend(select)
+            text = ", ".join(previous_columns)
+            text_edit.setPlainText(text)
+
+    def _get_excel_input(self) -> ExcelInput:
         text = self.ui.comboBox.currentText()
         if text != ExcelOptions.STANDARD.value or text != ExcelOptions.MANUAL.value:
             error = "Interner Fehler, der Button 'Excel erstellen'\n" \
                     "sollte nicht klickbar sein mit der Option \n" \
                     "vorhandene Excel nutzen. Neustarten."
-            self.open_problem_input(error=error)
+            raise ValueError(error)
         elif self.ui.excel_folder_drop_4.text() == "":
             error = "Bitte gib einen Speicherort für die Excel-Datei an.\n" \
                     "Dazu kannst du bei 'Excel-Datei' einen Ordner \n" \
                     "angeben oder für den Standardweg den Rohmaterialorder \nangeben." \
                     "Für Standards schau dir doch gerne die Anleitung an."
-            self.open_problem_input(error=error)
+            raise ValueError(error)
         else:
             if text == ExcelOptions.MANUAL.value:
                 config = ExcelInput(
@@ -279,76 +362,15 @@ class MainWindow(QMainWindow):
                 config = ExcelInput(
                     excel_folder=Path(self.ui.excel_folder_drop_4.text())
                 )
-            self.worker.create_excel(conf=config, override=override)
+            return config
 
     def handle_excel_choice(self, i):
         if "Überschreiben" in i.text():
             self.create_excel_file(override=True)
 
-    def fill_excel(self):
-        # TODO implementation
-        # self.worker.fill_excel()
-        # if mode == existing nur auslesen sonst, raw mat input
-        pass
-
-    def create_picture_folder(self):
-        # TODO implementation
-        # lambda: self.worker.create_picture_folder()  # TODO
-        pass
-
-    def show_suggestions(self, text_edit: QPlainTextEdit, suggestions: List[str]):
-        dial = SelectionDialog("Spaltenvorschläge", "Spalten", suggestions, self)
-        if dial.exec_() == QDialog.Accepted:
-            select: List[str] = dial.itemsSelected()
-            previous_columns: List[str] = self.get_PlainTextEdit_parts(text_edit)
-            previous_columns.extend(select)
-            text = ", ".join(previous_columns)
-            text_edit.setPlainText(text)
-
-    # ### Helper Methods ### #
-    def get_excel_config(self) -> ExcelConfig:
-        data = {}
-
-        return ExcelConfig(**data)
-
-    def get_raw_inputs(self):
-        # Optional inputs like picture_folder besser handle
-        if self.ui.rawpath_drop_2.text() == "":  # außer bei create excel
-            raise ValueError("Bitte gib den Pfad zum Rohmaterialordner an.")
-        excel_option: ExcelOptions = ExcelOptions(self.ui.comboBox.currentText())
-        data = {
-            "do_structure": self.ui.structur_cB.isChecked(),
-            "do_rename": self.ui.rename_cB.isChecked(),
-            "fill_excel": self.ui.fill_excel_cB.isChecked(),
-            "create_picture_folder": self.ui.diashow_cB.isChecked(),
-            "raw_material_folder": Path(self.ui.rawpath_drop_2.text()),
-            "excel_option": excel_option,
-            "excel_full_filepath": None
-        }
-        if excel_option == ExcelOptions.EXISTING:
-            data['excel_full_filepath'] = Path(self.ui.excelpath_drop_2.text())
-            data["excel_folder"] = data.get('excel_full_filepath').parent
-        elif excel_option == ExcelOptions.MANUAL:
-            if self.ui.excel_folder_drop_4.text() == "":
-                raise ValueError("Bitte gib einen Speicherort für die Excel-Datei an.")
-            data["excel_folder"]: Path = Path(self.ui.excel_folder_drop_4.text())
-            data["excel_file_name"]: str = self.ui.lineEdit.text()
-            data["video_columns"]: List[str] = self.get_LineEdit_parts(self.ui.vid_columns)
-            data["picture_columns"]: List[str] = self.get_LineEdit_parts(self.ui.pic_columns)
-        else:
-            data["excel_folder"]: Path = data["raw_material_folder"].parent
-
-        if self.ui.groupBox_2.isChecked():
-            if self.ui.picture_drop.text() == "":
-                raise ValueError("Bitte gib einen Speicherort für den Bilderordner an.")
-            data["picture_folder"] = Path(self.ui.picture_drop.text())
-        else:
-            data["picture_folder"] = data["raw_material_folder"].parent
-
-        info = RawTabStandardInput(**data)
-        if info.excel_full_filepath is None:
-            info.excel_full_filepath = info.excel_folder / info.excel_file_name
-        return info
+    def handle_excel_in_process_choice(self, i):
+        if "Überschreiben" in i.text():
+            self.start_raw_process(override=True)
 
     # ##### PART III: Util / '' ##### #
     def create_sections(self):
