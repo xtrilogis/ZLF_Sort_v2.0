@@ -8,6 +8,9 @@ from assets import constants
 from excel import excelmethods
 
 
+def validate_folder(element: Path) -> bool:
+    return element.exists() and element.is_dir()
+
 
 def validate_setup_path(path: Path):
     """Validates input for setting up the folders

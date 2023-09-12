@@ -16,7 +16,8 @@ from PyQt5.QtWidgets import QMainWindow, QFileDialog, QLineEdit, QDialog
 from PyQt5.QtCore import QThread, pyqtSlot, QDate
 
 from assethandling.asset_manager import settings
-from assethandling.basemodels import ExcelOptions, FolderTabInput, RawTabStandardInput, UtilTabInput
+from assethandling.basemodels import ExcelOptions, FolderTabInput, RawTabStandardInput, UtilTabInput, ExcelConfig, \
+    ExcelInput
 from ui.dialogs.selection_dialog import SelectionDialog
 from ui.thread_worker import Worker
 from ui.popups import messageboxes
@@ -255,30 +256,30 @@ class MainWindow(QMainWindow):
     def create_excel_file(self, override=False):
         # TODO Testing
         text = self.ui.comboBox.currentText()
-        if text == ExcelOptions.EXISTING.value:
-            # set marker
-            pass
+        if text != ExcelOptions.STANDARD.value or text != ExcelOptions.MANUAL.value:
+            error = "Interner Fehler, der Button 'Excel erstellen'\n" \
+                    "sollte nicht klickbar sein mit der Option \n" \
+                    "vorhandene Excel nutzen. Neustarten."
+            self.open_problem_input(error=error)
+        elif self.ui.excel_folder_drop_4.text() == "":
+            error = "Bitte gib einen Speicherort für die Excel-Datei an.\n" \
+                    "Dazu kannst du bei 'Excel-Datei' einen Ordner \n" \
+                    "angeben oder für den Standardweg den Rohmaterialorder \nangeben." \
+                    "Für Standards schau dir doch gerne die Anleitung an."
+            self.open_problem_input(error=error)
         else:
-            if self.ui.excel_folder_drop_4.text() == "":
-                error = "Bitte gib einen Speicherort für die Excel-Datei an.\n" \
-                        "Dazu kannst du bei 'Excel-Datei' einen Ordner \n" \
-                        "angeben oder für den Standardweg den Rohmaterialorder \nangeben." \
-                        "Für Standards schau dir doch gerne die Anleitung an."
-                msg = messageboxes.problem_with_input(error)
-                msg.exec()
-            file_name = self.ui.lineEdit.text()
-            path = Path(self.ui.excel_folder_drop_4.text())
-            if text == ExcelOptions.STANDARD.value:
-                self.worker.create_excel(file_name=file_name, path=path, override=override)
+            if text == ExcelOptions.MANUAL.value:
+                config = ExcelInput(
+                    excel_folder=Path(self.ui.excel_folder_drop_4.text()),
+                    excel_file_name=self.ui.lineEdit.text(),
+                    video_columns=self.ui.vid_columns.text().split(", "),
+                    picture_columns=self.ui.pic_columns.text().split(", ")
+                )
             else:
-                self.worker.create_excel(file_name=file_name,
-                                         path=path,
-                                         option=ExcelOptions.MANUAL,
-                                         columns=[
-                                             self.ui.vid_columns.text().split(", "),
-                                             self.ui.pic_columns.text().split(", ")
-                                         ],
-                                         override=override)
+                config = ExcelInput(
+                    excel_folder=Path(self.ui.excel_folder_drop_4.text())
+                )
+            self.worker.create_excel(conf=config, override=override)
 
     def handle_excel_choice(self, i):
         if "Überschreiben" in i.text():
@@ -305,9 +306,14 @@ class MainWindow(QMainWindow):
             text_edit.setPlainText(text)
 
     # ### Helper Methods ### #
+    def get_excel_config(self) -> ExcelConfig:
+        data = {}
+
+        return ExcelConfig(**data)
+
     def get_raw_inputs(self):
         # Optional inputs like picture_folder besser handle
-        if self.ui.rawpath_drop_2.text() == "":
+        if self.ui.rawpath_drop_2.text() == "":  # außer bei create excel
             raise ValueError("Bitte gib den Pfad zum Rohmaterialordner an.")
         excel_option: ExcelOptions = ExcelOptions(self.ui.comboBox.currentText())
         data = {

@@ -25,23 +25,27 @@ class FolderTabInput(BaseModel):
     date: datetime
 
 
-class ExcelConfig(BaseModel):
-    excel_option: ExcelOptions
+class ExcelInput(BaseModel):
+    excel_folder: Path | None
+    excel_file_name: str = f"Zeltlagerfilm {datetime.now().date().year}.xlsx"  # TODO in settings speichern
     video_columns: List[str] = settings["standard-video-columns"]
     picture_columns: List[str] = settings["standard-picture-columns"]
+
+
+class ExcelConfig(BaseModel):
+    excel_folder: Path
     excel_file_name: str = f"Zeltlagerfilm {datetime.now().date().year}.xlsx"
-    excel_folder: Path | None
-    excel_full_filepath: Path | None
+    sheets: List[SheetConfig]
 
 
-class RawTabStandardInput(BaseModel):
+class RawTabInput(BaseModel):
     do_structure: bool
     do_rename: bool
     fill_excel: bool
     create_picture_folder: bool
     raw_material_folder: Path
     first_folder_date: datetime
-    excel_config: ExcelConfig
+    excel_file_fullpath: Path
     picture_folder: Path
 
 

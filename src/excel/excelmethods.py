@@ -5,28 +5,27 @@ from typing import List, Dict
 import pandas as pd
 from pandas import DataFrame
 
-from assethandling.basemodels import SheetConfig
+from assethandling.basemodels import SheetConfig, ExcelConfig
 
 
-def create_emtpy_excel(file_name: str, folder: Path, sheet_configs: List[SheetConfig], override=False):
+def create_emtpy_excel(config: ExcelConfig, override=False) -> Path:
     """Creates a new Excel file, at the given path, with the given sheets
+    :param config:
     :raise FileExistsError, if the there already is a file with the same name
-    :param file_name:
-    :param folder: folder where Excel should be saved
-    :param sheet_configs:
     :param override:
-    :return:
+    :return: path to new created
     """
-    if ".xlsx" not in file_name:
-        file_name += ".xlsx"
-    full_excel_path = folder / file_name
+    if ".xlsx" not in config.excel_file_name:
+        config.excel_file_name += ".xlsx"
+    full_excel_path = config.excel_folder / config.excel_file_name
     if full_excel_path.exists() and not override:
         raise FileExistsError
     else:
         sheets: Dict[str, DataFrame] = {}
-        for sheet in sheet_configs:
+        for sheet in config.sheets:
             sheets[sheet.name] = pd.DataFrame(columns=sheet.columns)
         save_sheets_to_excel(sheets=sheets, path=full_excel_path)
+    return full_excel_path
 
 
 def save_sheets_to_excel(sheets: Dict[str, DataFrame], path: Path):

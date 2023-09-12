@@ -8,9 +8,10 @@ from assethandling.asset_manager import settings
 from inputhandling import validation
 from foldersetup import folder_setup
 from excel.excelmethods import create_emtpy_excel
-from assethandling.basemodels import ExcelOptions, SheetConfig, FolderTabInput, UtilTabInput
+from assethandling.basemodels import ExcelOptions, SheetConfig, FolderTabInput, UtilTabInput, ExcelConfig, ExcelInput
 from stats import statistics
 from util import util_methods as eval
+from inputhandling.validation import validate_folder
 
 
 class Worker(QThread):
@@ -53,31 +54,23 @@ class Worker(QThread):
         pass
 
     @pyqtSlot()
-    def create_excel(self, file_name: str,
-                     path: Path,
-                     option=ExcelOptions.STANDARD,
-                     columns=None,
-                     override=False):
+    def create_excel(self, input_: ExcelInput, override=False):
         try:
-            if file_name is None or not isinstance(path, Path) or not path.exists():
+            if not validate_folder(input_.excel_folder):
                 raise AttributeError("Incorrect Input.")
+
             self.new_message_raw.emit("Starte Excel erstellen.")
-            if option == ExcelOptions.STANDARD:
-                sheets: List[SheetConfig] = [SheetConfig(name="Videos", columns=settings["standard-video-columns"]),
-                                             SheetConfig(name="Bilder", columns=settings["standard-picture-columns"])]
-            elif option == ExcelOptions.MANUAL and columns is not None:
-                sheets: List[SheetConfig] = [SheetConfig(name="Videos", columns=columns[0]),
-                                             SheetConfig(name="Bilder", columns=columns[1])]
-            else:
-                self.problem_with_input.emit("Called Function with incorrect parameters. \n"
-                                             "Don't call with EXISTING or forget columns for manual.")
-                return
-            create_emtpy_excel(file_name=file_name, path=path, sheets=sheets, override=override)
+            config = ExcelConfig(
+                excel_folder=input_.excel_folder,
+                excel_file_name=input_.excel_file_name,
+                sheets=[SheetConfig(name="Videos", columns=input_.video_columns),
+                        SheetConfig(name="Bilder", columns=input_.picture_columns)]
+            )
+            create_emtpy_excel(config=config, override=override)
             self.new_message_raw.emit("Excel-Datei erfolgreich erstellt")
         except FileExistsError:
             self.excel_exits_error.emit()
         except Exception as e:
-            print(e)
             self.problem_with_input.emit(str(e))
 
     @pyqtSlot()
