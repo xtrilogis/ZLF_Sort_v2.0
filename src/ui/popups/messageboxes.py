@@ -93,7 +93,6 @@ def handle_problem_mc():
 
 def excel_exists(message):
     """Creates a basic Messagebox with Information Icon and one "ok" button
-    :arg title is set as the window title
     :arg message is set as the main text"""
     msg = QMessageBox()
     msg.setWindowTitle("Datei existiert")

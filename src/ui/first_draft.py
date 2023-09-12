@@ -464,6 +464,9 @@ class Ui_MainWindow(object):
         item_1 = QtWidgets.QTreeWidgetItem(item_0)
         self.horizontalLayout_12.addWidget(self.example_fs)
         self.verticalLayout_17.addWidget(self.frame_23)
+        self.dateEdit_2 = QtWidgets.QDateEdit(self.folder_structure)
+        self.dateEdit_2.setObjectName("dateEdit_2")
+        self.verticalLayout_17.addWidget(self.dateEdit_2)
         self.frame_24 = QtWidgets.QFrame(self.folder_structure)
         self.frame_24.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.frame_24.setFrameShadow(QtWidgets.QFrame.Raised)
@@ -1566,7 +1569,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(1)
-        self.tabWidget_raw.setCurrentIndex(3)
+        self.tabWidget_raw.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):

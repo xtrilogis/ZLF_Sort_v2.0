@@ -1,7 +1,5 @@
 from os import path
-from PyQt5 import QtWidgets, QtCore, QtGui
-from PyQt5.QtGui import QStandardItemModel, QStandardItem
-from PyQt5.QtWidgets import QMessageBox, QDialog, QFormLayout, QLabel, QListView, QDialogButtonBox
+from PyQt5 import QtWidgets
 
 
 class DropLineEditExcel(QtWidgets.QLineEdit):
