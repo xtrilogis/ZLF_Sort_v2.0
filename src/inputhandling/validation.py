@@ -6,7 +6,7 @@ import pandas as pd
 
 from assethandling.basemodels import RawTabInput
 from assets import constants
-from excel import excelmethods
+from excel.excelmethods import load_sheets_as_df
 
 
 def is_valid_folder(element: Path) -> bool:
@@ -18,7 +18,7 @@ def validate_excel_file(excel_file: Path) -> List[str]:
         return ["Bitte gültige Excel angeben."]
     errors: List[str] = []
     try:
-        sheets = excelmethods.load_sheets_as_df(excel_file)
+        sheets = load_sheets_as_df(excel_file)
         if "Videos" not in sheets.keys():
             errors.append("Excel Mappe 'Videos' fehlt.")
         if "Bilder" not in sheets.keys():
