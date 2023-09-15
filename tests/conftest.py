@@ -1,11 +1,23 @@
 from datetime import datetime
 from pathlib import Path
+import locale
 
 from pytest import fixture
 from assethandling.basemodels import RawTabInput
 
 
 ROOT = Path.cwd() / "testData"
+locale.setlocale(locale.LC_TIME, 'de_DE.utf8')
+
+
+@fixture()
+def testdata_path():
+    return ROOT
+
+
+@fixture()
+def dummy_file():
+    return ROOT / "dummy_file.txt"
 
 
 @fixture()

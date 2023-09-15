@@ -1,6 +1,6 @@
 import filecmp
 import shutil
-import os
+from os.path import getmtime
 from pathlib import Path
 from datetime import datetime
 from typing import Optional, List
@@ -21,6 +21,7 @@ def create_folder(parent: Path, folder: str) -> Path:
 
 
 def copy_file(src_file: Path, dst_folder: Path):
+    """ does nothing if the file would be copied to its location"""
     if not dst_folder.exists():
         dst_folder.mkdir(parents=True)
     file_dst: Path = dst_folder / src_file.name
@@ -67,7 +68,7 @@ def get_file_captured_date(file: Path, file_type) -> datetime:
             captured_date: Optional[datetime] = _get_video_captured_date(file)
     finally:
         if captured_date is None:
-            captured_date: datetime = datetime.fromtimestamp(os.path.getmtime(str(file)))
+            captured_date: datetime = datetime.fromtimestamp(getmtime(str(file)))
         return captured_date
 
 
