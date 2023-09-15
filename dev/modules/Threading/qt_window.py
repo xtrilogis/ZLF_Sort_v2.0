@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QPushButton, QVBoxLayout, QWidget, QApplication
 from PyQt5 import QtCore
 from PyQt5.QtCore import *
 from PyQt5.QtGui import QMovie
-from qThead_main import Worker
+from qt_worker import Worker
 
 
 class Window(QWidget):
@@ -41,23 +41,25 @@ class Window(QWidget):
 
     def setup_thread_connections(self):
         self.thread = QThread()
-        self.worker = Worker()
+        self.worker = Worker(ui=self)
         self.worker.moveToThread(self.thread)
 
-        self.button.clicked.connect(self.worker.some_process)
-        self.button.clicked.connect(self.movie.start)
+        self.button.clicked.connect(lambda: self.worker.some_process(name="halle"))
+
         self.worker.partial_completion.connect(self.some_process_done)
         self.worker.process_completed.connect(self.process_complete)
 
         self.thread.start()
 
-    @pyqtSlot()
-    def some_process_done(self):
-        self.print_label.setText("Some Process done")
+    def bla(self):
+        self.worker.some_process()
+
+    @pyqtSlot(str)
+    def some_process_done(self, msg):
+        self.print_label.setText(msg)
 
     @pyqtSlot()
     def process_complete(self):
-        self.movie.stop()
         self.print_label.setText("Process complet")
 
 
