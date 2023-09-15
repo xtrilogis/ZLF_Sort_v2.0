@@ -10,7 +10,7 @@ from excel.excelmethods import load_sheets_as_df
 
 
 def is_valid_folder(element: Path) -> bool:
-    return element.exists() and element.is_dir()
+    return element.exists() and element.is_dir() and not element.drive == ""
 
 
 def validate_excel_file(excel_file: Path) -> List[str]:
