@@ -1,7 +1,7 @@
 """Contains all methods for validation input"""
 from datetime import datetime
 from pathlib import Path
-from typing import Tuple, List
+from typing import List
 import pandas as pd
 
 from assethandling.basemodels import RawTabInput
@@ -9,7 +9,7 @@ from assets import constants
 from excel import excelmethods
 
 
-def validate_folder(element: Path) -> bool:
+def is_valid_folder(element: Path) -> bool:
     return element.exists() and element.is_dir()
 
 
@@ -51,22 +51,22 @@ def _validate_sheet(df: pd.DataFrame) -> List[str]:
     return errors
 
 
-def validate_setup_path(path: Path):
+def validate_setup_path(path: Path) -> List[str]:
     """Validates input for setting up the folders
     :arg path
     """
-    if path.exists() and path.is_dir():
+    if is_valid_folder(path):
         if "Rohmaterial" in path.as_uri():
-            return False, "Der Pfad enthält das Wort 'Rohmaterial'.\n" \
-                          "Dies kann später zu Problemen führen.\n" \
-                          "Bitte Ändern!"
-        return True, ""
-    return False, "Der angegebene Pfad ist kein valider Ordnerpfad."
+            return ["Der Pfad enthält das Wort 'Rohmaterial'.\n"
+                    "Dies kann später zu Problemen führen.\n"
+                    "Bitte Ändern!"]
+        return []
+    return ["Der angegebene Pfad ist kein valider Ordnerpfad."]
 
 
-def validate_raw(inputs: RawTabInput):
+def validate_raw(inputs: RawTabInput) -> List[str]:
     errors = []
-    if not validate_folder(inputs.raw_material_folder):
+    if not is_valid_folder(inputs.raw_material_folder):
         errors.append("Bitte einen gültigen Rohmaterialordner angeben.")
     if inputs.do_structure and not isinstance(inputs.first_folder_date, datetime):
         errors.append("Bitte ein gültiges Datum angeben, ab dem die Ordner erstellt werden.")
@@ -77,17 +77,12 @@ def validate_raw(inputs: RawTabInput):
     return errors
 
 
-def validate_util_paths(raw_material_folder: Path, excel_full_filepath: Path) -> Tuple[bool, List[str]]:
+def validate_util_paths(raw_material_folder: Path, excel_full_filepath: Path) -> List[str]:
     errors: List[str] = []
 
-    if not raw_material_folder.exists():
-        errors.append("Bitte gib einen gültigen Rohmaterialordner an.")
-    elif not raw_material_folder.is_dir():
+    if not is_valid_folder(raw_material_folder):
         errors.append("Bitte gib einen gültigen Rohmaterialordner an.")
 
-    if not excel_full_filepath.exists():
-        errors.append("Bitte gib eine gültige Exceldatei an.")
-    else:
-        errors.extend(validate_excel_file(excel_full_filepath))
+    errors.extend(validate_excel_file(excel_full_filepath))
 
-    return len(errors) == 0, errors
+    return errors
