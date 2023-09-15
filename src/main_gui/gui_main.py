@@ -1,24 +1,19 @@
 """Start der App"""
 # print("Python Code Starting")
 from PyQt5.QtWidgets import QApplication, QPlainTextEdit
+from PyQt5.QtWidgets import QMainWindow, QFileDialog, QLineEdit, QDialog
+from PyQt5.QtCore import QThread, pyqtSlot, QDate
 import sys
-
-from excel import excelmethods
-from inputhandling import validation
-from ui.first_draft import Ui_MainWindow
 from datetime import datetime
 from pathlib import Path
 from typing import List
 from pydantic import ValidationError
 
-from PyQt5.QtWidgets import QMainWindow, QFileDialog, QLineEdit, QDialog
-from PyQt5.QtCore import QThread, pyqtSlot, QDate
-
+from excel import excelmethods
+from inputhandling.validation import validate_excel_file
 from assethandling.asset_manager import settings
 from assethandling.basemodels import ExcelOptions, FolderTabInput, UtilTabInput, ExcelInput, RawTabInput
-from ui.dialogs.selection_dialog import SelectionDialog
-from ui.thread_worker import Worker
-from ui.popups import messageboxes
+from ui import Ui_MainWindow, SelectionDialog, Worker, messageboxes
 
 print("Imports done")
 
@@ -92,12 +87,13 @@ class MainWindow(QMainWindow):
 
     def setup_button_connections(self):
         # ##### BUTTONS "Ordner erstellt" ##### #
-        self.ui.harddrive_tb_2.clicked.connect(self.show_filedialog_harddrive_path)
+        self.ui.harddrive_tb_2.clicked.connect(
+            lambda: self.show_filedialog_folder(self.ui.harddrive_drop_2))
         self.ui.folder_start_pb_2.clicked.connect(self.setup_folder_structure_new)
 
         # ##### BUTTONS "Rohmaterial verarbeiten" ##### #
         self.ui.rawpath_folder_tb_2.clicked.connect(
-            lambda: self.show_filedialog_raw_material_path(self.ui.rawpath_drop_2))
+            lambda: self.show_filedialog_folder(self.ui.rawpath_drop_2))
         self.ui.execute_raw_pB.clicked.connect(self.start_raw_process)
 
         self.ui.correct_fs.clicked.connect(self.correct_structure)
@@ -116,19 +112,19 @@ class MainWindow(QMainWindow):
                                           suggestions=settings["suggestions-picture-columns"])
         )
         self.ui.rawpath_folder_tb_4.clicked.connect(
-            lambda: self.show_filedialog_raw_material_path(self.ui.excel_folder_drop_4)
+            lambda: self.show_filedialog_folder(self.ui.excel_folder_drop_4)
         )
         self.ui.excelpath_folder_tb_2.clicked.connect(
             lambda: self.show_filedialog_excel_file_path(self.ui.excelpath_drop_2)
         )
         self.ui.picture_tb.clicked.connect(
-            lambda: self.show_filedialog_raw_material_path(self.ui.picture_drop)
+            lambda: self.show_filedialog_folder(self.ui.picture_drop)
         )
         self.ui.create_picture_folder_pb.clicked.connect(self.create_picture_folder)
 
         # ##### BUTTONS "Auswertung" ##### #
         self.ui.rawpath_folder_tb_3.clicked.connect(
-            lambda: self.show_filedialog_raw_material_path(self.ui.rawpath_drop_3)
+            lambda: self.show_filedialog_folder(self.ui.rawpath_drop_3)
         )
         self.ui.excelpath_folder_tb_3.clicked.connect(
             lambda: self.show_filedialog_excel_file_path(self.ui.excelpath_drop_3)
@@ -196,7 +192,7 @@ class MainWindow(QMainWindow):
     def open_excel_in_process_exists(self):
         """Opens a message box displaying a given error"""
         msg = messageboxes.excel_exists("Die angegebene Excel-Datei existiert bereits.")
-        msg.buttonClicked.connect(self.handle_excel_choice)
+        msg.buttonClicked.connect(self.handle_excel_in_process_choice)
         msg.exec()
 
     @pyqtSlot()
@@ -210,7 +206,7 @@ class MainWindow(QMainWindow):
         if directory:
             self.ui.harddrive_drop_2.setText(directory)
 
-    def show_filedialog_raw_material_path(self, line_edit: QLineEdit):
+    def show_filedialog_folder(self, line_edit: QLineEdit):
         """Handles selecting the raw material path/folder through a FileDialog"""
         directory = QFileDialog.getExistingDirectory(parent=self, caption="Open dir", directory="")
         if directory:
@@ -376,9 +372,10 @@ class MainWindow(QMainWindow):
     def create_sections(self):
         try:
             data: UtilTabInput = self.get_util_input()
-            self.worker.run_copy_sections(inputs=data)
         except (ValidationError, ValueError) as e:
             self.open_problem_input(error=str(e))
+            return
+        self.worker.run_copy_sections(inputs=data)
 
     def create_selections(self):
         try:
@@ -420,7 +417,7 @@ class MainWindow(QMainWindow):
             if self.ui.excelpath_drop_3.text() == "":
                 raise ValueError("Bitte gib eine Excel-Datei an.")
             path = Path(self.ui.excelpath_drop_3.text())
-            errors = validation.validate_excel_file(excel_file=path)
+            errors = validate_excel_file(excel_file=path)
             if errors:
                 raise ValueError('\n'.join(errors))
             items = excelmethods.get_columns(excel=path, sheet=sheet)

@@ -1,3 +1,4 @@
+import time
 from datetime import datetime
 from pathlib import Path
 from typing import List, Dict
@@ -5,14 +6,14 @@ from typing import List, Dict
 import pandas as pd
 from PyQt5.QtCore import *  # TODO better
 
-from inputhandling import validation
 from foldersetup import folder_setup
 from excel.excelmethods import create_emtpy_excel
 from assethandling.basemodels import SheetConfig, FolderTabInput, UtilTabInput, ExcelConfig, ExcelInput, \
     RawTabInput
-from stats import statistics
+from util.stats import statistics
 from util import util_methods as eval_
-from inputhandling.validation import validate_folder, validate_excel_file
+from inputhandling.validation import is_valid_folder, validate_excel_file, validate_setup_path, validate_raw, \
+    validate_util_paths
 from rawmaterial.raw_material import correct_file_structure, run_rename, fill_excel, create_picture_folder
 
 
@@ -32,8 +33,8 @@ class Worker(QThread):
     @pyqtSlot(str, QDate)
     def setup_folder_structure(self, inputs: FolderTabInput):
         """Create the folder 'Zeltlagerfilm xxxx with all its Subfolders"""
-        valid, error = validation.validate_setup_path(path=inputs.folder)
-        if valid:
+        error = validate_setup_path(path=inputs.folder)
+        if len(error) == 0:
             self.new_message_setup.emit("Input validiert.")
             folder_setup.create_folder_structure(parent=inputs.folder, date=inputs.date)
             self.new_message_setup.emit("Ordner erfolgreich erstellt.")
@@ -44,7 +45,7 @@ class Worker(QThread):
     # ### RAW
     @pyqtSlot(RawTabInput)
     def run_raw_full(self, inputs: RawTabInput):
-        errors = validation.validate_raw(inputs)
+        errors = validate_raw(inputs)
         if errors:
             self._send_results_raw("Prozess voll", errors)
             self.problem_with_input.emit("")
@@ -84,7 +85,7 @@ class Worker(QThread):
 
     @pyqtSlot(Path)
     def run_correct_file_structure(self, path: Path, start: datetime):
-        if not validate_folder(path) and not isinstance(start, datetime):
+        if not is_valid_folder(path) and not isinstance(start, datetime):
             self.problem_with_input.emit(str("!!!! Fehler !!!"))
             return
 
@@ -97,7 +98,7 @@ class Worker(QThread):
 
     @pyqtSlot(Path)
     def rename_files(self, path: Path):
-        if not validate_folder(path):
+        if not is_valid_folder(path):
             self.problem_with_input.emit(str("!!!! Fehler !!!"))
             return
 
@@ -125,7 +126,7 @@ class Worker(QThread):
             self.problem_with_input.emit(str(e))
 
     def _handle_excel_creation(self, input_: ExcelInput, override) -> Path:
-        if not validate_folder(input_.excel_folder):
+        if not is_valid_folder(input_.excel_folder):
             raise AttributeError("Incorrect Input.")
 
         self.new_message_raw.emit("Starte Excel erstellen.")
@@ -141,7 +142,7 @@ class Worker(QThread):
 
     @pyqtSlot(Path, Path)
     def fill_excel(self, raw: Path, excel: Path):
-        if not validate_folder(raw):
+        if not is_valid_folder(raw):
             self.problem_with_input.emit(str("!!!! Fehler !!!"))
             return
         errors = validate_excel_file(excel)
@@ -156,7 +157,7 @@ class Worker(QThread):
 
     @pyqtSlot(Path, Path)
     def create_picture_folder(self, raw, folder):
-        if not validate_folder(raw) or not validate_folder(folder):
+        if not is_valid_folder(raw) or not is_valid_folder(folder):
             self.problem_with_input.emit(str("!!!! Fehler !!!"))
             return
 
@@ -169,9 +170,9 @@ class Worker(QThread):
     # ### UTIL ### #
     @staticmethod
     def _validate_and_prepare(raw_material_folder: Path, excel_full_filepath: Path) -> Dict[str, pd.DataFrame]:
-        valid, errors = validation.validate_util_paths(raw_material_folder=raw_material_folder,
-                                                       excel_full_filepath=excel_full_filepath)
-        if not valid:
+        errors = validate_util_paths(raw_material_folder=raw_material_folder,
+                                        excel_full_filepath=excel_full_filepath)
+        if errors:
             raise ValueError('\n'.join(errors))
         return eval_.prepare_dataframes(excel_file=excel_full_filepath,
                                         raw_path=raw_material_folder)
