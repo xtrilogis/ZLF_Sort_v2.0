@@ -1,0 +1,7 @@
+{
+  "standard-video-columns": ["Bemerkung", "Outtakes (x)"],
+  "standard-picture-columns": ["Bemerkung", "NZS (x)", "Outtakes (x)",
+    "Leiterabspann (x)", "Kinderabspann (x)", "Insta/Webseite (x)", "Elternabend"],
+  "suggestions-video-columns": ["Personen", "Kinder", "Leiter", "Instagram", "Schnittideen"],
+  "suggestions-picture-columns": ["Personen", "Kinder", "Leiter", "Fotowand (x)", "Desktophintergrund (x)"]
+}
