@@ -13,6 +13,13 @@ from assethandling.basemodels import FileType, File
 from assets import constants
 
 
+def create_folder(parent: Path, folder: str) -> Path:
+    create: Path = parent.joinpath(folder)
+    if not create.exists():
+        create.mkdir(parents=True)
+    return create
+
+
 def copy_file(src_file: Path, dst_folder: Path):
     if not dst_folder.exists():
         dst_folder.mkdir(parents=True)
