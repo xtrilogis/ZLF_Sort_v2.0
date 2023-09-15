@@ -21,6 +21,16 @@ def dummy_file():
 
 
 @fixture()
+def correct_excel():
+    return ROOT / "ok_data.xlsx"
+
+
+@fixture()
+def correct_raw():
+    return ROOT / "Rohmaterial"
+
+
+@fixture()
 def get_raw_input():
     data = {
             "do_structure": True,

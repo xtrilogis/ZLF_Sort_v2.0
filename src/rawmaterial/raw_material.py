@@ -1,9 +1,8 @@
 import locale
 from pathlib import Path
+import pandas as pd
 from datetime import datetime, timedelta, date
 from typing import List, Dict
-
-import pandas as pd
 from pydantic import ValidationError
 
 from assethandling.basemodels import File, FileType
@@ -16,17 +15,13 @@ locale.setlocale(locale.LC_TIME, 'de_DE.utf8')
 
 def correct_file_structure(raw_material_folder: Path, dst_folder: Path, start: datetime) -> List[str]:
     errors = []
-    print("Start")
     check_if_right_structure()
 
     all_files: List[File] = _get_all_files(raw_material_folder=raw_material_folder, errors=errors)
-    print("All Files")
     structure: Dict[str | date, Dict[str, List[File]]] = _create_structure(start_date=start)
 
     _fill_structure(structure=structure, all_files=all_files)
-    print("Structure")
     _copy_files(structure=structure, dst_folder=dst_folder, errors=errors)
-    print("copied")
 
     return errors
 
@@ -163,17 +158,3 @@ def create_picture_folder(picture_folder: Path, raw_material_folder: Path) -> Li
             except (FileNotFoundError, FileExistsError) as e:
                 errors.append(element.name)
     return errors
-
-
-if __name__ == "__main__":
-    path2 = Path(
-        "D:/Users/Wisdom/Lernen/Coding_Python/ZLF_Sort_v2.0/TestDateien/Rohmaterial/")
-    # "D:/Users/Wisdom/Allgemein/PJHF/2022_23/Zeltlager/Zeltlagerfilm/Rohmaterial/Sonstiges/Videos/")
-
-    # test_file = path / "07-26-Mi_001.JPG" # 08-05-Sa_153.jpg, 08-05-Sa_071.jpeg, 08-05-Sa_081.jpg
-    # correct_file_structure(path, Path("D:/Users/Wisdom/Lernen/Coding_Python/ZLF_Sort_v2.0/TestDateien/"),
-    # datetime(2022, 7, 27))
-    # correct_file_structure(Path("D:/Users/Wisdom/Lernen/Coding_Python/ZLF_Sort_v2.0/TestDateien/roh/"),
-    #                        Path("D:/Users/Wisdom/Lernen/Coding_Python/TestDateien/"),
-    #                        datetime(2023, 7, 26))
-    print(create_picture_folder(Path("D:/Users/Wisdom/Lernen/Coding_Python/TestDateien/n"), Path("D:/Users/Wisdom/Lernen/Coding_Python/TestDateien/")))
