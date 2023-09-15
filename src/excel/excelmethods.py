@@ -1,10 +1,9 @@
 from pathlib import Path
 from typing import List, Dict
-
 import pandas as pd
 from pandas import DataFrame
 
-from assethandling.basemodels import SheetConfig, ExcelConfig
+from assethandling.basemodels import ExcelConfig
 
 
 def create_emtpy_excel(config: ExcelConfig, override=False) -> Path:
@@ -38,13 +37,9 @@ def load_sheets_as_df(path: Path) -> Dict[str, DataFrame]:
     return pd.read_excel(path, sheet_name=None)
 
 
-def get_columns(excel, sheet) -> List[str]:
+def get_columns(excel: Path, sheet: str) -> List[str]:
     """Extracts all columns the given sheet has
         :param excel fullpath of the Excel file
         :param sheet to search"""
     df = pd.read_excel(excel, sheet_name=sheet)
     return df.columns
-
-
-if __name__ == "__main__":
-    create_emtpy_excel("test", "D:/", [SheetConfig(name="sdf", columns=["sae", "eas"])])
