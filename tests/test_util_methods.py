@@ -12,20 +12,23 @@ def test_prepare_df():
 
 
 @mock.patch("util.util_methods.filemethods.copy_file")
-def test_copy_section():
+def test_copy_section(mock_copy):
     # Todo implementation
+    assert mock_copy.call_count
     pass
 
 
 @mock.patch("util.util_methods.filemethods.copy_file")
-def test_copy_selections():
+def test_copy_selections(mock_copy):
     # Todo implementation
+    assert mock_copy.call_count
     pass
 
 
 @mock.patch("util.util_methods.filemethods.copy_file")
-def test_search_columns():
+def test_search_columns(mock_copy):
     # Todo implementation
+    assert mock_copy.call_count
     pass
 
 

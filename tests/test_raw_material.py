@@ -13,7 +13,7 @@ def test_correct_folder_structure(mock_copy, correct_raw):
 @mock.patch("rawmaterial.raw_material.rename_files")
 def test_rename_files(mock_rename, correct_raw):
     run_rename(correct_raw)
-    assert mock_rename.call_count == 4 # 31
+    assert mock_rename.call_count == 4  # 31
     assert mock_rename.call_args_list[0].kwargs['folder'] == correct_raw / "a 27.07. Mi/Bilder"
     files = mock_rename.call_args_list[0].kwargs['all_files']
     assert files[0].date < files[-1].date
