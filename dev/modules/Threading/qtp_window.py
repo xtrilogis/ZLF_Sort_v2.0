@@ -60,8 +60,8 @@ class MainWindow(QMainWindow):
         print("THREAD COMPLETE!")
 
     def oh_no(self):
-        # Pass the function to execute
-        worker = Worker(is_valid_folder, element=Path("D:"))  # self.execute_another_fn, mydict={"hasl": "asdf", "asfes": "sefsa"}) # Any other args, kwargs are passed to the run function
+        # Pass the function to execute is_valid_folder, element=Path("D:"))  #
+        worker = Worker(self.execute_another_fn, mydict={"hasl": "asdf", "asfes": "sefsa"}) # Any other args, kwargs are passed to the run function
         worker.signals.result.connect(self.print_output)
         worker.signals.finished.connect(self.thread_complete)
         worker.signals.progress.connect(self.progress_fn)

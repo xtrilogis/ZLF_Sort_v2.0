@@ -38,6 +38,7 @@ class Worker(QRunnable):
 
         # Store constructor arguments (re-used for processing)
         self.fn = fn
+        print(type(fn))
         self.args = args
         self.kwargs = kwargs
         self.signals = WorkerSignals()
