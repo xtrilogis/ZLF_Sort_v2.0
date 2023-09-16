@@ -11,7 +11,6 @@ from inputhandling.validation import validate_util_paths, validate_setup_path, i
 from rawmaterial import raw_material as raw
 from util import util_methods as eval_
 from util.stats import statistics
-from src.main.db.connectors import bla
 
 
 def pretty_send_list(list_: List[str], progress_callback, titel=""):
@@ -22,7 +21,6 @@ def pretty_send_list(list_: List[str], progress_callback, titel=""):
 
 
 def execute_function(progress_callback):
-    print(bla)
     for n in range(0, 5):
         time.sleep(10)
         progress_callback.emit(str(n * 100 / 4))
@@ -85,7 +83,7 @@ def create_excel(inputs: RawTabInput, progress_callback) -> Path:
 
 def run_fill_excel(inputs: RawTabInput, progress_callback) -> str:
     if isinstance(inputs.excel, ExcelInput):
-        path = create_excel(inputs.excel, progress_callback)
+        path = create_excel(inputs, progress_callback)
         inputs.excel = path
     run_raw_processes(function=handle_fill_excel,
                       titel="Dateien in Excel schreiben.",
@@ -201,7 +199,6 @@ def handle_full_execution(sheets: Dict[str, DataFrame], inputs: UtilTabInput, pr
         "Bilderordner": [inputs.create_picture_folder, handle_picture_folder]
     }
     for key, value in mapping.items():
-        print(key)
         if value[0]:
             try:
                 progress_callback.emit(

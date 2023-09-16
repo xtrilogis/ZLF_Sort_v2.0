@@ -55,8 +55,6 @@ def copy_section(df: pd.DataFrame, rating_limit: int) -> List[str]:
 
                 file_fullpath = Path(df.loc[count, 'Dateipfad'])
                 section = value.strip()
-                if "07-29-Sa_012" in str(file_fullpath):
-                    print("")
                 destination_folder = _get_section_dst_folder(file_fullpath=file_fullpath,
                                                              section=section)
                 filemethods.copy_file(src_file=file_fullpath,

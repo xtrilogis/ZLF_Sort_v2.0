@@ -310,7 +310,7 @@ class MainWindow(QMainWindow):
                 raise ValueError("Bitte gib einen Speicherort für den Bilderordner an.")
             data["picture_folder"] = Path(self.ui.drop_picture_folder.text())
         else:
-            data["picture_folder"] = data["raw_material_folder"].parent / "Bilderordner"
+            data["picture_folder"] = data.get("raw_material_folder").parent / "Bilderordner"
 
         return RawTabInput(**data)
 
@@ -379,7 +379,6 @@ class MainWindow(QMainWindow):
         self.run_action(function=function, slot=self.write_process_util, input_=data)
 
     def run_action(self, function, slot, input_):
-        print("1")
         self.disable_work_buttons()
         self.movie.start()
         worker = Worker(function, inputs=input_)

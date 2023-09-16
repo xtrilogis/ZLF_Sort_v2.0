@@ -1,29 +1,10 @@
-from datetime import datetime
-from typing import List
-from pathlib import Path
-
-from assethandling.asset_manager import settings
-from excel.excelmethods import create_emtpy_excel
-from inputhandling import validation
-from rawmaterial import raw_material
-from assethandling.basemodels import ExcelOptions, FolderTabInput, UtilTabInput, RawTabInput, SheetConfig, \
-    ExcelConfig, ExcelInput
-from ui import thread_worker as tw
+from assethandling.basemodels import UtilTabInput
+from ui import Worker
 
 ROOT = "../TestDateien"
 ROOT_absolute = "D:/Users/Wisdom/Lernen/Coding_Python/ZLF_Sort_v2.0/TestDateien"
 path = "D:/Users/Wisdom/Lernen/Coding_Python/ZLF_Sort_v2.0/TestDateien/Rohmaterial"
 pfad_excel = "D:/Users/Wisdom/Lernen/Coding_Python/ZLF_Sort_v2.0/TestDateien/Rohmaterial/Zeltlagerfilm 2022.xlsx"
-
-
-def create_folder_structure():
-    worker = tw.Worker()
-    data = FolderTabInput(
-        folder=Path(ROOT_absolute),
-        date=datetime.now()
-    )
-    worker.setup_folder_structure(inputs=data)
-
 
 # def get_raw_input():
 #     root = Path(ROOT_absolute)
@@ -44,58 +25,6 @@ def create_folder_structure():
 #         "picture_folder": root
 #     }
 #     return RawTabInput(**data)
-#
-#
-# def process_raw(inputs: RawTabInput):
-#     wk = tw.Worker()
-#     try:
-#         validate_and_prepare(inputs=inputs)  # TODO implementation
-#     except Exception as e:
-#         print(str(e))
-#         return
-#     print("Inputs validiert und Excel eingelesen.")
-#
-#     if inputs.do_structure:
-#         try:
-#             result = raw_material.correct_file_structure(
-#                 raw_material_folder=inputs.raw_material_folder,
-#                 dst_folder=inputs.raw_material_folder.parent / "New",
-#                 start=inputs.first_folder_date
-#             )
-#             print(result)
-#         except Exception as e:
-#             print(str(e))
-#     if inputs.do_rename:
-#         try:
-#             result = raw_material.run_rename(raw_material_folder=inputs.raw_material_folder)
-#             print(result)
-#         except Exception as e:
-#             print(str(e))
-#     if inputs.fill_excel:
-#         try:
-#             result = raw_material.fill_excel(excel=inputs.excel_config.excel_full_filepath,
-#                                              raw_material_folder=inputs.raw_material_folder)
-#             print(result)
-#         except Exception as e:
-#             print(str(e))
-#     if inputs.create_picture_folder:
-#         try:
-#             result = raw_material.create_picture_folder(picture_folder=inputs.picture_folder,
-#                                                         raw_material_folder=inputs.raw_material_folder)
-#             print(result)
-#         except Exception as e:
-#             print(str(e))
-#
-#     print("BlaBla: raw gesamt fertig")
-
-def create_excel(input_: ExcelInput, override=False) -> Path:
-    config = ExcelConfig(
-        excel_folder=input_.excel_folder,
-        excel_file_name=input_.excel_file_name,
-        sheets=[SheetConfig(name="Videos", columns=input_.video_columns),
-                SheetConfig(name="Bilder", columns=input_.picture_columns)]
-    )
-    return create_emtpy_excel(config=config, override=override)
 
 
 def get_util_input():
@@ -121,46 +50,13 @@ def get_util_input():
     return UtilTabInput(**data)
 
 
-def process_util(inputs: UtilTabInput):
-    wk = tw.Worker()
-    try:
-        sheets = wk._validate_and_prepare(raw_material_folder=inputs.raw_material_folder,
-                                          excel_full_filepath=inputs.excel_full_filepath)
-    except Exception as e:
-        print(str(e))
-        return
-    print("Inputs validiert und Excel eingelesen.")
-
-    if inputs.do_sections:
-        try:
-            wk._handle_section(sheets=sheets, inputs=inputs)
-        except Exception as e:
-            print(str(e))
-    if inputs.do_selections:
-        try:
-            wk._handle_selection(sheets=sheets, inputs=inputs)
-        except Exception as e:
-            print(str(e))
-    if inputs.do_search:
-        try:
-            wk._handle_search(sheets=sheets, inputs=inputs)
-        except Exception as e:
-            print(str(e))
-    if inputs.create_picture_folder:
-        try:
-            wk._handle_picture_folder(sheets=sheets, inputs=inputs)
-        except Exception as e:
-            print(str(e))
-
-    print("BlaBla: util gesamt fertig")
-
-
-def stats():
-    wk = tw.Worker()
-    wk.run_statistics()
+def bla():
+    worker = Worker(function=get_util_input())
+    worker.run()
 
 
 if __name__ == "__main__":
+    bla()
     # create_folder_structure()
     # process_raw()
     # process_util(get_util_input())
