@@ -3,7 +3,8 @@ from pandas import DataFrame
 from pathlib import Path
 from typing import Dict, List
 
-from assethandling.basemodels import UtilTabInput, FolderTabInput, RawTabInput
+from assethandling.basemodels import UtilTabInput, FolderTabInput, RawTabInput, ExcelInput, ExcelConfig, SheetConfig
+from excel.excelmethods import create_emtpy_excel
 from foldersetup import folder_setup
 from inputhandling.validation import validate_util_paths, validate_setup_path, is_valid_folder, validate_excel_file
 from rawmaterial import raw_material as raw
@@ -61,11 +62,30 @@ def run_rename_files(inputs: RawTabInput, progress_callback) -> str:
     return "Umbenennen abgeschlossen."
 
 
+def create_excel(inputs: ExcelInput, progress_callback) -> Path:
+    if not is_valid_folder(inputs.excel_folder):
+        raise AttributeError("Incorrect Input.")
+
+    progress_callback.emit("Starte Excel erstellen.")
+    config = ExcelConfig(
+        excel_folder=inputs.excel_folder,
+        excel_file_name=inputs.excel_file_name,
+        sheets=[SheetConfig(name="Videos", columns=inputs.video_columns),
+                SheetConfig(name="Bilder", columns=inputs.picture_columns)]
+    )
+    path = create_emtpy_excel(config=config, override=inputs.override)
+    progress_callback.emit("Excel-Datei erfolgreich erstellt")
+    return path
+
+
 def run_fill_excel(inputs: RawTabInput, progress_callback) -> str:
+    if isinstance(inputs.excel, ExcelInput):
+        path = create_excel(inputs.excel, progress_callback)
+        inputs.excel = path
     run_raw_processes(function=handle_fill_excel,
                       titel="Dateien in Excel schreiben.",
                       progress_callback=progress_callback,
-                      excel=inputs.excel_file_fullpath,
+                      excel=inputs.excel,
                       raw_material_folder=inputs.raw_material_folder)
 
     return "Dateien in Excel schreiben abgeschlossen."
@@ -143,9 +163,9 @@ def run_create_rated_picture_folder(inputs: UtilTabInput, progress_callback) -> 
     return run_util_processes(handle_picture_folder, inputs, progress_callback)
 
 
-def run_statistics(raw_path, progress_callback) -> str:
+def run_statistics(inputs: UtilTabInput, progress_callback) -> str:
     progress_callback.emit("Inputs validiert.")
-    handle_statistics(raw_path=raw_path, progress_callback=progress_callback)
+    handle_statistics(raw_path=inputs.raw_material_folder, progress_callback=progress_callback)
     return "Statistik fertig."
 
 

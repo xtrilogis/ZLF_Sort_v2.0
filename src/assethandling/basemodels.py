@@ -30,6 +30,7 @@ class ExcelInput(BaseModel):
     excel_file_name: str = f"Zeltlagerfilm {datetime.now().date().year}.xlsx"
     video_columns: List[str] = settings["standard-video-columns"]
     picture_columns: List[str] = settings["standard-picture-columns"]
+    override: bool = False
 
 
 class ExcelConfig(BaseModel):
@@ -45,7 +46,7 @@ class RawTabInput(BaseModel):
     create_picture_folder: bool
     raw_material_folder: Path
     first_folder_date: datetime
-    excel_file_fullpath: Path
+    excel: Path | ExcelInput
     picture_folder: Path
 
 
