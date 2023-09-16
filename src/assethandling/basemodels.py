@@ -46,7 +46,7 @@ class RawTabInput(BaseModel):
     create_picture_folder: bool
     raw_material_folder: Path
     first_folder_date: datetime
-    excel: Path | ExcelInput
+    excel: Path | ExcelInput | None
     picture_folder: Path
 
 

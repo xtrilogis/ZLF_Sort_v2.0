@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Dict, List
 
 from assethandling.basemodels import UtilTabInput, FolderTabInput, RawTabInput, ExcelInput, ExcelConfig, SheetConfig
+from assets import constants
 from excel.excelmethods import create_emtpy_excel
 from foldersetup import folder_setup
 from inputhandling.validation import validate_util_paths, validate_setup_path, is_valid_folder, validate_excel_file
@@ -62,18 +63,22 @@ def run_rename_files(inputs: RawTabInput, progress_callback) -> str:
     return "Umbenennen abgeschlossen."
 
 
-def create_excel(inputs: ExcelInput, progress_callback) -> Path:
-    if not is_valid_folder(inputs.excel_folder):
+def create_excel(inputs: RawTabInput, progress_callback) -> Path:
+    if not is_valid_folder(inputs.excel.excel_folder):
         raise AttributeError("Incorrect Input.")
 
     progress_callback.emit("Starte Excel erstellen.")
+    vid = constants.minimal_columns.copy()
+    vid.extend(inputs.excel.video_columns)
+    pic = constants.minimal_columns.copy()
+    pic.extend(inputs.excel.picture_columns)
     config = ExcelConfig(
-        excel_folder=inputs.excel_folder,
-        excel_file_name=inputs.excel_file_name,
-        sheets=[SheetConfig(name="Videos", columns=inputs.video_columns),
-                SheetConfig(name="Bilder", columns=inputs.picture_columns)]
+        excel_folder=inputs.excel.excel_folder,
+        excel_file_name=inputs.excel.excel_file_name,
+        sheets=[SheetConfig(name="Videos", columns=vid),
+                SheetConfig(name="Bilder", columns=pic)]
     )
-    path = create_emtpy_excel(config=config, override=inputs.override)
+    path = create_emtpy_excel(config=config, override=inputs.excel.override)
     progress_callback.emit("Excel-Datei erfolgreich erstellt")
     return path
 
@@ -95,7 +100,7 @@ def run_create_picture_folder(inputs: RawTabInput, progress_callback) -> str:
     run_raw_processes(function=handle_create_picture_folder,
                       titel="Bilderordner erstellen.",
                       progress_callback=progress_callback,
-                      folder=inputs.create_picture_folder,
+                      folder=inputs.picture_folder,
                       raw_material_folder=inputs.raw_material_folder)
     return "Bilderordner erstellen abgeschlossen."
 
@@ -134,7 +139,8 @@ def handle_fill_excel(excel: Path, raw_material_folder: Path):
     return raw.fill_excel(excel=excel, raw_material_folder=raw_material_folder)
 
 
-def handle_create_picture_folder(raw_material_folder, folder):
+def handle_create_picture_folder(raw_material_folder, folder: Path):
+    folder.mkdir()
     if not is_valid_folder(folder):
         raise ValueError("Bitte gib einen gültigen Zielordner an.")
 
@@ -169,7 +175,7 @@ def run_statistics(inputs: UtilTabInput, progress_callback) -> str:
     return "Statistik fertig."
 
 
-def run_util_processes(function, inputs, progress_callback) -> str:
+def run_util_processes(function, inputs: UtilTabInput, progress_callback) -> str:
     sheets = validate_and_prepare(raw_material_folder=inputs.raw_material_folder,
                                   excel_full_filepath=inputs.excel_full_filepath)
     progress_callback.emit("Inputs validiert und Excel eingelesen.")
@@ -195,6 +201,7 @@ def handle_full_execution(sheets: Dict[str, DataFrame], inputs: UtilTabInput, pr
         "Bilderordner": [inputs.create_picture_folder, handle_picture_folder]
     }
     for key, value in mapping.items():
+        print(key)
         if value[0]:
             try:
                 progress_callback.emit(

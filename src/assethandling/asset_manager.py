@@ -16,4 +16,5 @@ def load_settings() -> dict:
 
 settings: dict = load_settings()
 # excel_Datei = "../assets/Zeltlagerfilm 2023.xlsx"
-window_icon: Path = asset_path("window_icon.png")
+window_icon = str(asset_path("window_icon.png"))
+gif = str(asset_path("output-onlinegiftools.gif"))

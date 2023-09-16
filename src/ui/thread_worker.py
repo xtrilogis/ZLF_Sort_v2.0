@@ -35,6 +35,7 @@ class Worker(QRunnable):
             self.signals.new_message.emit("Start processing")
             result = self.function(*self.args, **self.kwargs)
         except Exception as e:
+            print(e)
             self.signals.problem_with_input.emit(f"Problem:\n{str(e)}")
         else:
             # TODO + result is None
