@@ -88,83 +88,36 @@ def handle_full_execution(sheets: Dict[str, DataFrame], inputs: UtilTabInput, pr
 
 
 def handle_sections(sheets: Dict[str, DataFrame], inputs: UtilTabInput, progress_callback) -> str:
-    _sections_per_sheet(df=sheets["Videos"],
-                        do_sections=inputs.do_video_sections,
-                        rating=inputs.rating_section,
-                        part="Videos",
-                        progress_callback=progress_callback)
-    _sections_per_sheet(df=sheets["Bilder"],
-                        do_sections=inputs.do_picture_sections,
-                        rating=inputs.rating_section,
-                        part="Bilder",
-                        progress_callback=progress_callback)
+    for sheet_name, do_section in [("Videos", inputs.do_video_sections),
+                                   ("Bilder", inputs.do_picture_sections)]:
+        if do_section and not sheets[sheet_name].empty:
+            results = eval_.copy_section(df=sheets[sheet_name], rating_limit=inputs.rating_section)
+            pretty_send_list(titel=f"{sheet_name}abschnitte erstellt.",
+                             list_=results, progress_callback=progress_callback)
     return "Abschnitte abgeschlossen."
 
 
-def _sections_per_sheet(df: DataFrame, do_sections: bool, rating: int, part: str, progress_callback):
-    if do_sections and not df.empty:
-        results = eval_.copy_section(df=df, rating_limit=rating)
-        pretty_send_list(titel=f"{part}abschnitte erstellt.",
-                         list_=results, progress_callback=progress_callback)
-        return results
-
-
 def handle_selection(sheets: Dict[str, DataFrame], inputs: UtilTabInput, progress_callback) -> str:
-    _selection_per_sheet(df=sheets["Videos"],
-                         columns=inputs.videos_columns_selection,
-                         raw_path=inputs.raw_material_folder,
-                         marker=inputs.marker,
-                         part="Videos",
-                         progress_callback=progress_callback)
-    _selection_per_sheet(df=sheets["Bilder"],
-                         columns=inputs.picture_columns_selection,
-                         raw_path=inputs.raw_material_folder,
-                         marker=inputs.marker,
-                         part="Bilder",
-                         progress_callback=progress_callback)
+    for sheet_name, columns in [("Videos", inputs.videos_columns_selection),
+                                ("Bilder", inputs.picture_columns_selection)]:
+        if columns and not sheets[sheet_name].empty:
+            result = eval_.copy_selections(df=sheets[sheet_name], raw_path=inputs.raw_material_folder,
+                                           columns=columns, marker=inputs.marker)
+            pretty_send_list(titel=f"{sheet_name}selektion erstellt.",
+                             list_=result, progress_callback=progress_callback)
     return "Selektionen abgeschlossen."
 
 
-def _selection_per_sheet(df: DataFrame, columns: List[str],
-                         raw_path: Path, marker: str, part: str,
-                         progress_callback):
-    if columns and not df.empty:
-        result = eval_.copy_selections(df=df,
-                                       raw_path=raw_path,
-                                       columns=columns,
-                                       marker=marker)
-        pretty_send_list(titel=f"{part}selektion erstellt.",
-                         list_=result, progress_callback=progress_callback)
-
-
 def handle_search(sheets: Dict[str, DataFrame], inputs: UtilTabInput, progress_callback) -> str:
-    _search_per_sheet(df=sheets["Videos"],
-                      columns=inputs.videos_columns_search,
-                      raw_path=inputs.raw_material_folder,
-                      keywords=inputs.keywords,
-                      rating=inputs.rating_search,
-                      part="Videos",
-                      progress_callback=progress_callback)
-    _search_per_sheet(df=sheets["Bilder"],
-                      columns=inputs.picture_columns_search,
-                      raw_path=inputs.raw_material_folder,
-                      keywords=inputs.keywords,
-                      rating=inputs.rating_search,
-                      part="Bilder",
-                      progress_callback=progress_callback)
+    for sheet_name, columns in [("Videos", inputs.videos_columns_search),
+                                ("Bilder", inputs.picture_columns_search)]:
+        if columns and not sheets[sheet_name].empty:
+            result = eval_.search_columns(df=sheets[sheet_name], columns=columns,
+                                          raw_path=inputs.raw_material_folder,
+                                          markers=inputs.keywords, rating=inputs.rating_search)
+            pretty_send_list(titel=f"{sheet_name}suche erstellt.",
+                             list_=result, progress_callback=progress_callback)
     return "Suche abgeschlossen."
-
-
-def _search_per_sheet(df: DataFrame, columns: List[str], raw_path: Path,
-                      keywords: List[str], rating: int, part: str, progress_callback):
-    if columns and not df.empty:
-        result = eval_.search_columns(df=df,
-                                      raw_path=raw_path,
-                                      columns=columns,
-                                      markers=keywords,
-                                      rating=rating)
-        pretty_send_list(titel=f"{part}suche erstellt.",
-                         list_=result, progress_callback=progress_callback)
 
 
 def handle_picture_folder(sheets: Dict[str, DataFrame], inputs: UtilTabInput, progress_callback) -> str:
