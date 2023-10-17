@@ -95,6 +95,14 @@ def _copy_files(structure: Dict[str | date, Dict[str, List[File]]], dst_folder: 
 
 def run_rename(raw_material_folder: Path) -> List[str]:
     errors: List[str] = []
+    if _is_folder_with_material(raw_material_folder):
+        all_files: List[File] = []
+        for child in raw_material_folder.iterdir():
+            _add_file_object(file=child, all_files=all_files, errors=errors)
+        all_files.sort(key=lambda x: x.date, reverse=False)
+
+        rename_files(folder=raw_material_folder, all_files=all_files, errors=errors)
+
     for element in raw_material_folder.glob('**/*'):
         if _is_folder_with_material(element):
             all_files: List[File] = []
@@ -136,7 +144,7 @@ def _add_child_files(folder: Path, sheets: Dict[str, pd.DataFrame], errors: List
         try:
             if child.suffix.upper() in constants.video_extensions:
                 if not video_folder_written:
-                    sheets["Videos"].loc[len(sheets["Videos"]), "Datei"] = folder.name
+                    sheets["Videos"].loc[len(sheets["Videos"]), "Datei"] = folder.parent.name
                     video_folder_written = True
                 sheets["Videos"].loc[len(sheets["Videos"]), "Datei"] = child.name
 

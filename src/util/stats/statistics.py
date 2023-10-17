@@ -35,7 +35,7 @@ def get_raw_material_duration(path: Path) -> Tuple[str, List[str], List[List[Any
 
 def _get_duration(file_fullpath: Path):
     duration = VideoFileClip(str(file_fullpath)).duration
-    print(f"File: {file_fullpath.name}, Dauer: {duration}s")
+    # print(f"File: {file_fullpath.name}, Dauer: {duration}s")
     return duration
 
 

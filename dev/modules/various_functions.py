@@ -181,5 +181,18 @@ def os_walk(sheets):
                 df.loc[row, "Dateipfad"] = element
 
 
+def some_fn(input, bla):
+    for i in input:
+        print(i)
+    print(bla)
+
+
+def run(function, titel, **kwargs):
+    function(**kwargs)
+    print(titel)
+    pass
+
+
 if __name__ == '__main__':
+    run(some_fn, titel="sfda", bla="asdf", input=[1, 2, 4])
     pass
