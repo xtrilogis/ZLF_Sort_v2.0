@@ -27,6 +27,7 @@ def correct_file_structure(raw_material_folder: Path, dst_folder: Path, start: d
 
 
 def check_if_right_structure():
+    # Todo
     pass
 
 
