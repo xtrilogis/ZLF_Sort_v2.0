@@ -10,7 +10,7 @@ from pydantic import ValidationError
 from assethandling.asset_manager import settings
 from assethandling.basemodels import UtilTabInput, RawTabInput, FolderTabInput, ExcelOptions, ExcelInput
 from ui import Worker
-from adapt import runners
+from runner import runners
 
 
 print("Imports done")

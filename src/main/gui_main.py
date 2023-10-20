@@ -17,7 +17,7 @@ from assethandling.asset_manager import settings
 from assethandling.basemodels import UtilTabInput, RawTabInput, FolderTabInput, ExcelOptions, ExcelInput
 from ui import Ui_MainWindow, messageboxes, SelectionDialog
 from src.main.threadworker.thread_worker import Worker
-from src.main.adapt import runners
+from src.main.runner import runners
 from inputhandling.validation import validate_excel_file
 from excel import excelmethods
 from assethandling.asset_manager import gif
@@ -168,7 +168,7 @@ class MainWindow(QMainWindow):
             lambda: self.run_raw_action(function=runners.run_rename_files))
         # todo
         self.ui.pb_create_excel.clicked.connect(
-            lambda: self.raw_with_excel(function=runners.create_excel))
+            lambda: self.raw_with_excel(function=runners.run_create_excel))
         # todo
         self.ui.pb_fill_excel.clicked.connect(
             lambda: self.raw_with_excel(function=runners.run_fill_excel))
