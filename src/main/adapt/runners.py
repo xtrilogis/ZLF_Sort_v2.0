@@ -12,7 +12,10 @@ from rawmaterial import raw_material as raw
 from util import util_methods as eval_
 from util.stats import statistics
 
+# !! TODO Add get_data as kwargs
 
+
+# Todo duplicate with Worker send_result_list
 def pretty_send_list(list_: List[str], progress_callback, titel=""):
     progress_callback.emit(titel)
     if list_:
@@ -20,6 +23,7 @@ def pretty_send_list(list_: List[str], progress_callback, titel=""):
     [progress_callback.emit(f"- {x}") for x in list_ if x]
 
 
+# sample function
 def execute_function(progress_callback):
     for n in range(0, 5):
         time.sleep(10)
@@ -29,7 +33,7 @@ def execute_function(progress_callback):
 
 
 # ### SETUP ### #
-def run_folder_setup(inputs: FolderTabInput, progress_callback) -> str:
+def run_folder_setup(inputs: FolderTabInput, progress_callback, get_data) -> str:
     """Create the folder 'Zeltlagerfilm xxxx with all its Subfolders"""
     errors = validate_setup_path(path=inputs.folder)
     if len(errors) == 0:
@@ -42,7 +46,7 @@ def run_folder_setup(inputs: FolderTabInput, progress_callback) -> str:
 
 
 # ### RAW ### #
-def run_correct_structure(inputs: RawTabInput, progress_callback) -> str:
+def run_correct_structure(inputs: RawTabInput, progress_callback, get_data) -> str:
     run_raw_processes(progress_callback=progress_callback,
                       titel="Korrekte Ordnerstruktur",
                       function=raw.correct_file_structure,
@@ -53,7 +57,7 @@ def run_correct_structure(inputs: RawTabInput, progress_callback) -> str:
     return "Korrekte Ordnerstruktur abgeschlossen."
 
 
-def run_rename_files(inputs: RawTabInput, progress_callback) -> str:
+def run_rename_files(inputs: RawTabInput, progress_callback, get_data) -> str:
     run_raw_processes(progress_callback=progress_callback,
                       titel="Dateien umbenennen",
                       function=raw.run_rename,
@@ -61,7 +65,7 @@ def run_rename_files(inputs: RawTabInput, progress_callback) -> str:
     return "Umbenennen abgeschlossen."
 
 
-def create_excel(inputs: RawTabInput, progress_callback) -> Path:
+def create_excel(inputs: RawTabInput, progress_callback, get_data) -> Path:
     if not is_valid_folder(inputs.excel.excel_folder):
         raise AttributeError("Incorrect Input.")
 
@@ -81,9 +85,9 @@ def create_excel(inputs: RawTabInput, progress_callback) -> Path:
     return path
 
 
-def run_fill_excel(inputs: RawTabInput, progress_callback) -> str:
+def run_fill_excel(inputs: RawTabInput, progress_callback, get_data) -> str:
     if isinstance(inputs.excel, ExcelInput):
-        path = create_excel(inputs, progress_callback)
+        path = create_excel(inputs, progress_callback, get_data)
         inputs.excel = path
     run_raw_processes(function=handle_fill_excel,
                       titel="Dateien in Excel schreiben.",
@@ -94,7 +98,7 @@ def run_fill_excel(inputs: RawTabInput, progress_callback) -> str:
     return "Dateien in Excel schreiben abgeschlossen."
 
 
-def run_create_picture_folder(inputs: RawTabInput, progress_callback) -> str:
+def run_create_picture_folder(inputs: RawTabInput, progress_callback, get_data) -> str:
     run_raw_processes(function=handle_create_picture_folder,
                       titel="Bilderordner erstellen.",
                       progress_callback=progress_callback,
@@ -103,7 +107,7 @@ def run_create_picture_folder(inputs: RawTabInput, progress_callback) -> str:
     return "Bilderordner erstellen abgeschlossen."
 
 
-def run_process_raw_full(inputs: RawTabInput, progress_callback) -> str:
+def run_process_raw_full(inputs: RawTabInput, progress_callback, get_data) -> str:
     mapping = {
         "Korrekte Ordnerstruktur": [inputs.do_structure, run_correct_structure],
         "Umbenennen": [inputs.do_rename, run_rename_files],
@@ -120,6 +124,7 @@ def run_process_raw_full(inputs: RawTabInput, progress_callback) -> str:
     return "Prozessierung abgeschlossen."
 
 
+# todo utilize get_data
 def run_raw_processes(function, progress_callback, titel, **kwargs):
     if not is_valid_folder(kwargs["raw_material_folder"]):
         raise ValueError("Bitte gib einen gültigen Rohmaterial ordner an.")
@@ -147,32 +152,33 @@ def handle_create_picture_folder(raw_material_folder, folder: Path):
 
 
 # ### UTIL ### #
-def run_process_util_full(inputs: UtilTabInput, progress_callback) -> str:
+def run_process_util_full(inputs: UtilTabInput, progress_callback, get_data) -> str:
     return run_util_processes(handle_full_execution, inputs, progress_callback)
 
 
-def run_copy_sections(inputs: UtilTabInput, progress_callback) -> str:
+def run_copy_sections(inputs: UtilTabInput, progress_callback, get_data) -> str:
     return run_util_processes(handle_sections, inputs, progress_callback)
 
 
-def run_copy_selection(inputs: UtilTabInput, progress_callback) -> str:
+def run_copy_selection(inputs: UtilTabInput, progress_callback, get_data) -> str:
     return run_util_processes(handle_selection, inputs, progress_callback)
 
 
-def run_search(inputs: UtilTabInput, progress_callback) -> str:
+def run_search(inputs: UtilTabInput, progress_callback, get_data) -> str:
     return run_util_processes(handle_search, inputs, progress_callback)
 
 
-def run_create_rated_picture_folder(inputs: UtilTabInput, progress_callback) -> str:
+def run_create_rated_picture_folder(inputs: UtilTabInput, progress_callback, get_data) -> str:
     return run_util_processes(handle_picture_folder, inputs, progress_callback)
 
 
-def run_statistics(inputs: UtilTabInput, progress_callback) -> str:
+def run_statistics(inputs: UtilTabInput, progress_callback, get_data) -> str:
     progress_callback.emit("Inputs validiert.")
     handle_statistics(raw_path=inputs.raw_material_folder, progress_callback=progress_callback)
     return "Statistik fertig."
 
 
+# todo utilize get_data
 def run_util_processes(function, inputs: UtilTabInput, progress_callback) -> str:
     sheets = validate_and_prepare(raw_material_folder=inputs.raw_material_folder,
                                   excel_full_filepath=inputs.excel_full_filepath)

@@ -5,7 +5,8 @@ from datetime import datetime
 from typing import List
 
 from PyQt5 import QtGui
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QFileDialog, QLineEdit, QDialog, QPlainTextEdit
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QFileDialog, QLineEdit, QDialog, QPlainTextEdit, \
+    QInputDialog
 from PyQt5.QtCore import *
 import sys
 from pathlib import Path
@@ -14,8 +15,9 @@ from pydantic import ValidationError
 
 from assethandling.asset_manager import settings
 from assethandling.basemodels import UtilTabInput, RawTabInput, FolderTabInput, ExcelOptions, ExcelInput
-from ui import Ui_MainWindow, messageboxes, Worker, SelectionDialog
-from adapt import runners
+from ui import Ui_MainWindow, messageboxes, SelectionDialog
+from src.main.threadworker.thread_worker import Worker
+from src.main.adapt import runners
 from inputhandling.validation import validate_excel_file
 from excel import excelmethods
 from assethandling.asset_manager import gif
@@ -32,7 +34,11 @@ class MainWindow(QMainWindow):
         self.setup_ui()
         self.setup_input_buttons()
         self.setup_executions_buttons()
+
+        self.mutex = QMutex()
+        self.cond = QWaitCondition()
         self.threadpool = QThreadPool()
+
         self.current_function = None
 
     def setup_ui(self):
@@ -256,6 +262,15 @@ class MainWindow(QMainWindow):
         msg = messageboxes.problem_with_input(error)
         msg.exec()
 
+    @pyqtSlot(str)
+    def open_information_input(self, text: str):
+        text, ok = QInputDialog().getText(self, "QInputDialog().getText()",
+                                          text, QLineEdit.Normal,
+                                          "Input")
+        if ok and text:
+            self.sender().data_response.emit(text)
+        self.cond.wakeAll()
+
     # todo
     @pyqtSlot()
     def open_excel_exists(self):
@@ -417,10 +432,11 @@ class MainWindow(QMainWindow):
     def run_action(self, function, slot, input_):
         self.disable_work_buttons()
         self.movie.start()
-        worker = Worker(function, inputs=input_)
+        worker = Worker(function, self.mutex, self.cond, inputs=input_)
         worker.signals.new_message.connect(slot)
         worker.signals.problem_with_input.connect(self.open_problem_input)
         worker.signals.finished.connect(self.process_finished)
+        worker.signals.request_data.connect(self.open_information_input)
 
         self.threadpool.start(worker)
 
@@ -479,9 +495,11 @@ class MainWindow(QMainWindow):
                 cols.append(part.strip())
         return cols
 
-
-if __name__ == '__main__':
+def main():
     app = QApplication(sys.argv)
     window = MainWindow()
     window.show()
     sys.exit(app.exec())
+
+if __name__ == '__main__':
+    main()

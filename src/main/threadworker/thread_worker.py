@@ -10,19 +10,27 @@ class WorkerSignals(QObject):
     problem_with_input = pyqtSignal(str)
     new_message = pyqtSignal(str)
     finished = pyqtSignal()
+    request_data = pyqtSignal(str)
+    data_response = pyqtSignal(str)
 
 
 class Worker(QRunnable):
 
-    def __init__(self, function, *args, **kwargs):
+    def __init__(self, function, mutex, condition, *args, **kwargs):
         super(Worker, self).__init__()
 
         self.function = function
+        self.mutex = mutex
+        self.condition = condition
         self.args = args
         self.kwargs = kwargs
         self.signals = WorkerSignals()
 
         self.kwargs['progress_callback'] = self.signals.new_message
+
+        self.kwargs['get_data'] = self.get_input
+        self.signals.data_response.connect(self.set_input)
+        self.user_input = None
 
     @pyqtSlot()
     def run(self) -> None:
@@ -52,3 +60,15 @@ class Worker(QRunnable):
         if result:
             self.signals.new_message.emit("Probleme:")
         [self.signals.new_message.emit(f"- {x}") for x in result if x]
+
+    def get_input(self, text):
+        self.signals.request_data.emit(text)
+        self.mtx.lock()
+        try:
+            self.cond.wait(self.mtx)
+        finally:
+            self.mtx.unlock()
+        return self.user_input
+
+    def set_input(self, input_):
+        self.user_input = input_
