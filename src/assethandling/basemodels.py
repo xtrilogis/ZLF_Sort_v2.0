@@ -25,29 +25,9 @@ class FolderTabInput(BaseModel):
     date: datetime
 
 
-class ExcelInput(BaseModel):
-    excel_folder: Path | None
-    excel_file_name: str = f"Zeltlagerfilm {datetime.now().date().year}.xlsx"
-    video_columns: List[str] = settings["standard-video-columns"]
-    picture_columns: List[str] = settings["standard-picture-columns"]
-    override: bool = False
-
-
-class ExcelConfig(BaseModel):
-    excel_folder: Path
-    excel_file_name: str = f"Zeltlagerfilm {datetime.now().date().year}.xlsx"
-    sheets: List[SheetConfig]
-
-
+# Todo new basemodels for raw
 class RawTabInput(BaseModel):
     do_structure: bool
-    do_rename: bool
-    fill_excel: bool
-    create_picture_folder: bool
-    raw_material_folder: Path
-    first_folder_date: datetime
-    excel: Path | ExcelInput | None
-    picture_folder: Path
 
 
 class UtilTabInput(BaseModel):

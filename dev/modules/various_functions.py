@@ -193,6 +193,15 @@ def run(function, titel, **kwargs):
     pass
 
 
+class Mai(BaseModel):
+    eigenschaft: str
+
+
+class Sdf(Mai):
+    some_value: str
+
+
 if __name__ == '__main__':
-    run(some_fn, titel="sfda", bla="asdf", input=[1, 2, 4])
+    # run(some_fn, titel="sfda", bla="asdf", input=[1, 2, 4])
+    nums = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     pass
