@@ -82,12 +82,10 @@ def run_create_excel(inputs: RawTabInput, progress_callback, get_data) -> Path:
     if not is_valid_folder(inputs.excel.folder):
         raise AttributeError("The given folder is not a valid folder.")
 
-    if not is_valid_folder(inputs.excel.excel_folder):
-        raise AttributeError("Incorrect Input.")
-
     progress_callback.emit("Starte Excel erstellen.")
-    path = raw_connector.handle_create_excel(config=inputs.excel, get_data=get_data)
-    progress_callback.emit("Excel-Datei erfolgreich erstellt")
+    path = raw_connector.handle_create_excel(config_=inputs.excel,
+                                             get_data=get_data,
+                                             progress_callback=progress_callback)
     return path
 
 

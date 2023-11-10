@@ -63,11 +63,11 @@ class Worker(QRunnable):
 
     def get_input(self, text):
         self.signals.request_data.emit(text)
-        self.mtx.lock()
+        self.mutex.lock()
         try:
-            self.cond.wait(self.mtx)
+            self.condition.wait(self.mutex)
         finally:
-            self.mtx.unlock()
+            self.mutex.unlock()
         return self.user_input
 
     def set_input(self, input_):

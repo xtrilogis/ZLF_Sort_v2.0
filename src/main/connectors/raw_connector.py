@@ -24,22 +24,24 @@ def handle_create_picture_folder(raw_material_folder, folder: Path):
                                      raw_material_folder=raw_material_folder)
 
 
-def handle_create_excel(config: ExcelInput, get_data):
+def handle_create_excel(config_: ExcelInput, get_data, progress_callback):
     vid = constants.minimal_columns.copy()
-    vid.extend(config.video_columns)
+    vid.extend(config_.video_columns)
     pic = constants.minimal_columns.copy()
-    pic.extend(config.picture_columns)
+    pic.extend(config_.picture_columns)
     config = ExcelConfig(
-        excel_folder=config.excel_folder,
-        excel_file_name=config.excel_file_name,
+        excel_folder=config_.folder,
+        excel_file_name=config_.name,
         sheets=[SheetConfig(name="Videos", columns=vid),
                 SheetConfig(name="Bilder", columns=pic)]
     )
     try:
-        path = create_emtpy_excel(config=config)
+        return create_emtpy_excel(config=config)
     except FileExistsError:
         # todo
         override: str = get_data(text="Excel existiert bereits. Soll sie überschrieben werden? j/n")
-        res = override.lower() == "j"
-        path = create_emtpy_excel(config=config, override=res)
-    return path
+        if override.lower() == "j":
+            path = create_emtpy_excel(config=config, override=True)
+            progress_callback.emit("Excel-Datei erfolgreich erstellt")
+            return path
+        progress_callback.emit("Excel wurde nicht erstellt, da die Datei bereits vorhanden ist.")

@@ -171,7 +171,7 @@ class MainWindow(QMainWindow):
             lambda: self.run_raw_action(function=runners.run_rename_files))
         # todo
         self.ui.pb_create_excel.clicked.connect(
-            lambda: self.raw_with_excel(function=runners.run_create_excel))
+            lambda: self.run_raw_action(function=runners.run_create_excel))
         # todo
         self.ui.pb_fill_excel.clicked.connect(
             lambda: self.raw_with_excel(function=runners.run_fill_excel))
@@ -277,18 +277,6 @@ class MainWindow(QMainWindow):
             self.sender().data_response.emit(text)
         self.cond.wakeAll()
 
-    # todo
-    @pyqtSlot()
-    def open_excel_exists(self):
-        """Opens a message box displaying a given error"""
-        msg = messageboxes.excel_exists("Die angegebene Excel-Datei existiert bereits.")
-        msg.buttonClicked.connect(self.handle_excel_choice)
-        msg.exec()
-
-    def handle_excel_choice(self, i):
-        if "Überschreiben" in i.text():
-            self.raw_with_excel(function=self.current_function, override=True)
-
     @pyqtSlot()
     def process_finished(self):
         self.enable_work_buttons()
@@ -313,7 +301,7 @@ class MainWindow(QMainWindow):
         self.run_action(function=function, slot=self.write_process_setup, input_=data)
 
     # ------------------------- todo ------------------
-    def get_raw_input_new(self) -> RawTabInput:
+    def get_raw_input(self) -> RawTabInput:
         data = {
             "do_structure": self.ui.cb_structure.isChecked(),
             "do_rename": self.ui.cb_rename.isChecked(),
@@ -359,7 +347,7 @@ class MainWindow(QMainWindow):
             return Path(self.ui.drop_picture_folder.text())
         return raw_material_folder.parent / "Bilderordner"
 
-    def run_raw_action_new(self, function):
+    def run_raw_action(self, function):
         try:
             data: RawTabInput = self.get_raw_input()
         except (ValidationError, ValueError) as e:
