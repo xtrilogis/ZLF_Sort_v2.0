@@ -40,7 +40,7 @@ class ExcelInput(BaseModel):
 
     @property
     def full_path(self) -> Path:
-        return self.folder.joinpath(self.name)
+        return self.folder / self.name
 
 
 class ExcelConfig(BaseModel):
