@@ -25,6 +25,14 @@ def handle_create_picture_folder(raw_material_folder, folder: Path):
 
 
 def handle_create_excel(config_: ExcelInput, get_data, progress_callback):
+    """
+    Creates an Excel file with the given configuration,
+    if the file already exists, user is asked for permission to override a file
+    :param config_: Configuration given by the user input
+    :param get_data: method to request user permission
+    :param progress_callback: method to send current state to UI
+    :return: path to the Excel file if successfully, None otherwise
+    """
     vid = constants.minimal_columns.copy()
     vid.extend(config_.video_columns)
     pic = constants.minimal_columns.copy()
@@ -38,7 +46,6 @@ def handle_create_excel(config_: ExcelInput, get_data, progress_callback):
     try:
         return create_emtpy_excel(config=config)
     except FileExistsError:
-        # todo
         override: str = get_data(text="Excel existiert bereits. Soll sie überschrieben werden? j/n")
         if override.lower() == "j":
             path = create_emtpy_excel(config=config, override=True)
