@@ -21,8 +21,6 @@ from rawmaterial import raw_material as raw
 from util import util_methods as eval_
 from pandas import DataFrame
 
-# !! TODO Add get_data as kwargs
-
 
 # Todo duplicate with Worker send_result_list
 def pretty_send_list(list_: List[str], progress_callback, titel=""):
@@ -90,13 +88,13 @@ def run_create_excel(inputs: RawTabInput, progress_callback, get_data) -> Path:
 
 
 def run_fill_excel(inputs: RawTabInput, progress_callback, get_data) -> str:
-    if isinstance(inputs.excel, ExcelInput):
-        path = run_create_excel(inputs, progress_callback, get_data)
-        inputs.excel = path
+    if inputs.excel.option == ExcelOption.CREATE:
+        run_create_excel(inputs, progress_callback, get_data)
+
     run_raw_processes(function=raw_connector.handle_fill_excel,
                       titel="Dateien in Excel schreiben.",
                       progress_callback=progress_callback,
-                      excel=inputs.excel,
+                      excel=inputs.excel.full_path,
                       raw_material_folder=inputs.raw_material_folder)
 
     return "Dateien in Excel schreiben abgeschlossen."
