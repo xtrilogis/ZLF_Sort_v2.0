@@ -8,26 +8,56 @@ from pydantic import BaseModel
 from assethandling.asset_manager import settings
 
 
+class FolderTabInput(BaseModel):
+    folder: Path
+    date: datetime
+
+
 class SheetConfig(BaseModel):
     name: str
     columns: List[str]
 
 
-class ExcelOptions(Enum):
+class ExcelInputOptions(Enum):
     # TODO bessere Beschriftung
     STANDARD = "Standard"
     MANUAL = "Manuelle Einstellungen"
     EXISTING = "Vorhandene Excel-Datei"
 
 
-class FolderTabInput(BaseModel):
+class ExcelOption(Enum):
+    EXISTING = "existing"
+    CREATE = "create"
+
+
+class ExcelInput(BaseModel):
+    option: ExcelOption
+    name: str = f"Zeltlagerfilm {datetime.now().date().year}.xlsx"
     folder: Path
-    date: datetime
+    full_path: Path
+    video_columns: List[str] = settings["standard-video-columns"]
+    picture_columns: List[str] = settings["standard-picture-columns"]
+
+    @property
+    def full_path(self) -> Path:
+        return self.folder.joinpath(self.name)
 
 
-# Todo new basemodels for raw
+class ExcelConfig(BaseModel):
+    excel_folder: Path
+    excel_file_name: str = f"Zeltlagerfilm {datetime.now().date().year}.xlsx"
+    sheets: List[SheetConfig]
+
+
 class RawTabInput(BaseModel):
     do_structure: bool
+    do_rename: bool
+    fill_excel: bool
+    create_picture_folder: bool
+    raw_material_folder: Path
+    first_folder_date: datetime
+    excel: ExcelInput
+    picture_folder: Path
 
 
 class UtilTabInput(BaseModel):

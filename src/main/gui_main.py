@@ -14,8 +14,8 @@ from pathlib import Path
 from pydantic import ValidationError
 
 from assethandling.asset_manager import settings
-from assethandling.basemodels import UtilTabInput, RawTabInput, FolderTabInput,\
-    ExcelOptions, ExcelInput
+from assethandling.basemodels import UtilTabInput, RawTabInput, FolderTabInput, \
+    ExcelInputOptions, ExcelInput, ExcelOption
 from ui import Ui_MainWindow, messageboxes, SelectionDialog
 from src.main.threadworker.thread_worker import Worker
 from src.main.runner import runners
@@ -65,13 +65,13 @@ class MainWindow(QMainWindow):
 
     def show_frame(self):
         text = self.ui.excel_option.currentText()
-        if text == ExcelOptions.STANDARD.value:
+        if text == ExcelInputOptions.STANDARD.value:
             self.ui.help_standard_excel.show()
             self.ui.excel_path.hide()
             self.ui.manuel_columns.hide()
             self.ui.frame_8.show()
             self.ui.pb_create_excel.show()
-        elif text == ExcelOptions.EXISTING.value:
+        elif text == ExcelInputOptions.EXISTING.value:
             self.ui.help_standard_excel.hide()
             self.ui.excel_path.show()
             self.ui.manuel_columns.hide()
@@ -269,6 +269,7 @@ class MainWindow(QMainWindow):
 
     @pyqtSlot(str)
     def open_information_input(self, text: str):
+        # feat: text is a code, witch is mapped to a proper InputDialog
         text, ok = QInputDialog().getText(self, "QInputDialog().getText()",
                                           text, QLineEdit.Normal,
                                           "Input")
@@ -313,9 +314,6 @@ class MainWindow(QMainWindow):
 
     # ------------------------- todo ------------------
     def get_raw_input_new(self) -> RawTabInput:
-        # get all ui informations
-        # deal with logics later
-        # how to handle excel
         data = {
             "do_structure": self.ui.cb_structure.isChecked(),
             "do_rename": self.ui.cb_rename.isChecked(),
@@ -323,9 +321,43 @@ class MainWindow(QMainWindow):
             "create_picture_folder": self.ui.cb_diashow.isChecked(),
             "raw_material_folder": Path(self.ui.drop_raw_rawpath.text()),
             "first_folder_date": self.ui.date_correct_fs.date().toPyDate(),
-            # "excel": excel,
+            "excel": self._get_excel_input()
         }
+        data["picture_folder"] = self._get_picture_folder(data["raw_material_folder"])
         return RawTabInput(**data)
+
+    def _get_excel_input(self) -> ExcelInput:
+        excel_input_option: ExcelInputOptions = ExcelInputOptions(self.ui.excel_option.currentText())
+        if excel_input_option == ExcelInputOptions.EXISTING:
+            filepath: Path = self.ui.drop_raw_excel_file.text()
+            data = {
+                "option": ExcelOption.EXISTING,
+                "name": filepath.name,
+                "folder": filepath.parent,
+                "video_columns": [],  # use default value instead?
+                "picture_columns": []
+            }
+        elif excel_input_option == ExcelInputOptions.MANUAL:
+            data = {
+                "option": ExcelOption.CREATE,
+                "name": self.ui.le_excel_file_name.text(),
+                "folder": Path(self.ui.drop_excel_folder.text()),
+                "video_columns": self.get_PlainTextEdit_parts(self.ui.vid_columns),
+                "picture_columns": self.get_PlainTextEdit_parts(self.ui.pic_columns)
+            }
+        else:
+            data = {
+                "option": ExcelOption.CREATE,
+                "folder": Path(self.ui.drop_raw_rawpath.text()),
+            }
+        return ExcelInput(**data)
+
+    def _get_picture_folder(self, raw_material_folder: Path):
+        if self.ui.custom_picture_folder.isChecked():
+            if self.ui.drop_picture_folder.text() == "":
+                raise ValueError("Bitte gib einen Speicherort für den Bilderordner an.")
+            return Path(self.ui.drop_picture_folder.text())
+        return raw_material_folder.parent / "Bilderordner"
 
     def run_raw_action_new(self, function):
         try:
