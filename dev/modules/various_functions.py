@@ -16,6 +16,7 @@ from pydantic import BaseModel
 from assets import constants
 from excel import excelmethods
 from fileopertations.filemethods import copy_file
+from pathlib import Path
 
 name = 97  # kleines a in ascii
 # print(chr(name+1))
@@ -200,8 +201,20 @@ class Mai(BaseModel):
 class Sdf(Mai):
     some_value: str
 
+class ExcelInput(BaseModel):
+    # option: ExcelOption
+    name: str = f"Zeltlagerfilm" # {datetime.now().date().year}.xlsx"
+    folder: Path
+    # full_path: Path
+    #video_columns: List[str] = settings["standard-video-columns"]
+    # picture_columns: List[str] = settings["standard-picture-columns"]
+
+    @property
+    def full_path(self) -> Path:
+        return self.folder.joinpath(self.name)
 
 if __name__ == '__main__':
     # run(some_fn, titel="sfda", bla="asdf", input=[1, 2, 4])
     nums = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    res = ExcelInput(folder=Path("test/path"))
     pass

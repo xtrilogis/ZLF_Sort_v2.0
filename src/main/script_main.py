@@ -8,7 +8,7 @@ from pathlib import Path
 from pydantic import ValidationError
 
 from assethandling.asset_manager import settings
-from assethandling.basemodels import UtilTabInput, RawTabInput, FolderTabInput, ExcelOptions, ExcelInput
+from assethandling.basemodels import UtilTabInput, RawTabInput, FolderTabInput, ExcelInputOptions, ExcelInput
 from ui import Worker
 from runner import runners
 
@@ -36,7 +36,7 @@ data_raw = {
     "video_columns": settings["standard-video-columns"],
     "picture_columns": settings["standard-picture-columns"],
     "excel_file_name": f"Zeltlagerfilm {datetime.now().date().year}.xlsx",
-    "excel_option": ExcelOptions.STANDARD
+    "excel_option": ExcelInputOptions.STANDARD
 }
 
 
@@ -210,8 +210,8 @@ class Main:
     def excel(self, override) -> Path | ExcelInput | None:
         if not data_raw["fill_excel"]:
             return None
-        excel_option: ExcelOptions = data_raw["excel_option"]
-        if excel_option == ExcelOptions.EXISTING:
+        excel_option: ExcelInputOptions = data_raw["excel_option"]
+        if excel_option == ExcelInputOptions.EXISTING:
             return Path(data_raw["excel_full_filepath"])
         else:
             try:
@@ -226,7 +226,7 @@ class Main:
                 self.open_problem_input(str(e))
 
     def _get_excel_input(self, option) -> ExcelInput:
-        if option != ExcelOptions.STANDARD and option != ExcelOptions.MANUAL:
+        if option != ExcelInputOptions.STANDARD and option != ExcelInputOptions.MANUAL:
             error = "Interner Fehler, der Button 'Excel erstellen'\n" \
                     "sollte nicht klickbar sein mit der Option \n" \
                     "vorhandene Excel nutzen. Neustarten."
@@ -238,7 +238,7 @@ class Main:
                     "Für Standards schau dir doch gerne die Anleitung an."
             raise ValueError(error)
         else:
-            if option == ExcelOptions.MANUAL:
+            if option == ExcelInputOptions.MANUAL:
                 config = ExcelInput(
                     excel_folder=Path(data_raw["excel_folder"]),
                     excel_file_name=data_raw["excel_file_name"],

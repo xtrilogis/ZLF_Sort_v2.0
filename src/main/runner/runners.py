@@ -3,7 +3,8 @@ import time
 from pathlib import Path
 from typing import Dict, List
 
-from assethandling.basemodels import UtilTabInput, FolderTabInput, RawTabInput, ExcelInput, ExcelConfig, SheetConfig
+from assethandling.basemodels import UtilTabInput, FolderTabInput, RawTabInput, ExcelInput, ExcelConfig, SheetConfig, \
+    ExcelOption
 from assets import constants
 from src.main.connectors import raw_connector, util_connector
 
@@ -75,22 +76,17 @@ def run_rename_files(inputs: RawTabInput, progress_callback, get_data) -> str:
 
 
 def run_create_excel(inputs: RawTabInput, progress_callback, get_data) -> Path:
-    # todo create connector
+    if inputs.excel.option != ExcelOption.CREATE:
+        raise AttributeError("Can't call create Excel for existing Excel.")
+
+    if not is_valid_folder(inputs.excel.folder):
+        raise AttributeError("The given folder is not a valid folder.")
+
     if not is_valid_folder(inputs.excel.excel_folder):
         raise AttributeError("Incorrect Input.")
 
     progress_callback.emit("Starte Excel erstellen.")
-    vid = constants.minimal_columns.copy()
-    vid.extend(inputs.excel.video_columns)
-    pic = constants.minimal_columns.copy()
-    pic.extend(inputs.excel.picture_columns)
-    config = ExcelConfig(
-        excel_folder=inputs.excel.excel_folder,
-        excel_file_name=inputs.excel.excel_file_name,
-        sheets=[SheetConfig(name="Videos", columns=vid),
-                SheetConfig(name="Bilder", columns=pic)]
-    )
-    path = create_emtpy_excel(config=config, override=inputs.excel.override)
+    path = raw_connector.handle_create_excel(config=inputs.excel, get_data=get_data)
     progress_callback.emit("Excel-Datei erfolgreich erstellt")
     return path
 
@@ -109,11 +105,13 @@ def run_fill_excel(inputs: RawTabInput, progress_callback, get_data) -> str:
 
 
 def run_create_picture_folder(inputs: RawTabInput, progress_callback, get_data) -> str:
-    run_raw_processes(function=raw_connector.handle_create_picture_folder,
+    result = run_raw_processes(function=raw_connector.handle_create_picture_folder,
                       titel="Bilderordner erstellen.",
                       progress_callback=progress_callback,
                       folder=inputs.picture_folder,
                       raw_material_folder=inputs.raw_material_folder)
+    # result.append("Bilderordner erstellen abgeschlossen.")
+    # return result
     return "Bilderordner erstellen abgeschlossen."
 
 
@@ -127,7 +125,7 @@ def run_process_raw_full(inputs: RawTabInput, progress_callback, get_data) -> st
     for key, value in mapping.items():
         if value[0]:
             try:
-                result = value[1](inputs=inputs, progress_callback=progress_callback)
+                result = value[1](inputs=inputs, progress_callback=progress_callback, get_data=get_data)
                 progress_callback.emit(result)
             except Exception as e:
                 pretty_send_list(titel=f"{key} erstellen.", list_=[str(e)], progress_callback=progress_callback)
@@ -141,6 +139,7 @@ def run_raw_processes(function, progress_callback, titel, **kwargs):
     progress_callback.emit("Inputs validiert")
 
     result = function(**kwargs)
+    # return result
     pretty_send_list(titel=titel, list_=result, progress_callback=progress_callback)
 
 

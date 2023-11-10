@@ -21,7 +21,12 @@ def create_folder(parent: Path, folder: str) -> Path:
 
 
 def copy_file(src_file: Path, dst_folder: Path):
-    """ does nothing if the file would be copied to its location"""
+    """
+    copy the given file to the given folder
+    Note: if a file with the same name already exists
+    the file will be renamed to filename(nr), nr will be increased until the name doesn't exists
+    """
+    # feat: make overwrite possible/optional
     if not dst_folder.exists():
         dst_folder.mkdir(parents=True)
     file_dst: Path = dst_folder / src_file.name

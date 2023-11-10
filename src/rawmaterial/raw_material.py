@@ -15,18 +15,20 @@ locale.setlocale(locale.LC_TIME, 'de_DE.utf8')
 
 def correct_file_structure(raw_material_folder: Path, dst_folder: Path, start: datetime) -> List[str]:
     errors = []
-    check_if_right_structure()
+    _check_if_right_structure()
 
     all_files: List[File] = _get_all_files(raw_material_folder=raw_material_folder, errors=errors)
     structure: Dict[str | date, Dict[str, List[File]]] = _create_structure(start_date=start)
 
     _fill_structure(structure=structure, all_files=all_files)
-    _copy_files(structure=structure, dst_folder=dst_folder, errors=errors)
+    # idea: check if folder exists, ask for permission to override
+    # override = get_data(text="Im angegebenen Ordner existieren schon Dateien, sollen diese Überschrieben werden?")
+    _copy_file_structure(structure=structure, dst_folder=dst_folder, errors=errors)
 
     return errors
 
 
-def check_if_right_structure():
+def _check_if_right_structure():
     # Todo
     pass
 
@@ -72,7 +74,7 @@ def _fill_structure(structure: Dict[str | date, Dict[str, List[File]]], all_file
             structure["Sonstiges"][file.type.value].append(file)
 
 
-def _copy_files(structure: Dict[str | date, Dict[str, List[File]]], dst_folder: Path, errors: List[str]):
+def _copy_file_structure(structure: Dict[str | date, Dict[str, List[File]]], dst_folder: Path, errors: List[str]):
     letter = 97
     for key, value in structure.items():
         if isinstance(key, date):
@@ -95,6 +97,8 @@ def _copy_files(structure: Dict[str | date, Dict[str, List[File]]], dst_folder: 
 
 
 def run_rename(raw_material_folder: Path) -> List[str]:
+    # todo: msg when no files renamed
+    # todo: reduce duplicated code
     errors: List[str] = []
     if _is_folder_with_material(raw_material_folder):
         all_files: List[File] = []
@@ -128,6 +132,7 @@ def fill_excel(excel: Path, raw_material_folder: Path) -> List[str]:
     errors: List[str] = []
     sheets: Dict[str, pd.DataFrame] = load_sheets_as_df(excel)
     if not sheets["Videos"].empty or not sheets["Bilder"].empty:
+        # feat: ask if Excel should be overwritten
         raise ValueError("Die Excel enthält bereits Daten.")
 
     for element in raw_material_folder.glob('**/*'):
@@ -159,6 +164,7 @@ def _add_child_files(folder: Path, sheets: Dict[str, pd.DataFrame], errors: List
 
 
 def create_picture_folder(picture_folder: Path, raw_material_folder: Path) -> List[str]:
+    # feat: check if folder contains elements and then ask for handling
     errors: List[str] = []
     for element in raw_material_folder.glob('**/*'):
         if element.suffix.upper() in constants.image_extensions:
