@@ -23,7 +23,7 @@ from pandas import DataFrame
 
 
 # Todo duplicate with Worker send_result_list
-def pretty_send_list(list_: List[str], progress_callback, titel=""):
+def pretty_send_problems(list_: List[str], progress_callback, titel=""):
     progress_callback.emit(titel)
     if list_:
         progress_callback.emit("Probleme:")
@@ -49,31 +49,42 @@ def run_folder_setup(inputs: FolderTabInput, progress_callback, get_data) -> str
         folder_setup.create_folder_structure(parent=inputs.folder, date=inputs.date)
         progress_callback.emit("Ordner erfolgreich erstellt.")
     else:
-        pretty_send_list(titel="Ordner erstellen", list_=errors, progress_callback=progress_callback)
+        pretty_send_problems(titel="Ordner erstellen", list_=errors, progress_callback=progress_callback)
     return "Ordnerstruktur erfolgreich erstellt"
 
 
 # ### RAW ### #
-def run_correct_structure(inputs: RawTabInput, progress_callback, get_data) -> str:
-    run_raw_processes(progress_callback=progress_callback,
-                      titel="Korrekte Ordnerstruktur",
-                      function=raw.correct_file_structure,
-                      raw_material_folder=inputs.raw_material_folder,
-                      dst_folder=inputs.raw_material_folder.parent / "New",
-                      start=inputs.first_folder_date
-                      )
-    return "Korrekte Ordnerstruktur abgeschlossen."
+def raw_process(titel):
+    def decor(func):
+        def wrap(*args, **kwargs):
+            progress_callback = kwargs["progress_callback"]
+
+            if not is_valid_folder(kwargs["inputs"].raw_material_folder):
+                raise ValueError("Bitte gib einen gültigen Rohmaterial ordner an.")
+            progress_callback.emit("Inputs validiert")
+
+            result = func(*args, **kwargs)
+            pretty_send_problems(titel=titel, list_=result, progress_callback=progress_callback)
+            return f"{titel} abgeschlossen."
+
+        return wrap
+
+    return decor
 
 
-def run_rename_files(inputs: RawTabInput, progress_callback, get_data) -> str:
-    run_raw_processes(progress_callback=progress_callback,
-                      titel="Dateien umbenennen",
-                      function=raw.run_rename,
-                      raw_material_folder=inputs.raw_material_folder)
-    return "Umbenennen abgeschlossen."
+@raw_process("Korrekte Ordnerstruktur")
+def run_correct_structure(inputs: RawTabInput, **kwargs) -> List[str]:
+    return raw.correct_file_structure(raw_material_folder=inputs.raw_material_folder,
+                                      dst_folder=inputs.raw_material_folder.parent / "New",
+                                      start=inputs.first_folder_date)
 
 
-def run_create_excel(inputs: RawTabInput, progress_callback, get_data) -> Path:
+@raw_process("Dateien umbenennen")
+def run_rename_files(inputs: RawTabInput, **kwargs) -> List[str]:
+    return raw.run_rename(raw_material_folder=inputs.raw_material_folder)
+
+
+def run_create_excel(inputs: RawTabInput, progress_callback, get_data, **kwargs) -> Path:
     if inputs.excel.option != ExcelOption.CREATE:
         raise AttributeError("Can't call create Excel for existing Excel.")
 
@@ -87,28 +98,18 @@ def run_create_excel(inputs: RawTabInput, progress_callback, get_data) -> Path:
     return path
 
 
-def run_fill_excel(inputs: RawTabInput, progress_callback, get_data) -> str:
+@raw_process("Dateien in Excel schreiben")
+def run_fill_excel(inputs: RawTabInput, progress_callback, get_data, **kwargs) -> List[str]:
     if inputs.excel.option == ExcelOption.CREATE:
         run_create_excel(inputs, progress_callback, get_data)
-
-    run_raw_processes(function=raw_connector.handle_fill_excel,
-                      titel="Dateien in Excel schreiben.",
-                      progress_callback=progress_callback,
-                      excel=inputs.excel.full_path,
-                      raw_material_folder=inputs.raw_material_folder)
-
-    return "Dateien in Excel schreiben abgeschlossen."
+    return raw_connector.handle_fill_excel(excel=inputs.excel.full_path,
+                                           raw_material_folder=inputs.raw_material_folder)
 
 
-def run_create_picture_folder(inputs: RawTabInput, progress_callback, get_data) -> str:
-    result = run_raw_processes(function=raw_connector.handle_create_picture_folder,
-                      titel="Bilderordner erstellen.",
-                      progress_callback=progress_callback,
-                      folder=inputs.picture_folder,
-                      raw_material_folder=inputs.raw_material_folder)
-    # result.append("Bilderordner erstellen abgeschlossen.")
-    # return result
-    return "Bilderordner erstellen abgeschlossen."
+@raw_process("Bilderordner erstellen")
+def run_create_picture_folder(inputs: RawTabInput, **kwargs) -> List[str]:
+    return raw_connector.handle_create_picture_folder(raw_material_folder=inputs.raw_material_folder,
+                                                      folder=inputs.picture_folder)
 
 
 def run_process_raw_full(inputs: RawTabInput, progress_callback, get_data) -> str:
@@ -124,19 +125,19 @@ def run_process_raw_full(inputs: RawTabInput, progress_callback, get_data) -> st
                 result = value[1](inputs=inputs, progress_callback=progress_callback, get_data=get_data)
                 progress_callback.emit(result)
             except Exception as e:
-                pretty_send_list(titel=f"{key} erstellen.", list_=[str(e)], progress_callback=progress_callback)
+                pretty_send_problems(titel=f"{key} erstellen.", list_=[str(e)], progress_callback=progress_callback)
     return "Prozessierung abgeschlossen."
 
 
-# todo utilize get_data, move ?
-def run_raw_processes(function, progress_callback, titel, **kwargs):
-    if not is_valid_folder(kwargs["raw_material_folder"]):
-        raise ValueError("Bitte gib einen gültigen Rohmaterial ordner an.")
-    progress_callback.emit("Inputs validiert")
-
-    result = function(**kwargs)
-    # return result
-    pretty_send_list(titel=titel, list_=result, progress_callback=progress_callback)
+# # todo utilize get_data, move ?
+# def run_raw_processes(function, progress_callback, titel, **kwargs):
+#     if not is_valid_folder(kwargs["raw_material_folder"]):
+#         raise ValueError("Bitte gib einen gültigen Rohmaterial ordner an.")
+#     progress_callback.emit("Inputs validiert")
+#
+#     result = function(**kwargs)
+#     # return result
+#     pretty_send_problems(titel=titel, list_=result, progress_callback=progress_callback)
 
 
 # ### UTIL ### #
