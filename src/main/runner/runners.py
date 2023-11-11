@@ -23,6 +23,7 @@ from pandas import DataFrame
 
 
 # Todo duplicate with Worker send_result_list
+# use errors Signal
 def pretty_send_problems(list_: List[str], progress_callback, titel=""):
     progress_callback.emit(titel)
     if list_:
@@ -129,52 +130,19 @@ def run_process_raw_full(inputs: RawTabInput, progress_callback, get_data) -> st
     return "Prozessierung abgeschlossen."
 
 
-# # todo utilize get_data, move ?
-# def run_raw_processes(function, progress_callback, titel, **kwargs):
-#     if not is_valid_folder(kwargs["raw_material_folder"]):
-#         raise ValueError("Bitte gib einen gültigen Rohmaterial ordner an.")
-#     progress_callback.emit("Inputs validiert")
-#
-#     result = function(**kwargs)
-#     # return result
-#     pretty_send_problems(titel=titel, list_=result, progress_callback=progress_callback)
-
-
 # ### UTIL ### #
-def run_process_util_full(inputs: UtilTabInput, progress_callback, get_data) -> str:
-    return run_util_processes(util_connector.handle_full_execution, inputs, progress_callback)
+def util_process():
+    def decor(func):
+        def wrap(inputs: UtilTabInput, progress_callback, get_data, *args, **kwargs):
 
+            sheets = validate_and_prepare(raw_material_folder=inputs.raw_material_folder,
+                                          excel_full_filepath=inputs.excel_full_filepath)
+            progress_callback.emit("Inputs validiert und Excel eingelesen.")
 
-def run_copy_sections(inputs: UtilTabInput, progress_callback, get_data) -> str:
-    return run_util_processes(util_connector.handle_sections, inputs, progress_callback)
-
-
-def run_copy_selection(inputs: UtilTabInput, progress_callback, get_data) -> str:
-    return run_util_processes(util_connector.handle_selection, inputs, progress_callback)
-
-
-def run_search(inputs: UtilTabInput, progress_callback, get_data) -> str:
-    return run_util_processes(util_connector.handle_search, inputs, progress_callback)
-
-
-def run_create_rated_picture_folder(inputs: UtilTabInput, progress_callback, get_data) -> str:
-    return run_util_processes(util_connector.handle_picture_folder, inputs, progress_callback)
-
-
-def run_statistics(inputs: UtilTabInput, progress_callback, get_data) -> str:
-    progress_callback.emit("Inputs validiert.")
-    util_connector.handle_statistics(raw_path=inputs.raw_material_folder, progress_callback=progress_callback)
-    return "Statistik fertig."
-
-
-# todo utilize get_data, move?
-def run_util_processes(function, inputs: UtilTabInput, progress_callback) -> str:
-    sheets = validate_and_prepare(raw_material_folder=inputs.raw_material_folder,
-                                  excel_full_filepath=inputs.excel_full_filepath)
-    progress_callback.emit("Inputs validiert und Excel eingelesen.")
-
-    msg = function(sheets=sheets, inputs=inputs, progress_callback=progress_callback)
-    return msg
+            msg = func(sheets=sheets, inputs=inputs, progress_callback=progress_callback)
+            return msg
+        return wrap
+    return decor
 
 
 def validate_and_prepare(raw_material_folder: Path, excel_full_filepath: Path) -> Dict[str, DataFrame]:
@@ -184,3 +152,47 @@ def validate_and_prepare(raw_material_folder: Path, excel_full_filepath: Path) -
         raise ValueError('\n'.join(errors))
     return eval_.prepare_dataframes(excel_file=excel_full_filepath,
                                     raw_path=raw_material_folder)
+
+
+@util_process()
+def run_process_util_full(sheets: Dict[str, DataFrame], inputs: UtilTabInput, progress_callback) -> str:
+    mapping = {
+        "Abschnitte": [inputs.do_sections, util_connector.handle_sections],
+        "Selektionen": [inputs.do_selections, util_connector.handle_selection],
+        "Suche": [inputs.do_search, util_connector.handle_search],
+        "Bilderordner": [inputs.create_picture_folder, util_connector.handle_picture_folder]
+    }
+    for key, value in mapping.items():
+        if value[0]:
+            try:
+                progress_callback.emit(
+                    value[1](sheets=sheets, inputs=inputs, progress_callback=progress_callback))
+            except Exception as e:
+                pretty_send_problems(titel=f"{key} erstellen.", list_=[str(e)], progress_callback=progress_callback)
+    return "Prozessierung abgeschlossen"
+
+
+@util_process()
+def run_copy_sections(sheets: Dict[str, DataFrame], inputs: UtilTabInput, progress_callback) -> str:
+    return util_connector.handle_sections(sheets=sheets, inputs=inputs, progress_callback=progress_callback)
+
+
+@util_process()
+def run_copy_selection(sheets: Dict[str, DataFrame], inputs: UtilTabInput, progress_callback) -> str:
+    return util_connector.handle_selection(sheets=sheets, inputs=inputs, progress_callback=progress_callback)
+
+
+@util_process()
+def run_search(sheets: Dict[str, DataFrame], inputs: UtilTabInput, progress_callback) -> str:
+    return util_connector.handle_search(sheets=sheets, inputs=inputs, progress_callback=progress_callback)
+
+
+@util_process()
+def run_create_rated_picture_folder(sheets: Dict[str, DataFrame], inputs: UtilTabInput, progress_callback) -> str:
+    return util_connector.handle_picture_folder(sheets=sheets, inputs=inputs, progress_callback=progress_callback)
+
+
+def run_statistics(inputs: UtilTabInput, progress_callback, get_data) -> str:
+    progress_callback.emit("Inputs validiert.")
+    util_connector.handle_statistics(raw_path=inputs.raw_material_folder, progress_callback=progress_callback)
+    return "Statistik fertig."

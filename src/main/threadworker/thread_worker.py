@@ -8,6 +8,7 @@ class WorkerSignals(QObject):
     Supported Signals:
     """
     problem_with_input = pyqtSignal(str)
+    # todo errors = pyqtSignal(List[str])
     new_message = pyqtSignal(str)
     finished = pyqtSignal()
     request_data = pyqtSignal(str)
@@ -52,7 +53,7 @@ class Worker(QRunnable):
             else:
                 self.signals.new_message.emit(str(result))
         finally:
-            self.signals.new_message.emit("Done")
+            # self.signals.new_message.emit("Done")
             self.signals.finished.emit()
 
     def send_result_list(self, part: str, result: List[str]):
