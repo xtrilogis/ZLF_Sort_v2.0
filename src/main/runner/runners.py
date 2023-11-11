@@ -22,6 +22,7 @@ def run_folder_setup(inputs: FolderTabInput, progress_callback, get_data) -> str
         setup_methods.create_folder_structure(parent=inputs.folder, date=inputs.date)
         progress_callback.emit("Ordner erfolgreich erstellt.")
     else:
+        # lieber problem with input Signal o.s.
         _pretty_send_problems(titel="Ordner erstellen", list_=errors, progress_callback=progress_callback)
     return "Ordnerstruktur erfolgreich erstellt"
 

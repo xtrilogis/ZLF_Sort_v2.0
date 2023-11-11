@@ -47,10 +47,9 @@ class Worker(QRunnable):
             print(e)
             self.signals.problem_with_input.emit(f"Problem:\n{str(e)}")
         else:
-            # TODO + result is None
             if type(result) == list:
                 self.send_result_list("", result)
-            else:
+            if result:
                 self.signals.new_message.emit(str(result))
         finally:
             # self.signals.new_message.emit("Done")
