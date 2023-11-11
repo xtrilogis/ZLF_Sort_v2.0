@@ -154,19 +154,21 @@ def validate_and_prepare(raw_material_folder: Path, excel_full_filepath: Path) -
                                     raw_path=raw_material_folder)
 
 
-@util_process()
-def run_process_util_full(sheets: Dict[str, DataFrame], inputs: UtilTabInput, progress_callback) -> str:
+# @util_process()
+def run_process_util_full(inputs: UtilTabInput, progress_callback, get_data):
+    # sheets: Dict[str, DataFrame], inputs: UtilTabInput, progress_callback) -> str:
     mapping = {
-        "Abschnitte": [inputs.do_sections, util_connector.handle_sections],
-        "Selektionen": [inputs.do_selections, util_connector.handle_selection],
-        "Suche": [inputs.do_search, util_connector.handle_search],
-        "Bilderordner": [inputs.create_picture_folder, util_connector.handle_picture_folder]
+        "Abschnitte": [inputs.do_sections, run_copy_sections],
+        "Selektionen": [inputs.do_selections, run_copy_selection],
+        "Suche": [inputs.do_search, run_search],
+        "Bilderordner": [inputs.create_picture_folder, run_create_rated_picture_folder]
     }
     for key, value in mapping.items():
         if value[0]:
             try:
+                # !!! signature of util_process
                 progress_callback.emit(
-                    value[1](sheets=sheets, inputs=inputs, progress_callback=progress_callback))
+                    value[1](inputs=inputs, progress_callback=progress_callback, get_data=get_data))
             except Exception as e:
                 pretty_send_problems(titel=f"{key} erstellen.", list_=[str(e)], progress_callback=progress_callback)
     return "Prozessierung abgeschlossen"
