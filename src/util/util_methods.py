@@ -5,6 +5,7 @@ import pandas as pd
 from assets import constants
 from excel import excelmethods
 from fileopertations import filemethods
+from util.stats import statistics
 
 
 def prepare_dataframes(excel_file: Path, raw_path: Path) -> Dict[str, pd.DataFrame]:
@@ -131,3 +132,20 @@ def copy_pictures_with_rating(df: pd.DataFrame, raw_path: Path, rating_limit: in
             filemethods.copy_file(src_file=value,
                                   dst_folder=dst_folder)
     return problems
+
+
+def create_statistics(raw_path: Path, progress_callback):
+    select = raw_path.parent / "Schnittmaterial"
+
+    total_duration, problems, duration_per_day = statistics.get_raw_material_duration(path=raw_path)
+    result = [f"Gesamtdauer: {total_duration}"]
+    progress_callback.emit("Gesamtdauer ermittelt.")
+
+    for day in duration_per_day:
+        result.append(f"Dauer am Tag {day[0]} ist {day[1]}.")
+    progress_callback.emit("Dauer pro Tag ermittelt.")
+
+    result.append(statistics.percent_selected(raw=raw_path, selected=select))
+    progress_callback.emit("Verwendeter Anteil ermittelt.")
+
+    progress_callback.emit('\n'.join(result))
