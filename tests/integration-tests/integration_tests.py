@@ -14,6 +14,7 @@ from src.excel.excelmethods import save_sheets_to_excel
 # this is a sample how to test the gui without actually doing the core work like copying
 @mock.patch("sys.exit")
 @mock.patch("src.main.runner.runners.run_folder_setup")  # change this to a more core function e.g. copy_file
+
 @mock.patch("src.main.gui_main.MainWindow.get_folder_input")
 def test_main(mock_input, mock_fn, sys):
     # moc.return_value = "asdf"
