@@ -62,21 +62,21 @@ class RawTabInput(BaseModel):
 class UtilTabInput(BaseModel):
     raw_material_folder: Path
     excel_full_filepath: Path
-    do_sections: bool
-    do_video_sections: bool
-    do_picture_sections: bool
-    rating_section: int
-    do_selections: bool
-    videos_columns_selection: List[str]
-    picture_columns_selection: List[str]
-    marker: str
-    do_search: bool
-    videos_columns_search: List[str]
-    picture_columns_search: List[str]
-    keywords: List[str]
-    rating_search: int
-    create_picture_folder: bool
-    rating_pictures: int
+    do_sections: bool = False
+    do_video_sections: bool = False
+    do_picture_sections: bool = False
+    rating_section: int = -1
+    do_selections: bool = False
+    videos_columns_selection: List[str] = []
+    picture_columns_selection: List[str] = []
+    marker: str = ""
+    do_search: bool = False
+    videos_columns_search: List[str] = []
+    picture_columns_search: List[str] = []
+    keywords: List[str] = []
+    rating_search: int = -1
+    create_picture_folder: bool = False
+    rating_pictures: int = -1
 
 
 class FileType(Enum):
