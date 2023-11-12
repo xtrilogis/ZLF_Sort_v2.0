@@ -70,7 +70,7 @@ def validate_raw(inputs: RawTabInput):
     if inputs.do_structure and not isinstance(inputs.first_folder_date, datetime): # isinstance übernimmt pydantic
         errors.append("Bitte ein gültiges Datum angeben, ab dem die Ordner erstellt werden.")
     if inputs.fill_excel:
-        errors.extend(validate_excel_file(inputs.excel_file_fullpath))
+        errors.extend(validate_excel_file(inputs.excel.full_path))
     if inputs.create_picture_folder and inputs.picture_folder.drive == "":
         errors.append("Bitte eine gültigen Pfad für die Bilder angeben.")
     if errors:

@@ -26,15 +26,15 @@ def run_folder_setup(inputs: FolderTabInput, progress_callback, get_data) -> str
 # ### RAW ### #
 def raw_process(titel):
     def decor(func):
-        def wrap(*args, **kwargs):
-            progress_callback = kwargs["progress_callback"]
+        def wrap(inputs: RawTabInput, progress_callback, *args, **kwargs):
 
-            if not is_valid_folder(kwargs["inputs"].raw_material_folder):
+            if not is_valid_folder(inputs.raw_material_folder):
                 raise ValueError("Bitte gib einen gültigen Rohmaterialordner an.")
             progress_callback.emit("Inputs validiert")
 
-            result = func(*args, **kwargs)
-            _pretty_send_problems(titel=titel, list_=result, progress_callback=progress_callback)
+            result = func(inputs, progress_callback, *args, **kwargs)
+            if result:
+                _pretty_send_problems(titel=titel, list_=result, progress_callback=progress_callback)
             return f"{titel} abgeschlossen."
 
         return wrap
@@ -121,7 +121,7 @@ def run_process_raw_full(inputs: RawTabInput, progress_callback, get_data) -> st
                 progress_callback.emit(result)
             except Exception as e:
                 _pretty_send_problems(titel=f"{key} erstellen.", list_=[str(e)], progress_callback=progress_callback)
-    return "Prozessierung abgeschlossen."
+    return "Gesammelt ausführen abgeschlossen."
 
 
 # ### UTIL ### #

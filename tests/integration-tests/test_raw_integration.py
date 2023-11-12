@@ -249,7 +249,7 @@ def test_process_raw_full(mock_input, _, mock_copy, __, mock_rename, mock_save, 
         do_rename=True,
         fill_excel=True,
         create_picture_folder=True,
-        raw_material_folder=TEST_PATH / "raw/structured2t",
+        raw_material_folder=TEST_PATH / "raw/structured2",
         first_folder_date=datetime(2023, 7, 27),
         excel=ExcelInput(
             option=ExcelOption.EXISTING,

@@ -162,17 +162,14 @@ class MainWindow(QMainWindow):
 
 
         # ##### BUTTONS "Rohmaterial verarbeiten" ##### #
-        # todo
         self.ui.pb_start_raw_full.clicked.connect(
-            lambda: self.raw_with_excel(function=runners.run_process_raw_full))
+            lambda: self.run_raw_action(function=runners.run_process_raw_full))
         self.ui.pb_correct_fs.clicked.connect(
             lambda: self.run_raw_action(function=runners.run_correct_structure))
         self.ui.pb_rename.clicked.connect(
             lambda: self.run_raw_action(function=runners.run_rename_files))
-        # todo
         self.ui.pb_create_excel.clicked.connect(
             lambda: self.run_raw_action(function=runners.run_create_excel))
-        # todo
         self.ui.pb_fill_excel.clicked.connect(
             lambda: self.run_raw_action(function=runners.run_fill_excel))
         self.ui.pb_create_picture_folder.clicked.connect(
