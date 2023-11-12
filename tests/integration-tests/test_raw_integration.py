@@ -1,3 +1,4 @@
+from pathlib import Path
 from unittest.mock import patch
 from datetime import datetime
 from assethandling.basemodels import RawTabInput
@@ -14,10 +15,6 @@ def test_run_correct_structure(mock_input, sys, mock_fn):
     expectation = [28, 56, 84]  # eig aber check structure fehlt [28, 28, 56]
     for num, value in enumerate(paths):
         mock_input.return_value = RawTabInput(
-            do_structure=True,
-            do_rename=False,
-            fill_excel=False,
-            create_picture_folder=False,
             raw_material_folder=TEST_PATH / value,
             first_folder_date=datetime(2023, 7, 27),
             excel=excel_input_standard,
@@ -32,13 +29,7 @@ def test_run_correct_structure(mock_input, sys, mock_fn):
 @patch("src.main.gui_main.MainWindow.get_raw_input")
 def test_run_correct_structure_errors(mock_input, sys, mock_fn):
     mock_fn.return_value = None
-    paths = ["raw/unstructured/Rohmaterial", "raw/structured1", "raw/structured2"]
-    expectation = [28, 56, 84]  # eig aber check structure fehlt [28, 28, 56]
     mock_input.return_value = RawTabInput(
-        do_structure=True,
-        do_rename=False,
-        fill_excel=False,
-        create_picture_folder=False,
         raw_material_folder=TEST_PATH / "non existent",
         first_folder_date=datetime(2023, 7, 27),
         excel=excel_input_standard,
@@ -46,6 +37,39 @@ def test_run_correct_structure_errors(mock_input, sys, mock_fn):
         )
     main()
     assert mock_fn.call_count == 0
+
+
+@patch("pathlib.Path.rename")
+@patch("sys.exit")
+@patch("src.main.gui_main.MainWindow.get_raw_input")
+def test_run_rename(mock_input, sys, mock_fn):
+    mock_input.return_value = RawTabInput(
+        raw_material_folder=TEST_PATH / "raw/structured1",
+        first_folder_date=datetime(2023, 7, 27),
+        excel=excel_input_standard,
+        picture_folder=TEST_PATH
+    )
+    main()
+    assert mock_fn.call_count == 28
+    assert Path(mock_fn.call_args_list[0].args[0]).name == "07_27_Do-001.jpg"
+
+
+@patch("pathlib.Path.rename")
+@patch("sys.exit")
+@patch("src.main.gui_main.MainWindow.get_raw_input")
+def test_run_rename_errors(mock_input, sys, mock_fn):
+    mock_fn.return_value = None
+    mock_input.return_value = RawTabInput(
+        raw_material_folder=TEST_PATH / "non existent",
+        first_folder_date=datetime(2023, 7, 27),
+        excel=excel_input_standard,
+        picture_folder=TEST_PATH
+        )
+    main()
+    assert mock_fn.call_count == 0
+
+
+# excel, fill, picture_folder, full
 
 # @mock.patch("PyQt5.QtWidgets.QInputDialog.getText")
 # @mock.patch("sys.exit")
@@ -88,3 +112,33 @@ def test_run_correct_structure_errors(mock_input, sys, mock_fn):
 #     )
 #     main()
 #     assert mock_fn.call_count == 0
+
+@patch("pathlib.Path.mkdir")
+@patch("src.main.runner.runners.raw_methods.copy_file")
+@patch("sys.exit")
+@patch("src.main.gui_main.MainWindow.get_raw_input")
+def test_run_create_picture_folder(mock_input, sys, mock_fn, mock_mkdir):
+    mock_input.return_value = RawTabInput(
+        raw_material_folder=TEST_PATH / "raw/structured1",
+        first_folder_date=datetime(2023, 7, 27),
+        excel=excel_input_standard,
+        picture_folder=TEST_PATH
+    )
+    main()
+    assert mock_fn.call_count == 18
+
+
+@patch("pathlib.Path.mkdir")
+@patch("src.main.runner.runners.raw_methods.copy_file")
+@patch("sys.exit")
+@patch("src.main.gui_main.MainWindow.get_raw_input")
+def test_run_create_picture_folder(mock_input, sys, mock_fn, mock_mkdir):
+    mock_fn.return_value = None
+    mock_input.return_value = RawTabInput(
+        raw_material_folder=TEST_PATH / "non existent",
+        first_folder_date=datetime(2023, 7, 27),
+        excel=excel_input_standard,
+        picture_folder=TEST_PATH
+        )
+    main()
+    assert mock_fn.call_count == 0

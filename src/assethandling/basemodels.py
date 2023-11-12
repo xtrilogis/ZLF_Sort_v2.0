@@ -50,10 +50,10 @@ class ExcelConfig(BaseModel):
 
 
 class RawTabInput(BaseModel):
-    do_structure: bool
-    do_rename: bool
-    fill_excel: bool
-    create_picture_folder: bool
+    do_structure: bool = False
+    do_rename: bool = False
+    fill_excel: bool = False
+    create_picture_folder: bool = False
     raw_material_folder: Path
     first_folder_date: datetime
     excel: ExcelInput
