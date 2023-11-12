@@ -7,6 +7,7 @@ from rawmaterial.raw_material import correct_file_structure, run_rename, \
 @mock.patch("rawmaterial.raw_material.copy_file")
 def test_correct_folder_structure(mock_copy, correct_raw):
     # TODO implementation
+    # test if _copy_file_strcture is called with the right structure -> len(keys), per key len(images) and len(videos)
     pass
 
 
