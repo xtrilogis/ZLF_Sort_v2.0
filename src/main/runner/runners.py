@@ -5,7 +5,8 @@ from assethandling.basemodels import UtilTabInput, FolderTabInput, RawTabInput, 
     ExcelOption
 from assets import constants
 
-from inputhandling.validation import validate_util_paths, validate_setup_path, is_valid_folder, validate_excel_file
+from inputhandling.validation import validate_util_paths, validate_setup_path, is_valid_folder, validate_excel_file, \
+    validate_raw
 from excel.excelmethods import create_emtpy_excel
 from foldersetup import folder_setup as setup_methods
 from rawmaterial import raw_material as raw_methods
@@ -116,6 +117,7 @@ def run_create_picture_folder(inputs: RawTabInput, **kwargs) -> List[str]:
 
 
 def run_process_raw_full(inputs: RawTabInput, progress_callback, get_data) -> str:
+    validate_raw(inputs)
     mapping = {
         "Korrekte Ordnerstruktur": [inputs.do_structure, run_correct_structure],
         "Umbenennen": [inputs.do_rename, run_rename_files],

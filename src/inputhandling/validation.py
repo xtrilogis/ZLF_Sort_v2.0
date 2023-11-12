@@ -63,7 +63,7 @@ def validate_setup_path(path: Path):
                          "Bitte Ändern!")
 
 
-def validate_raw(inputs: RawTabInput) -> List[str]:
+def validate_raw(inputs: RawTabInput):
     errors = []
     if not is_valid_folder(inputs.raw_material_folder):
         errors.append("Bitte einen gültigen Rohmaterialordner angeben.")
@@ -73,7 +73,8 @@ def validate_raw(inputs: RawTabInput) -> List[str]:
         errors.extend(validate_excel_file(inputs.excel_file_fullpath))
     if inputs.create_picture_folder and inputs.picture_folder.drive == "":
         errors.append("Bitte eine gültigen Pfad für die Bilder angeben.")
-    return errors
+    if errors:
+        raise ValueError("\n".join(errors))
 
 
 def validate_util_paths(raw_material_folder: Path, excel_full_filepath: Path) -> List[str]:
