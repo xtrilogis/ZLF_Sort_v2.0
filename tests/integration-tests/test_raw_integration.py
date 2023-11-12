@@ -9,8 +9,7 @@ from input_mocks import TEST_PATH, TEST_DATE, excel_input_standard, excel_input_
 @patch("src.main.runner.runners.raw_methods.copy_file")
 @patch("sys.exit")
 @patch("src.main.gui_main.MainWindow.get_raw_input")
-def test_run_correct_structure(mock_input, sys, mock_fn):
-    mock_fn.return_value = None
+def test_run_correct_structure(mock_input, _, mock_fn):
     paths = ["raw/unstructured/Rohmaterial", "raw/structured1", "raw/structured2"]
     expectation = [28, 56, 84]  # eig aber check structure fehlt [28, 28, 56]
     for num, value in enumerate(paths):
@@ -27,8 +26,7 @@ def test_run_correct_structure(mock_input, sys, mock_fn):
 @patch("src.main.runner.runners.raw_methods.copy_file")
 @patch("sys.exit")
 @patch("src.main.gui_main.MainWindow.get_raw_input")
-def test_run_correct_structure_errors(mock_input, sys, mock_fn):
-    mock_fn.return_value = None
+def test_run_correct_structure_errors(mock_input, _, mock_fn):
     mock_input.return_value = RawTabInput(
         raw_material_folder=TEST_PATH / "non existent",
         first_folder_date=datetime(2023, 7, 27),
@@ -42,7 +40,7 @@ def test_run_correct_structure_errors(mock_input, sys, mock_fn):
 @patch("pathlib.Path.rename")
 @patch("sys.exit")
 @patch("src.main.gui_main.MainWindow.get_raw_input")
-def test_run_rename(mock_input, sys, mock_fn):
+def test_run_rename(mock_input, _, mock_fn):
     mock_input.return_value = RawTabInput(
         raw_material_folder=TEST_PATH / "raw/structured1",
         first_folder_date=datetime(2023, 7, 27),
@@ -57,8 +55,7 @@ def test_run_rename(mock_input, sys, mock_fn):
 @patch("pathlib.Path.rename")
 @patch("sys.exit")
 @patch("src.main.gui_main.MainWindow.get_raw_input")
-def test_run_rename_errors(mock_input, sys, mock_fn):
-    mock_fn.return_value = None
+def test_run_rename_errors(mock_input, _, mock_fn):
     mock_input.return_value = RawTabInput(
         raw_material_folder=TEST_PATH / "non existent",
         first_folder_date=datetime(2023, 7, 27),
@@ -73,9 +70,8 @@ def test_run_rename_errors(mock_input, sys, mock_fn):
 @patch("excel.excelmethods.save_sheets_to_excel")
 @patch("sys.exit")
 @patch("src.main.gui_main.MainWindow.get_raw_input")
-def test_excel_creation_override(mock_input, sys, mock_fn, mock_input_dialog):
+def test_excel_creation_override(mock_input, _, mock_fn, mock_input_dialog):
     mock_input_dialog.return_value = "j", True
-    mock_fn.return_value = None
     mock_input.return_value = RawTabInput(
         raw_material_folder=TEST_PATH,
         first_folder_date=TEST_DATE,
@@ -92,9 +88,8 @@ def test_excel_creation_override(mock_input, sys, mock_fn, mock_input_dialog):
 @patch("excel.excelmethods.save_sheets_to_excel")
 @patch("sys.exit")
 @patch("src.main.gui_main.MainWindow.get_raw_input")
-def test_excel_creation_no_override(mock_input, sys, mock_fn, mock_input_dialog):
+def test_excel_creation_no_override(mock_input, _, mock_fn, mock_input_dialog):
     mock_input_dialog.return_value = "n", True
-    mock_fn.return_value = None
     mock_input.return_value = RawTabInput(
         raw_material_folder=TEST_PATH,
         first_folder_date=datetime.now(),
@@ -106,10 +101,10 @@ def test_excel_creation_no_override(mock_input, sys, mock_fn, mock_input_dialog)
 
 
 @patch("src.main.runner.runners.raw_methods.save_sheets_to_excel")
-@patch("src.main.runner.runners.create_emtpy_excel")
+@patch("src.main.runner.runners.raw_methods.create_emtpy_excel")
 @patch("sys.exit")
 @patch("src.main.gui_main.MainWindow.get_raw_input")
-def test_fill_excel_creation(mock_input, sys, mock_create, mock_save):
+def test_fill_excel_creation(mock_input, _, mock_create, mock_save):
     excel_input: ExcelInput = ExcelInput(
         option=ExcelOption.CREATE,
         name="ok_empty.xlsx",
@@ -132,7 +127,7 @@ def test_fill_excel_creation(mock_input, sys, mock_create, mock_save):
 @patch("excel.excelmethods.save_sheets_to_excel")
 @patch("sys.exit")
 @patch("src.main.gui_main.MainWindow.get_raw_input")
-def test_fill_excel_creation_override(mock_input, sys, mock_fn1, mock_fn, mock_input_dialog):
+def test_fill_excel_creation_override(mock_input, _, mock_fn1, mock_fn, mock_input_dialog):
     mock_input_dialog.return_value = "j", True
     mock_input.return_value = RawTabInput(
         raw_material_folder=TEST_PATH,
@@ -155,7 +150,7 @@ def test_fill_excel_creation_override(mock_input, sys, mock_fn1, mock_fn, mock_i
 @patch("src.main.runner.runners.raw_methods.save_sheets_to_excel")
 @patch("sys.exit")
 @patch("src.main.gui_main.MainWindow.get_raw_input")
-def test_fill_excel(mock_input, sys, mock_fn):
+def test_fill_excel(mock_input, _, mock_fn):
     mock_input.return_value = RawTabInput(
         raw_material_folder=TEST_PATH,
         first_folder_date=TEST_DATE,
@@ -173,7 +168,7 @@ def test_fill_excel(mock_input, sys, mock_fn):
 @patch("src.main.runner.runners.raw_methods.save_sheets_to_excel")
 @patch("sys.exit")
 @patch("src.main.gui_main.MainWindow.get_raw_input")
-def test_fill_excel_errors(mock_input, sys, mock_fn):
+def test_fill_excel_errors(mock_input, _, mock_fn):
     mock_input.side_effect = [
         RawTabInput(
             raw_material_folder=TEST_PATH,
@@ -215,7 +210,7 @@ def test_fill_excel_errors(mock_input, sys, mock_fn):
 @patch("src.main.runner.runners.raw_methods.copy_file")
 @patch("sys.exit")
 @patch("src.main.gui_main.MainWindow.get_raw_input")
-def test_run_create_picture_folder(mock_input, sys, mock_fn, mock_mkdir):
+def test_run_create_picture_folder(mock_input, _, mock_fn, __):
     mock_input.return_value = RawTabInput(
         raw_material_folder=TEST_PATH / "raw/structured1",
         first_folder_date=datetime(2023, 7, 27),
@@ -230,7 +225,7 @@ def test_run_create_picture_folder(mock_input, sys, mock_fn, mock_mkdir):
 @patch("src.main.runner.runners.raw_methods.copy_file")
 @patch("sys.exit")
 @patch("src.main.gui_main.MainWindow.get_raw_input")
-def test_run_create_picture_folder_errors(mock_input, sys, mock_fn, mock_mkdir):
+def test_run_create_picture_folder_errors(mock_input, _, mock_fn, __):
     mock_input.return_value = RawTabInput(
         raw_material_folder=TEST_PATH / "non existent",
         first_folder_date=datetime(2023, 7, 27),
@@ -241,12 +236,14 @@ def test_run_create_picture_folder_errors(mock_input, sys, mock_fn, mock_mkdir):
     assert mock_fn.call_count == 0
 
 
+@patch("src.main.runner.runners.raw_methods.create_emtpy_excel")
+@patch("src.main.runner.runners.raw_methods.save_sheets_to_excel")
 @patch("pathlib.Path.rename")
 @patch("pathlib.Path.mkdir")
 @patch("src.main.runner.runners.raw_methods.copy_file")
 @patch("sys.exit")
 @patch("src.main.gui_main.MainWindow.get_raw_input")
-def test_process_raw_full(mock_input, sys, mock_copy, mock_mkdir, mock_rename):
+def test_process_raw_full(mock_input, _, mock_copy, __, mock_rename, mock_save, mock_create):
     mock_input.return_value = RawTabInput(
         do_structure=True,
         do_rename=True,
@@ -254,10 +251,15 @@ def test_process_raw_full(mock_input, sys, mock_copy, mock_mkdir, mock_rename):
         create_picture_folder=True,
         raw_material_folder=TEST_PATH / "raw/structured2t",
         first_folder_date=datetime(2023, 7, 27),
-        excel=excel_input_standard,
+        excel=ExcelInput(
+            option=ExcelOption.EXISTING,
+            name="ok_empty.xlsx",
+            folder=TEST_PATH,
+        ),
         picture_folder=TEST_PATH
         )
     main()
     assert mock_copy.call_count ==  28 + 18
     assert mock_rename.call_count == 28
-    # fehlt excel
+    assert mock_save.call_count == 1
+    assert mock_create.call_count == 0
