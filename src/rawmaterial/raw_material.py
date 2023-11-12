@@ -7,7 +7,7 @@ from pydantic import ValidationError
 
 from assethandling.basemodels import File, FileType
 from assets import constants
-from excel.excelmethods import load_sheets_as_df, save_sheets_to_excel
+from excel.excelmethods import load_sheets_as_df, save_sheets_to_excel, create_emtpy_excel
 from fileopertations.filemethods import get_file_type, copy_file, get_file_captured_date, rename_files
 
 locale.setlocale(locale.LC_TIME, 'de_DE.utf8')
@@ -128,6 +128,18 @@ def _is_folder_with_material(path: Path) -> bool:
             return True
     return False
 
+def create_excel(config, progress_callback, get_data):
+    try:
+        path = create_emtpy_excel(config=config)
+        progress_callback.emit("Excel-Datei erfolgreich erstellt")
+        return path
+    except FileExistsError:
+        response: str = get_data(text="Excel existiert bereits. Soll sie überschrieben werden? j/n")
+        if response.lower() == "j":
+            path = create_emtpy_excel(config=config, override=True)
+            progress_callback.emit("Excel-Datei erfolgreich erstellt")
+            return path
+        progress_callback.emit("Excel wurde nicht erstellt, da die Datei bereits vorhanden ist.")
 
 def fill_excel(excel: Path, raw_material_folder: Path) -> List[str]:
     errors: List[str] = []

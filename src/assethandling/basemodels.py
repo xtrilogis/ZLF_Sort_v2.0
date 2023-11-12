@@ -34,7 +34,6 @@ class ExcelInput(BaseModel):
     option: ExcelOption
     name: str = f"Zeltlagerfilm {datetime.now().date().year}.xlsx"
     folder: Path
-    full_path: Path
     video_columns: List[str] = settings["standard-video-columns"]
     picture_columns: List[str] = settings["standard-picture-columns"]
 

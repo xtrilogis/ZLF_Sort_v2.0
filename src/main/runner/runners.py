@@ -7,7 +7,7 @@ from assets import constants
 
 from inputhandling.validation import validate_util_paths, validate_setup_path, is_valid_folder, validate_excel_file, \
     validate_raw
-from excel.excelmethods import create_emtpy_excel
+
 from foldersetup import folder_setup as setup_methods
 from rawmaterial import raw_material as raw_methods
 from util import util_methods as util_methods
@@ -62,18 +62,8 @@ def run_create_excel(inputs: RawTabInput, progress_callback, get_data, **kwargs)
         raise AttributeError("The given folder is not a valid folder.")
 
     progress_callback.emit("Starte Excel erstellen.")
-    config = _get_excel_config()
-    try:
-        path = create_emtpy_excel(config=config)
-        progress_callback.emit("Excel-Datei erfolgreich erstellt")
-        return path
-    except FileExistsError:
-        response: str = get_data(text="Excel existiert bereits. Soll sie überschrieben werden? j/n")
-        if response.lower() == "j":
-            path = create_emtpy_excel(config=config, override=True)
-            progress_callback.emit("Excel-Datei erfolgreich erstellt")
-            return path
-        progress_callback.emit("Excel wurde nicht erstellt, da die Datei bereits vorhanden ist.")
+    config = _get_excel_config(excel=inputs.excel)
+    raw_methods.create_excel(config, progress_callback, get_data)
 
 
 def _get_excel_config(excel: ExcelInput) -> ExcelConfig:

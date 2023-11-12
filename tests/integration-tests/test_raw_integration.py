@@ -1,9 +1,9 @@
 from pathlib import Path
 from unittest.mock import patch
 from datetime import datetime
-from assethandling.basemodels import RawTabInput
+from assethandling.basemodels import RawTabInput, ExcelInput, ExcelOption
 from src.main.gui_main import main
-from input_mocks import TEST_PATH, excel_input_standard
+from input_mocks import TEST_PATH, TEST_DATE, excel_input_standard, excel_input_manual
 
 
 @patch("src.main.runner.runners.raw_methods.copy_file")
@@ -69,49 +69,147 @@ def test_run_rename_errors(mock_input, sys, mock_fn):
     assert mock_fn.call_count == 0
 
 
-# excel, fill, picture_folder, full
+@patch("PyQt5.QtWidgets.QInputDialog.getText")
+@patch("excel.excelmethods.save_sheets_to_excel")
+@patch("sys.exit")
+@patch("src.main.gui_main.MainWindow.get_raw_input")
+def test_excel_creation_override(mock_input, sys, mock_fn, mock_input_dialog):
+    mock_input_dialog.return_value = "j", True
+    mock_fn.return_value = None
+    mock_input.return_value = RawTabInput(
+        raw_material_folder=TEST_PATH,
+        first_folder_date=TEST_DATE,
+        excel=excel_input_manual,
+        picture_folder=TEST_PATH
+    )
+    main()
+    assert mock_fn.call_count == 2
+    assert mock_fn.call_args_list[0][1]["sheet_name"] == "Videos"
+    assert mock_fn.call_args_list[1][1]["sheet_name"] == "Bilder"
 
-# @mock.patch("PyQt5.QtWidgets.QInputDialog.getText")
-# @mock.patch("sys.exit")
-# @mock.patch("src.main.gui_main.MainWindow.get_raw_input")
-# @mock.patch("pandas.DataFrame.to_excel")
-# def test_excel_creation_override(mock_fn, mock_input, sys, mock_input_dialog):
-#     mock_input_dialog.return_value = "j", True
-#     mock_fn.return_value = None
-#     mock_input.return_value = RawTabInput(
-#         do_structure=False,
-#         do_rename=False,
-#         fill_excel=False,
-#         create_picture_folder=False,
-#         raw_material_folder=input_mocks.TEST_PATH,
-#         first_folder_date=datetime.now(),
-#         excel=input_mocks.excel_input_manual,
-#         picture_folder=input_mocks.TEST_PATH
-#     )
-#     main()
-#     assert mock_fn.call_count == 2
-#     assert mock_fn.call_args_list[0][1]["sheet_name"] == "Videos"
-#     assert mock_fn.call_args_list[1][1]["sheet_name"] == "Bilder"
-#
-# @mock.patch("PyQt5.QtWidgets.QInputDialog.getText")
-# @mock.patch("sys.exit")
-# @mock.patch("src.main.gui_main.MainWindow.get_raw_input")
-# @mock.patch("pandas.DataFrame.to_excel")
-# def test_excel_creation_no_override(mock_fn, mock_input, sys, mock_input_dialog):
-#     mock_input_dialog.return_value = "n", True
-#     mock_fn.return_value = None
-#     mock_input.return_value = RawTabInput(
-#         do_structure=False,
-#         do_rename=False,
-#         fill_excel=False,
-#         create_picture_folder=False,
-#         raw_material_folder=input_mocks.TEST_PATH,
-#         first_folder_date=datetime.now(),
-#         excel=input_mocks.excel_input_manual,
-#         picture_folder=input_mocks.TEST_PATH
-#     )
-#     main()
-#     assert mock_fn.call_count == 0
+
+@patch("PyQt5.QtWidgets.QInputDialog.getText")
+@patch("excel.excelmethods.save_sheets_to_excel")
+@patch("sys.exit")
+@patch("src.main.gui_main.MainWindow.get_raw_input")
+def test_excel_creation_no_override(mock_input, sys, mock_fn, mock_input_dialog):
+    mock_input_dialog.return_value = "n", True
+    mock_fn.return_value = None
+    mock_input.return_value = RawTabInput(
+        raw_material_folder=TEST_PATH,
+        first_folder_date=datetime.now(),
+        excel=excel_input_manual,
+        picture_folder=TEST_PATH
+    )
+    main()
+    assert mock_fn.call_count == 0
+
+
+@patch("src.main.runner.runners.raw_methods.save_sheets_to_excel")
+@patch("src.main.runner.runners.create_emtpy_excel")
+@patch("sys.exit")
+@patch("src.main.gui_main.MainWindow.get_raw_input")
+def test_fill_excel_creation(mock_input, sys, mock_create, mock_save):
+    excel_input: ExcelInput = ExcelInput(
+        option=ExcelOption.CREATE,
+        name="ok_empty.xlsx",
+        folder=TEST_PATH,
+    )
+    mock_input.return_value = RawTabInput(
+        raw_material_folder=TEST_PATH,
+        first_folder_date=TEST_DATE,
+        excel=excel_input,
+        picture_folder=TEST_PATH
+    )
+
+    main()
+    assert mock_create.call_count == 1
+    assert mock_save.call_count == 1
+
+
+@patch("PyQt5.QtWidgets.QInputDialog.getText")
+@patch("src.main.runner.runners.raw_methods.save_sheets_to_excel")
+@patch("excel.excelmethods.save_sheets_to_excel")
+@patch("sys.exit")
+@patch("src.main.gui_main.MainWindow.get_raw_input")
+def test_fill_excel_creation_override(mock_input, sys, mock_fn1, mock_fn, mock_input_dialog):
+    mock_input_dialog.return_value = "j", True
+    mock_input.return_value = RawTabInput(
+        raw_material_folder=TEST_PATH,
+        first_folder_date=TEST_DATE,
+        excel=ExcelInput(
+            option=ExcelOption.CREATE,
+            name="ok_empty.xlsx",
+            folder=TEST_PATH,
+        ),
+        picture_folder=TEST_PATH
+    )
+    main()
+    assert mock_input_dialog.call_count == 1
+    assert mock_fn.call_count == 1
+    assert mock_fn1.call_count == 1
+    assert "Videos" in mock_fn.call_args_list[0].kwargs['sheets'].keys()
+    assert "Bilder" in mock_fn.call_args_list[0].kwargs['sheets'].keys()
+
+
+@patch("src.main.runner.runners.raw_methods.save_sheets_to_excel")
+@patch("sys.exit")
+@patch("src.main.gui_main.MainWindow.get_raw_input")
+def test_fill_excel(mock_input, sys, mock_fn):
+    mock_input.return_value = RawTabInput(
+        raw_material_folder=TEST_PATH,
+        first_folder_date=TEST_DATE,
+        excel=ExcelInput(
+            option=ExcelOption.EXISTING,
+            name="ok_empty.xlsx",
+            folder=TEST_PATH,
+        ),
+        picture_folder=TEST_PATH
+    )
+    main()
+    assert mock_fn.call_count == 1
+
+
+@patch("src.main.runner.runners.raw_methods.save_sheets_to_excel")
+@patch("sys.exit")
+@patch("src.main.gui_main.MainWindow.get_raw_input")
+def test_fill_excel_errors(mock_input, sys, mock_fn):
+    mock_input.side_effect = [
+        RawTabInput(
+            raw_material_folder=TEST_PATH,
+            first_folder_date=TEST_DATE,
+            excel=ExcelInput(
+                option=ExcelOption.EXISTING,
+                name="ok_data.xlsx",
+                folder=TEST_PATH,
+            ),
+            picture_folder=TEST_PATH
+        ),
+        RawTabInput(
+            raw_material_folder=TEST_PATH,
+            first_folder_date=TEST_DATE,
+            excel=ExcelInput(
+                option=ExcelOption.EXISTING,
+                name="missing_columns.xlsx",
+                folder=TEST_PATH,
+            ),
+            picture_folder=TEST_PATH
+        ),
+        RawTabInput(
+            raw_material_folder=TEST_PATH,
+            first_folder_date=TEST_DATE,
+            excel=ExcelInput(
+                option=ExcelOption.EXISTING,
+                name="missing_sheet.xlsx",
+                folder=TEST_PATH,
+            ),
+            picture_folder=TEST_PATH
+        )
+    ]
+
+    main()
+    assert mock_fn.call_count == 0
+
 
 @patch("pathlib.Path.mkdir")
 @patch("src.main.runner.runners.raw_methods.copy_file")
@@ -132,8 +230,7 @@ def test_run_create_picture_folder(mock_input, sys, mock_fn, mock_mkdir):
 @patch("src.main.runner.runners.raw_methods.copy_file")
 @patch("sys.exit")
 @patch("src.main.gui_main.MainWindow.get_raw_input")
-def test_run_create_picture_folder(mock_input, sys, mock_fn, mock_mkdir):
-    mock_fn.return_value = None
+def test_run_create_picture_folder_errors(mock_input, sys, mock_fn, mock_mkdir):
     mock_input.return_value = RawTabInput(
         raw_material_folder=TEST_PATH / "non existent",
         first_folder_date=datetime(2023, 7, 27),
@@ -142,3 +239,25 @@ def test_run_create_picture_folder(mock_input, sys, mock_fn, mock_mkdir):
         )
     main()
     assert mock_fn.call_count == 0
+
+
+@patch("pathlib.Path.rename")
+@patch("pathlib.Path.mkdir")
+@patch("src.main.runner.runners.raw_methods.copy_file")
+@patch("sys.exit")
+@patch("src.main.gui_main.MainWindow.get_raw_input")
+def test_process_raw_full(mock_input, sys, mock_copy, mock_mkdir, mock_rename):
+    mock_input.return_value = RawTabInput(
+        do_structure=True,
+        do_rename=True,
+        fill_excel=True,
+        create_picture_folder=True,
+        raw_material_folder=TEST_PATH / "raw/structured2t",
+        first_folder_date=datetime(2023, 7, 27),
+        excel=excel_input_standard,
+        picture_folder=TEST_PATH
+        )
+    main()
+    assert mock_copy.call_count ==  28 + 18
+    assert mock_rename.call_count == 28
+    # fehlt excel

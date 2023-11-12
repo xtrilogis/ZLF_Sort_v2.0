@@ -174,7 +174,7 @@ class MainWindow(QMainWindow):
             lambda: self.run_raw_action(function=runners.run_create_excel))
         # todo
         self.ui.pb_fill_excel.clicked.connect(
-            lambda: self.raw_with_excel(function=runners.run_fill_excel))
+            lambda: self.run_raw_action(function=runners.run_fill_excel))
         self.ui.pb_create_picture_folder.clicked.connect(
             lambda: self.run_raw_action(function=runners.run_create_picture_folder)
         )

@@ -211,10 +211,11 @@ class ExcelInput(BaseModel):
 
     @property
     def full_path(self) -> Path:
-        return self.folder.joinpath(self.name)
+        return self.folder / self.name
 
 if __name__ == '__main__':
     # run(some_fn, titel="sfda", bla="asdf", input=[1, 2, 4])
     nums = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     res = ExcelInput(folder=Path("test/path"))
+    print(res.full_path)
     pass
