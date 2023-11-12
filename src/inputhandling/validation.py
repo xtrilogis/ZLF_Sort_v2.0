@@ -67,7 +67,7 @@ def validate_raw(inputs: RawTabInput) -> List[str]:
     errors = []
     if not is_valid_folder(inputs.raw_material_folder):
         errors.append("Bitte einen gültigen Rohmaterialordner angeben.")
-    if inputs.do_structure and not isinstance(inputs.first_folder_date, datetime):
+    if inputs.do_structure and not isinstance(inputs.first_folder_date, datetime): # isinstance übernimmt pydantic
         errors.append("Bitte ein gültiges Datum angeben, ab dem die Ordner erstellt werden.")
     if inputs.fill_excel:
         errors.extend(validate_excel_file(inputs.excel_file_fullpath))

@@ -4,6 +4,7 @@ from pathlib import Path
 from assethandling.basemodels import ExcelInput, ExcelOption, RawTabInput
 
 TEST_PATH = Path.cwd().joinpath("./testData")
+TEST_DATE = datetime(2023, 10, 5)
 
 excel_input_standard: ExcelInput = ExcelInput(
     option=ExcelOption.CREATE,

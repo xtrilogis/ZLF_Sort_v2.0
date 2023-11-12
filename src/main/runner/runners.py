@@ -29,7 +29,7 @@ def raw_process(titel):
             progress_callback = kwargs["progress_callback"]
 
             if not is_valid_folder(kwargs["inputs"].raw_material_folder):
-                raise ValueError("Bitte gib einen gültigen Rohmaterial ordner an.")
+                raise ValueError("Bitte gib einen gültigen Rohmaterialordner an.")
             progress_callback.emit("Inputs validiert")
 
             result = func(*args, **kwargs)

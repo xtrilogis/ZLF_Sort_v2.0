@@ -21,15 +21,16 @@ def correct_file_structure(raw_material_folder: Path, dst_folder: Path, start: d
     structure: Dict[str | date, Dict[str, List[File]]] = _create_structure(start_date=start)
 
     _fill_structure(structure=structure, all_files=all_files)
-    # idea: check if folder exists, ask for permission to override
+    # todo: check if folder exists, ask for permission to override
     # override = get_data(text="Im angegebenen Ordner existieren schon Dateien, sollen diese Überschrieben werden?")
     _copy_file_structure(structure=structure, dst_folder=dst_folder, errors=errors)
-
+    # feat: Feedback how many files were copied
     return errors
 
 
 def _check_if_right_structure():
     # Todo
+    # adapt test
     pass
 
 
