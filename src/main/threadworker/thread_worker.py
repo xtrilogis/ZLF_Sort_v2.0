@@ -41,7 +41,7 @@ class Worker(QRunnable):
 
         # Retrieve args/kwargs here; and fire processing using them
         try:
-            self.signals.new_message.emit("Start processing")
+            self.signals.new_message.emit("Prozessierung gestartet.")
             result = self.function(*self.args, **self.kwargs)
         except Exception as e:
             print(e)
@@ -52,7 +52,7 @@ class Worker(QRunnable):
             if result:
                 self.signals.new_message.emit(str(result))
         finally:
-            # self.signals.new_message.emit("Done")
+            self.signals.new_message.emit("Prozessierung beendet.")
             self.signals.finished.emit()
 
     def send_result_list(self, part: str, result: List[str]):
