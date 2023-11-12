@@ -51,17 +51,16 @@ def _validate_sheet(df: pd.DataFrame) -> List[str]:
     return errors
 
 
-def validate_setup_path(path: Path) -> List[str]:
+def validate_setup_path(path: Path):
     """Validates input for setting up the folders
     :arg path
     """
-    if is_valid_folder(path):
-        if "Rohmaterial" in path.as_uri():
-            return ["Der Pfad enthält das Wort 'Rohmaterial'.\n"
-                    "Dies kann später zu Problemen führen.\n"
-                    "Bitte Ändern!"]
-        return []
-    return ["Der angegebene Pfad ist kein valider Ordnerpfad."]
+    if not is_valid_folder(path):
+        raise ValueError("Der angegebene Pfad ist kein valider Ordnerpfad.")
+    if "Rohmaterial" in path.as_uri():
+        raise ValueError("Der Pfad enthält das Wort 'Rohmaterial'.\n"
+                         "Dies kann später zu Problemen führen.\n"
+                         "Bitte Ändern!")
 
 
 def validate_raw(inputs: RawTabInput) -> List[str]:
