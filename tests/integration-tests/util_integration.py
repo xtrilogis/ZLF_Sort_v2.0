@@ -1,5 +1,3 @@
-from datetime import datetime
-from pathlib import Path
 from unittest import mock
 
 from input_mocks import TEST_PATH
@@ -46,7 +44,7 @@ def test_run_copy_sections_errors(mock_input, _, mock_fn):
         ),
         UtilTabInput(
             raw_material_folder=TEST_PATH / "util/Rohmaterial",
-            excel_full_filepath=TEST_PATH / "ok_data.xlsx",
+            excel_full_filepath=TEST_PATH / "util/Zeltlagerfilm 2023.xlsx",
             do_sections=True,
             do_video_sections=True,
             do_picture_sections=True,
@@ -97,7 +95,7 @@ def test_run_copy_selection_errors(mock_input, _, mock_fn):
         ),
         UtilTabInput(
             raw_material_folder=TEST_PATH / "util/Rohmaterial",
-            excel_full_filepath=TEST_PATH / "ok_data.xlsx",
+            excel_full_filepath=TEST_PATH / "util/Zeltlagerfilm 2023.xlsx",
             do_selections=True,
             videos_columns_selection=["Outtakes"],
             picture_columns_selection=["Outtakes"],
@@ -105,7 +103,7 @@ def test_run_copy_selection_errors(mock_input, _, mock_fn):
         ),
         UtilTabInput(
             raw_material_folder=TEST_PATH / "util/Rohmaterial",
-            excel_full_filepath=TEST_PATH / "ok_data.xlsx",
+            excel_full_filepath=TEST_PATH / "util/Zeltlagerfilm 2023.xlsx",
             do_selections=True,
             videos_columns_selection=["not existing (x)"],
             picture_columns_selection=[""],
@@ -157,7 +155,7 @@ def test_run_search_errors(mock_input, _, mock_fn):
         ),
         UtilTabInput(
             raw_material_folder=TEST_PATH / "util/Rohmaterial",
-            excel_full_filepath=TEST_PATH / "ok_data.xlsx",
+            excel_full_filepath=TEST_PATH / "util/Zeltlagerfilm 2023.xlsx",
             do_search=True,
             videos_columns_search=["Bemerkung"],  # 4 (2)
             picture_columns_search=["Bemerkung"],  # 4 (2), 6 (4)
@@ -166,7 +164,7 @@ def test_run_search_errors(mock_input, _, mock_fn):
         ),
         UtilTabInput(
             raw_material_folder=TEST_PATH / "util/Rohmaterial",
-            excel_full_filepath=TEST_PATH / "ok_data.xlsx",
+            excel_full_filepath=TEST_PATH / "util/Zeltlagerfilm 2023.xlsx",
             do_search=True,
             videos_columns_search=["Not-existing"],  # 4 (2)
             picture_columns_search=["Bemerkung"],  # 4 (2), 6 (4)
@@ -187,25 +185,43 @@ def test_run_search_errors(mock_input, _, mock_fn):
     assert mock_fn.call_count == 0
 
 
-@mock.patch("src.main.runner.runners.run_folder_setup")  # change this to a more core function e.g. copy_file
+@mock.patch("src.main.runner.runners.util_methods.filemethods.copy_file")
 @mock.patch("sys.exit")
 @mock.patch("src.main.gui_main.MainWindow.get_util_input")
 def test_run_create_rated_picture_folder(mock_input, _, mock_fn):
     mock_input.return_value = UtilTabInput(
         raw_material_folder=TEST_PATH / "util/Rohmaterial",
         excel_full_filepath=TEST_PATH / "util/Zeltlagerfilm 2023.xlsx",
+        create_picture_folder=True,
+        rating_pictures=4
         )
     main()
     assert mock_fn.call_count == 10
 
-@mock.patch("src.main.runner.runners.run_folder_setup")  # change this to a more core function e.g. copy_file
+@mock.patch("src.main.runner.runners.util_methods.filemethods.copy_file")
 @mock.patch("sys.exit")
 @mock.patch("src.main.gui_main.MainWindow.get_util_input")
 def test_run_create_rated_picture_folder_errors(mock_input, _, mock_fn):
-    mock_input.return_value = UtilTabInput(
-        raw_material_folder=TEST_PATH / "util/Rohmaterial",
-        excel_full_filepath=TEST_PATH / "util/Zeltlagerfilm 2023.xlsx",
+    mock_input.side_effect = [
+        UtilTabInput(
+            raw_material_folder=TEST_PATH / "util/Rohmaterial",
+            excel_full_filepath=TEST_PATH / "ok_empty.xlsx",
+            create_picture_folder=True,
+            rating_pictures=4
+        ),
+        UtilTabInput(
+            raw_material_folder=TEST_PATH / "util/Rohmaterial",
+            excel_full_filepath=TEST_PATH / "util/Zeltlagerfilm 2023.xlsx",
+            create_picture_folder=True,
+            rating_pictures=8
+        ),
+        UtilTabInput(
+            raw_material_folder=TEST_PATH / "util/Rohmaterial",
+            excel_full_filepath=TEST_PATH / "duplicated_data.xlsx",
+            create_picture_folder=True,
+            rating_pictures=4
         )
+    ]
     main()
     assert mock_fn.call_count == 0
 
