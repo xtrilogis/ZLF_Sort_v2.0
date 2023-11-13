@@ -26,13 +26,13 @@ def run_folder_setup(inputs: FolderTabInput, progress_callback, get_data) -> str
 # ### RAW ### #
 def raw_process(titel):
     def decor(func):
-        def wrap(inputs: RawTabInput, progress_callback, *args, **kwargs):
+        def wrap(inputs: RawTabInput, progress_callback, get_data, *args, **kwargs):
 
             if not is_valid_folder(inputs.raw_material_folder):
                 raise ValueError("Bitte gib einen gültigen Rohmaterialordner an.")
             progress_callback.emit("Inputs validiert")
 
-            result = func(inputs, progress_callback, *args, **kwargs)
+            result = func(inputs, progress_callback, get_data, *args, **kwargs)
             if result:
                 _pretty_send_problems(titel=titel, list_=result, progress_callback=progress_callback)
             return f"{titel} abgeschlossen."
@@ -43,10 +43,11 @@ def raw_process(titel):
 
 
 @raw_process("Korrekte Ordnerstruktur")
-def run_correct_structure(inputs: RawTabInput, **kwargs) -> List[str]:
+def run_correct_structure(inputs: RawTabInput, get_data, **kwargs) -> List[str]:
     return raw_methods.correct_file_structure(raw_material_folder=inputs.raw_material_folder,
                                               dst_folder=inputs.raw_material_folder.parent / "New",
-                                              start=inputs.first_folder_date)
+                                              start=inputs.first_folder_date,
+                                              get_data=get_data)
 
 
 @raw_process("Dateien umbenennen")
