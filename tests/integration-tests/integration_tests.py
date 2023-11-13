@@ -20,3 +20,4 @@ def test_main(mock_input, sys, mock_fn):
     main()
     assert type(mock_fn.call_args.kwargs["inputs"]) == FolderTabInput
 
+#  todo: one test per tab no input mock
