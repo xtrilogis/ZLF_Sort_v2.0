@@ -27,7 +27,7 @@ def copy_file(src_file: Path, dst_folder: Path):
     the file will be renamed to filename(nr), nr will be increased until the name doesn't exists
     """
     # feat: make overwrite possible/optional
-    if not dst_folder.exists():
+    if not dst_folder.exists(): # ggf create_folder mit folder=""
         dst_folder.mkdir(parents=True)
     file_dst: Path = dst_folder / src_file.name
     counter = 1

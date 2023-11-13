@@ -127,6 +127,7 @@ def _copy_marked_files(df: pd.DataFrame, column: str, marker: str,
 
 def copy_pictures_with_rating(df: pd.DataFrame, raw_path: Path, rating_limit: int) -> List[str]:
     problems = []
+    one_copied = False
     dst_folder = raw_path.parent / "Schnittmaterial" / f"Bilder bw{rating_limit}"
     for count, value in enumerate(df['Dateipfad']):
         if pd.isnull(value):
@@ -136,6 +137,9 @@ def copy_pictures_with_rating(df: pd.DataFrame, raw_path: Path, rating_limit: in
         if df.loc[count, 'Bewertung'] >= rating_limit:
             filemethods.copy_file(src_file=value,
                                   dst_folder=dst_folder)
+            one_copied = True
+    if not one_copied:
+        problems.append("Es wurden keine Dateien kopiert.")
     return problems
 
 

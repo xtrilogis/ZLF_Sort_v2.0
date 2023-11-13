@@ -12,8 +12,6 @@ from src.main.gui_main import main
 @mock.patch("sys.exit")
 @mock.patch("src.main.gui_main.MainWindow.get_util_input")
 def test_run_copy_sections(mock_input, _, mock_fn, __):
-    # moc.return_value = "asdf"
-    mock_fn.return_value = "Test"
     mock_input.return_value = UtilTabInput(
         raw_material_folder=TEST_PATH,
         excel_full_filepath=TEST_PATH / "util/Zeltlagerfilm 2023.xlsx",
@@ -37,8 +35,6 @@ def test_run_copy_sections(mock_input, _, mock_fn, __):
 @mock.patch("sys.exit")
 @mock.patch("src.main.gui_main.MainWindow.get_util_input")
 def test_run_copy_sections_errors(mock_input, _, mock_fn):
-    # empty sheet
-    mock_fn.return_value = "Test"
     mock_input.side_effect = [
         UtilTabInput(
             raw_material_folder=TEST_PATH,
@@ -70,30 +66,63 @@ def test_run_copy_sections_errors(mock_input, _, mock_fn):
 
 
 
-@mock.patch("src.main.runner.runners.run_folder_setup")  # change this to a more core function e.g. copy_file
+@mock.patch("src.main.runner.runners.util_methods.filemethods.copy_file")  # change this to a more core function e.g. copy_file
 @mock.patch("sys.exit")
 @mock.patch("src.main.gui_main.MainWindow.get_util_input")
 def test_run_copy_selection(mock_input, _, mock_fn):
-    mock_fn.return_value = "Test"
     mock_input.return_value = UtilTabInput(
         raw_material_folder=TEST_PATH,
-        excel_full_filepath=TEST_PATH,
-        # rating 4
+        excel_full_filepath=TEST_PATH / "util/Zeltlagerfilm 2023.xlsx",
+        do_selections=True,
+        videos_columns_selection=["Outtakes (x)"], # 4 Files
+        picture_columns_selection=["NZS (x)", "Outtakes (x)"], # 5 and 4
+        marker="x"
         )
     main()
-    # NZS b5 Outtakes b5, Video Outtakes 4
+    assert mock_fn.call_count == 13
 
 
-@mock.patch("src.main.runner.runners.run_folder_setup")  # change this to a more core function e.g. copy_file
+@mock.patch("src.main.runner.runners.util_methods.filemethods.copy_file")  # change this to a more core function e.g. copy_file
 @mock.patch("sys.exit")
 @mock.patch("src.main.gui_main.MainWindow.get_util_input")
 def test_run_copy_selection_errors(mock_input, _, mock_fn):
-    mock_fn.return_value = "Test"
-    mock_input.return_value = UtilTabInput(
-        raw_material_folder=TEST_PATH,
-        excel_full_filepath=TEST_PATH,
+    # none copied, empty_sheet, duplicated_data, Spalte nicht gefunden
+    mock_input.side_effect = [
+        UtilTabInput(
+            raw_material_folder=TEST_PATH,
+            excel_full_filepath=TEST_PATH / "ok_empty.xlsx",
+            do_selections=True,
+            videos_columns_selection=["Outtakes"],
+            picture_columns_selection=["NZS", "Outtakes"],
+            marker="x"
+        ),
+        UtilTabInput(
+            raw_material_folder=TEST_PATH,
+            excel_full_filepath=TEST_PATH / "ok_data.xlsx",
+            do_selections=True,
+            videos_columns_selection=["Outtakes"],
+            picture_columns_selection=["Outtakes"],
+            marker="marker"
+        ),
+        UtilTabInput(
+            raw_material_folder=TEST_PATH,
+            excel_full_filepath=TEST_PATH / "ok_data.xlsx",
+            do_selections=True,
+            videos_columns_selection=["not existing (x)"],
+            picture_columns_selection=[""],
+            marker="marker"
+        ),
+        UtilTabInput(
+            raw_material_folder=TEST_PATH,
+            excel_full_filepath=TEST_PATH / "duplicated_data.xlsx",
+            do_selections=True,
+            videos_columns_selection=["Outtakes (x)"],
+            picture_columns_selection=["NZS (x)", "Outtakes (x)"],
+            marker="x"
         )
+    ]
     main()
+    assert mock_fn.call_count == 0
 
 
 @mock.patch("src.main.runner.runners.run_folder_setup")  # change this to a more core function e.g. copy_file
