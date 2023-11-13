@@ -53,6 +53,7 @@ def copy_section(df: pd.DataFrame, rating_limit: int) -> List[str]:
             if rating >= rating_limit:
                 if pd.isnull(df.loc[count, 'Dateipfad']):
                     problems.append(f"Datei konnte nicht kopiert werden: {df.loc[count, 'Datei']}")
+                    continue
 
                 file_fullpath = Path(df.loc[count, 'Dateipfad'])
                 section = value.strip()
@@ -69,7 +70,7 @@ def copy_section(df: pd.DataFrame, rating_limit: int) -> List[str]:
 
 def _get_section_dst_folder(file_fullpath: Path, section: str) -> Path:
     new_parts = []
-    for _, part in enumerate(file_fullpath.parent.parent.parts):
+    for _, part in enumerate(file_fullpath.parent.parts):
         if part == "Rohmaterial":
             part = "Schnittmaterial"
         new_parts.append(part)
