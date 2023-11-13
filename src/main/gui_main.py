@@ -314,7 +314,7 @@ class MainWindow(QMainWindow):
     def _get_excel_input(self) -> ExcelInput:
         excel_input_option: ExcelInputOptions = ExcelInputOptions(self.ui.excel_option.currentText())
         if excel_input_option == ExcelInputOptions.EXISTING:
-            filepath: Path = self.ui.drop_raw_excel_file.text()
+            filepath: Path = Path(self.ui.drop_raw_excel_file.text())
             data = {
                 "option": ExcelOption.EXISTING,
                 "name": filepath.name,
@@ -333,7 +333,7 @@ class MainWindow(QMainWindow):
         else:
             data = {
                 "option": ExcelOption.CREATE,
-                "folder": Path(self.ui.drop_raw_rawpath.text()),
+                "folder": Path(self.ui.drop_raw_rawpath.text()).parent,
             }
         return ExcelInput(**data)
 
