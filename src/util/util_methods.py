@@ -43,6 +43,7 @@ def copy_section(df: pd.DataFrame, rating_limit: int) -> List[str]:
     :arg df pandas DataFrame containing file information
     :arg rating_limit only file with a rating equal or higher will be copied"""
     problems = []
+    one_copied = False
     for count, value in enumerate(df['Abschnitt']):
         rating = df.loc[count, 'Bewertung']
         if pd.isnull(value) and pd.isnull(rating):
@@ -61,10 +62,13 @@ def copy_section(df: pd.DataFrame, rating_limit: int) -> List[str]:
                                                              section=section)
                 filemethods.copy_file(src_file=file_fullpath,
                                       dst_folder=destination_folder)
+                one_copied = True
         except (AttributeError, ValueError) as e:
             problems.append(str(e))
         except FileNotFoundError as e:
             problems.append(f"Datei nicht gefunden: {df.loc[count, 'Datei']}")
+    if not one_copied:
+        problems.append("Es wurden keine Dateien kopiert.")
     return problems
 
 

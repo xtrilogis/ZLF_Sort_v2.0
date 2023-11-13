@@ -39,10 +39,32 @@ def test_run_copy_sections(mock_input, _, mock_fn, __):
 def test_run_copy_sections_errors(mock_input, _, mock_fn):
     # empty sheet
     mock_fn.return_value = "Test"
-    mock_input.return_value = UtilTabInput(
-        raw_material_folder=TEST_PATH,
-        excel_full_filepath=TEST_PATH,
+    mock_input.side_effect = [
+        UtilTabInput(
+            raw_material_folder=TEST_PATH,
+            excel_full_filepath=TEST_PATH / "ok_empty.xlsx",
+            do_sections=True,
+            do_video_sections=True,
+            do_picture_sections=True,
+            rating_section=4,
+        ),
+        UtilTabInput(
+            raw_material_folder=TEST_PATH,
+            excel_full_filepath=TEST_PATH / "ok_data.xlsx",
+            do_sections=True,
+            do_video_sections=True,
+            do_picture_sections=True,
+            rating_section=8,
+        ),
+        UtilTabInput(
+            raw_material_folder=TEST_PATH,
+            excel_full_filepath=TEST_PATH / "duplicated_data.xlsx",
+            do_sections=True,
+            do_video_sections=True,
+            do_picture_sections=True,
+            rating_section=4,
         )
+    ]
     main()
     assert mock_fn.call_count == 0
 
