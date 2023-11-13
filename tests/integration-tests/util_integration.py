@@ -1,14 +1,14 @@
-from unittest import mock
+from unittest.mock import patch
 
 from input_mocks import TEST_PATH
 from assethandling.basemodels import UtilTabInput
 from src.main.gui_main import main
 
 # this is a sample how to test the gui without actually doing the core work like copying
-@mock.patch("pathlib.Path.mkdir")
-@mock.patch("src.main.runner.runners.util_methods.filemethods.copy_file")
-@mock.patch("sys.exit")
-@mock.patch("src.main.gui_main.MainWindow.get_util_input")
+@patch("pathlib.Path.mkdir")
+@patch("src.main.runner.runners.util_methods.filemethods.copy_file")
+@patch("sys.exit")
+@patch("src.main.gui_main.MainWindow.get_util_input")
 def test_run_copy_sections(mock_input, _, mock_fn, __):
     mock_input.return_value = UtilTabInput(
         raw_material_folder=TEST_PATH / "util/Rohmaterial",
@@ -29,9 +29,9 @@ def test_run_copy_sections(mock_input, _, mock_fn, __):
 
 
 
-@mock.patch("src.main.runner.runners.util_methods.filemethods.copy_file")
-@mock.patch("sys.exit")
-@mock.patch("src.main.gui_main.MainWindow.get_util_input")
+@patch("src.main.runner.runners.util_methods.filemethods.copy_file")
+@patch("sys.exit")
+@patch("src.main.gui_main.MainWindow.get_util_input")
 def test_run_copy_sections_errors(mock_input, _, mock_fn):
     mock_input.side_effect = [
         UtilTabInput(
@@ -64,9 +64,9 @@ def test_run_copy_sections_errors(mock_input, _, mock_fn):
 
 
 
-@mock.patch("src.main.runner.runners.util_methods.filemethods.copy_file")
-@mock.patch("sys.exit")
-@mock.patch("src.main.gui_main.MainWindow.get_util_input")
+@patch("src.main.runner.runners.util_methods.filemethods.copy_file")
+@patch("sys.exit")
+@patch("src.main.gui_main.MainWindow.get_util_input")
 def test_run_copy_selection(mock_input, _, mock_fn):
     mock_input.return_value = UtilTabInput(
         raw_material_folder=TEST_PATH / "util/Rohmaterial",
@@ -80,9 +80,9 @@ def test_run_copy_selection(mock_input, _, mock_fn):
     assert mock_fn.call_count == 13
 
 
-@mock.patch("src.main.runner.runners.util_methods.filemethods.copy_file")
-@mock.patch("sys.exit")
-@mock.patch("src.main.gui_main.MainWindow.get_util_input")
+@patch("src.main.runner.runners.util_methods.filemethods.copy_file")
+@patch("sys.exit")
+@patch("src.main.gui_main.MainWindow.get_util_input")
 def test_run_copy_selection_errors(mock_input, _, mock_fn):
     mock_input.side_effect = [
         UtilTabInput(
@@ -122,9 +122,9 @@ def test_run_copy_selection_errors(mock_input, _, mock_fn):
     assert mock_fn.call_count == 0
 
 
-@mock.patch("src.main.runner.runners.util_methods.filemethods.copy_file")
-@mock.patch("sys.exit")
-@mock.patch("src.main.gui_main.MainWindow.get_util_input")
+@patch("src.main.runner.runners.util_methods.filemethods.copy_file")
+@patch("sys.exit")
+@patch("src.main.gui_main.MainWindow.get_util_input")
 def test_run_search(mock_input, _, mock_fn):
     mock_input.return_value = UtilTabInput(
         raw_material_folder=TEST_PATH / "util/Rohmaterial",
@@ -139,9 +139,9 @@ def test_run_search(mock_input, _, mock_fn):
     assert mock_fn.call_count == 8
 
 
-@mock.patch("src.main.runner.runners.util_methods.filemethods.copy_file")
-@mock.patch("sys.exit")
-@mock.patch("src.main.gui_main.MainWindow.get_util_input")
+@patch("src.main.runner.runners.util_methods.filemethods.copy_file")
+@patch("sys.exit")
+@patch("src.main.gui_main.MainWindow.get_util_input")
 def test_run_search_errors(mock_input, _, mock_fn):
     mock_input.side_effect = [
         UtilTabInput(
@@ -185,9 +185,9 @@ def test_run_search_errors(mock_input, _, mock_fn):
     assert mock_fn.call_count == 0
 
 
-@mock.patch("src.main.runner.runners.util_methods.filemethods.copy_file")
-@mock.patch("sys.exit")
-@mock.patch("src.main.gui_main.MainWindow.get_util_input")
+@patch("src.main.runner.runners.util_methods.filemethods.copy_file")
+@patch("sys.exit")
+@patch("src.main.gui_main.MainWindow.get_util_input")
 def test_run_create_rated_picture_folder(mock_input, _, mock_fn):
     mock_input.return_value = UtilTabInput(
         raw_material_folder=TEST_PATH / "util/Rohmaterial",
@@ -198,9 +198,9 @@ def test_run_create_rated_picture_folder(mock_input, _, mock_fn):
     main()
     assert mock_fn.call_count == 10
 
-@mock.patch("src.main.runner.runners.util_methods.filemethods.copy_file")
-@mock.patch("sys.exit")
-@mock.patch("src.main.gui_main.MainWindow.get_util_input")
+@patch("src.main.runner.runners.util_methods.filemethods.copy_file")
+@patch("sys.exit")
+@patch("src.main.gui_main.MainWindow.get_util_input")
 def test_run_create_rated_picture_folder_errors(mock_input, _, mock_fn):
     mock_input.side_effect = [
         UtilTabInput(
@@ -226,8 +226,8 @@ def test_run_create_rated_picture_folder_errors(mock_input, _, mock_fn):
     assert mock_fn.call_count == 0
 
 
-@mock.patch("sys.exit")
-@mock.patch("src.main.gui_main.MainWindow.get_util_input")
+@patch("sys.exit")
+@patch("src.main.gui_main.MainWindow.get_util_input")
 def test_run_statistics(mock_input, _):
     mock_input.return_value = UtilTabInput(
         raw_material_folder=TEST_PATH / "util/Rohmaterial",
@@ -236,10 +236,10 @@ def test_run_statistics(mock_input, _):
     main()
 
 
-@mock.patch("pathlib.Path.mkdir")
-@mock.patch("src.main.runner.runners.util_methods.filemethods.copy_file")
-@mock.patch("sys.exit")
-@mock.patch("src.main.gui_main.MainWindow.get_util_input")
+@patch("pathlib.Path.mkdir")
+@patch("src.main.runner.runners.util_methods.filemethods.copy_file")
+@patch("sys.exit")
+@patch("src.main.gui_main.MainWindow.get_util_input")
 def test_run_process_util_full(mock_input, _, mock_fn, __):
     mock_input.return_value = UtilTabInput(
         raw_material_folder=TEST_PATH / "util/Rohmaterial",

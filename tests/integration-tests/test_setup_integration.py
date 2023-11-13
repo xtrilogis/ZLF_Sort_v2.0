@@ -1,13 +1,13 @@
 from datetime import datetime
 from pathlib import Path
-from unittest import mock
+from unittest.mock import patch
 
 from assethandling.basemodels import FolderTabInput
 from src.main.gui_main import main
 
-@mock.patch("src.main.runner.runners.setup_methods.create_folder")
-@mock.patch("sys.exit")
-@mock.patch("src.main.gui_main.MainWindow.get_folder_input")
+@patch("src.main.runner.runners.setup_methods.create_folder")
+@patch("sys.exit")
+@patch("src.main.gui_main.MainWindow.get_folder_input")
 def test_folder_setup(mock_input, sys, mock_fn):
     mock_input.return_value = FolderTabInput(
             folder=Path.cwd(),
@@ -23,9 +23,9 @@ def test_folder_setup(mock_input, sys, mock_fn):
 # test if (either send_problems or) input error
 
 TEST_PATH = Path.cwd() / "testData"
-@mock.patch("src.main.runner.runners.setup_methods.create_folder")
-@mock.patch("sys.exit")
-@mock.patch("src.main.gui_main.MainWindow.get_folder_input")
+@patch("src.main.runner.runners.setup_methods.create_folder")
+@patch("sys.exit")
+@patch("src.main.gui_main.MainWindow.get_folder_input")
 def test_folder_setup_errors(mock_input, sys, mock_fn):
     mock_input.side_effect = [
         FolderTabInput(
