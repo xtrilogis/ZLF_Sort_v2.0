@@ -226,49 +226,39 @@ def test_run_create_rated_picture_folder_errors(mock_input, _, mock_fn):
     assert mock_fn.call_count == 0
 
 
-@mock.patch("src.main.runner.runners.run_folder_setup")  # change this to a more core function e.g. copy_file
 @mock.patch("sys.exit")
 @mock.patch("src.main.gui_main.MainWindow.get_util_input")
-def test_run_statistics(mock_input, _, mock_fn):
+def test_run_statistics(mock_input, _):
     mock_input.return_value = UtilTabInput(
         raw_material_folder=TEST_PATH / "util/Rohmaterial",
         excel_full_filepath=TEST_PATH / "util/Zeltlagerfilm 2023.xlsx",
         )
     main()
-    assert mock_fn.call_count == 0
 
 
-@mock.patch("src.main.runner.runners.run_folder_setup")  # change this to a more core function e.g. copy_file
+@mock.patch("pathlib.Path.mkdir")
+@mock.patch("src.main.runner.runners.util_methods.filemethods.copy_file")
 @mock.patch("sys.exit")
 @mock.patch("src.main.gui_main.MainWindow.get_util_input")
-def test_run_statistics_errors(mock_input, _, mock_fn):
+def test_run_process_util_full(mock_input, _, mock_fn, __):
     mock_input.return_value = UtilTabInput(
         raw_material_folder=TEST_PATH / "util/Rohmaterial",
         excel_full_filepath=TEST_PATH / "util/Zeltlagerfilm 2023.xlsx",
+        do_sections=True,
+        do_video_sections=True,
+        do_picture_sections=True,
+        rating_section=4,
+        do_selections=True,
+        videos_columns_selection=["Outtakes (x)"],  # 4 Files
+        picture_columns_selection=["NZS (x)", "Outtakes (x)"],  # 5 and 4
+        marker="x",
+        do_search=True,
+        videos_columns_search=["Bemerkung"],
+        picture_columns_search=["Bemerkung"],
+        keywords=["name", "Name", "Test"],
+        rating_search=4,
+        create_picture_folder=True,
+        rating_pictures=4
         )
     main()
-    assert mock_fn.call_count == 0
-
-
-@mock.patch("src.main.runner.runners.run_folder_setup")  # change this to a more core function e.g. copy_file
-@mock.patch("sys.exit")
-@mock.patch("src.main.gui_main.MainWindow.get_util_input")
-def test_run_process_util_full(mock_input, _, mock_fn):
-    mock_input.return_value = UtilTabInput(
-        raw_material_folder=TEST_PATH / "util/Rohmaterial",
-        excel_full_filepath=TEST_PATH / "util/Zeltlagerfilm 2023.xlsx",
-        )
-    main()
-    assert mock_fn.call_count == 0
-
-
-@mock.patch("src.main.runner.runners.run_folder_setup")  # change this to a more core function e.g. copy_file
-@mock.patch("sys.exit")
-@mock.patch("src.main.gui_main.MainWindow.get_util_input")
-def test_run_process_util_full_errors(mock_input, _, mock_fn):
-    mock_input.return_value = UtilTabInput(
-        raw_material_folder=TEST_PATH / "util/Rohmaterial",
-        excel_full_filepath=TEST_PATH / "util/Zeltlagerfilm 2023.xlsx",
-        )
-    main()
-    assert mock_fn.call_count == 0
+    assert mock_fn.call_count == 17 + 13 + 8 + 10
