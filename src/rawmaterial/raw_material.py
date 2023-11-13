@@ -198,7 +198,7 @@ def _add_child_files(folder: Path, sheets: Dict[str, pd.DataFrame], errors: List
 
             if child.suffix.upper() in constants.image_extensions:
                 if not picture_folder_written:
-                    sheets["Bilder"].loc[len(sheets["Bilder"]), "Datei"] = folder.name
+                    sheets["Bilder"].loc[len(sheets["Bilder"]), "Datei"] = folder.parent.name
                     picture_folder_written = True
                 sheets["Bilder"].loc[len(sheets["Bilder"]), "Datei"] = child.name
         except IndexError as e:
