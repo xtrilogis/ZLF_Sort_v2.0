@@ -106,12 +106,15 @@ def search_columns(df: pd.DataFrame, raw_path: Path, columns: List[str], markers
             if column in df.columns:
                 _copy_marked_files(df=df, column=column, marker=marker, problems=problems,
                                    current_folder=current_folder, rating=rating)
+            else:
+                problems.append(f"Spalte {column} nicht gefunden.")
     return problems
 
 
 def _copy_marked_files(df: pd.DataFrame, column: str, marker: str,
                        problems: List[str], current_folder: Path,
                        rating=0):
+    one_copied = False
     for count, value in enumerate(df[column]):
         if pd.isnull(value):
             pass
@@ -123,6 +126,9 @@ def _copy_marked_files(df: pd.DataFrame, column: str, marker: str,
 
             filemethods.copy_file(src_file=file_fullpath,
                                   dst_folder=current_folder)
+            one_copied = True
+    if not one_copied:
+        problems.append(f"Es wurden keine Dateien kopiert. \n Für Spalte {column}, Marker: {marker}")
 
 
 def copy_pictures_with_rating(df: pd.DataFrame, raw_path: Path, rating_limit: int) -> List[str]:
