@@ -13,26 +13,55 @@ from fileopertations.filemethods import get_file_type, copy_file, get_file_captu
 locale.setlocale(locale.LC_TIME, 'de_DE.utf8')
 
 
-def correct_file_structure(raw_material_folder: Path, dst_folder: Path, start: datetime) -> List[str]:
+def correct_file_structure(raw_material_folder: Path, dst_folder: Path, start: datetime, get_data) -> List[str]:
     errors = []
-    _check_if_right_structure()
+    if [x for x in raw_material_folder.iterdir()]:
+        response = get_data(text=f"Im Zielordner {dst_folder.parent}/{dst_folder.name}\n"
+                                 f"existieren bereits Dateien/Ordner.\n"
+                                 f"Sollen diese Überschrieben werden? j/n")
+        if response.lower != "j":
+            return ["Abbruch. Zielordner nicht leer"]
 
     all_files: List[File] = _get_all_files(raw_material_folder=raw_material_folder, errors=errors)
     structure: Dict[str | date, Dict[str, List[File]]] = _create_structure(start_date=start)
 
+
     _fill_structure(structure=structure, all_files=all_files)
-    # todo: check if folder exists, ask for permission to override
-    # override = get_data(text="Im angegebenen Ordner existieren schon Dateien, sollen diese Überschrieben werden?")
+
+    # _check_if_right_structure(structure, raw_material_folder)
     _copy_file_structure(structure=structure, dst_folder=dst_folder, errors=errors)
     # feat: Feedback how many files were copied
     return errors
 
 
-def _check_if_right_structure():
+def _check_if_right_structure(structure, raw_material_folder: Path):
     # Todo
     # adapt test
+    # if errors len < z.B. 10 User Fragen, ob das imm Rahmen ist oder ob verändert werden soll
+    read_structure, errors = _read_structure(raw_material_folder=raw_material_folder)
+    for key, value in read_structure.items():
+        pass
+    # structure == read_structure compare keys().length, compare if same amount of images and videos per Day
     pass
 
+def _read_structure(raw_material_folder: Path):
+    errors = []
+    structure = {}
+    for a in raw_material_folder.iterdir():
+        if a.is_dir(): # Tage
+            structure[a.name] = {"Bilder": [], "Videos": []}
+            for b in a.iterdir():
+                if b.is_file(): # Videos | Bilder
+                    errors.append(f"Datei {b.parent}/{b.name} außerhalb der richtigen Struktur.")
+                    pass # Fehler
+                if b.is_dir():
+                    for c in b.iterdir():
+                        if c.is_file(): # tatsächliche files
+                            _add_file_object(file=c, all_files=structure[a.name][b.name], errors=errors)
+                        if c.is_dir():
+                            errors.append(f"Ordner {c.parent.parent}/{c.parent}/{c.name} außerhalb der richtigen Struktur.")
+
+    return structure, errors
 
 def _get_all_files(raw_material_folder: Path, errors: List[str]) -> List[File]:
     all_files: List[File] = []
