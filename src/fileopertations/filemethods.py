@@ -24,10 +24,10 @@ def copy_file(src_file: Path, dst_folder: Path):
     """
     copy the given file to the given folder
     Note: if a file with the same name already exists
-    the file will be renamed to filename(nr), nr will be increased until the name doesn't exists
+    the file will be renamed to filename(nr), nr will be increased until the name doesn't exist
     """
     # feat: make overwrite possible/optional
-    if not dst_folder.exists(): # ggf create_folder mit folder=""
+    if not dst_folder.exists():
         dst_folder.mkdir(parents=True)
     file_dst: Path = dst_folder / src_file.name
     counter = 1
@@ -37,7 +37,6 @@ def copy_file(src_file: Path, dst_folder: Path):
         file_dst: Path = dst_folder / f'{src_file.stem}({counter}){src_file.suffix}'
         counter += 1
     shutil.copy(src=src_file, dst=file_dst)
-    # return new location
 
 
 def rename_files(folder: Path, all_files: List[File], progress_callback):

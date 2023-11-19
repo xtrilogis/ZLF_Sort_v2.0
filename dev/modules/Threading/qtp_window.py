@@ -93,6 +93,7 @@ class MainWindow(QMainWindow):
         self.threadpool.start(worker)
 
     def input_information(self, text):
+        # text, ok = QInputDialog.getItem(self, "title", "question", ["Ja", "Nein"])
         text, ok = QInputDialog().getText(self, "QInputDialog().getText()",
                                           text, QLineEdit.Normal,
                                           "Input")
