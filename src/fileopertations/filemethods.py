@@ -41,6 +41,7 @@ def copy_file(src_file: Path, dst_folder: Path):
 
 
 def rename_files(folder: Path, all_files: List[File], progress_callback):
+    renamed_files_nr: int = 0
     length = 3 if len(all_files) < 999 else 4
 
     special_folder = ("sonstiges" in folder.parent.name.lower() or
@@ -51,8 +52,10 @@ def rename_files(folder: Path, all_files: List[File], progress_callback):
             new_filepath = file.full_path.with_name(
                 name=f"{name}-{format(index + 1).zfill(length)}{file.full_path.suffix}")
             file.full_path.rename(new_filepath)
+            renamed_files_nr += 0
         except (FileNotFoundError, FileExistsError, WindowsError) as e:
             progress_callback.emit(f"Datei {file.full_path.name} wurde nicht umbenannt\n- Fehler: {type(e).__name__}")
+    progress_callback.emit(f"{renamed_files_nr} Dateien umbenannt.")
 
 
 def get_file_type(file: Path) -> FileType:

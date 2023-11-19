@@ -130,25 +130,20 @@ def _copy_files(elements: List[File], folder_name: Path, progress_callback) -> i
     return copied_files_nr
 
 def run_rename(raw_material_folder: Path, progress_callback):
-    # todo: msg when no files renamed
-    # todo: reduce duplicated code
-    if _is_folder_with_material(raw_material_folder):
+    _rename_files_in_folder(folder=raw_material_folder, progress_callback=progress_callback)
+
+    for element in raw_material_folder.glob('**/*'):
+        _rename_files_in_folder(folder=element, progress_callback=progress_callback)
+
+
+def _rename_files_in_folder(folder: Path, progress_callback):
+    if _is_folder_with_material(folder):
         all_files: List[File] = []
-        for child in raw_material_folder.iterdir():
+        for child in folder.iterdir():
             _add_file_object(file=child, all_files=all_files, progress_callback=progress_callback)
         all_files.sort(key=lambda x: x.date, reverse=False)
 
-        rename_files(folder=raw_material_folder, all_files=all_files, progress_callback=progress_callback)
-
-    for element in raw_material_folder.glob('**/*'):
-        if _is_folder_with_material(element):
-            all_files: List[File] = []
-            for child in element.iterdir():
-                _add_file_object(file=child, all_files=all_files, progress_callback=progress_callback)
-            all_files.sort(key=lambda x: x.date, reverse=False)
-
-            rename_files(folder=element, all_files=all_files, progress_callback=progress_callback)
-
+        rename_files(folder=folder, all_files=all_files, progress_callback=progress_callback)
 
 def _is_folder_with_material(path: Path) -> bool:
     if not path.is_dir():
