@@ -213,9 +213,16 @@ class ExcelInput(BaseModel):
     def full_path(self) -> Path:
         return self.folder / self.name
 
+def func1(name, age):
+    func2(name=name, age=age)
+
+def func2(name, **kwargs):
+    print(name)
+
 if __name__ == '__main__':
     # run(some_fn, titel="sfda", bla="asdf", input=[1, 2, 4])
-    nums = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-    res = ExcelInput(folder=Path("test/path"))
-    print(res.full_path)
+    # nums = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    # res = ExcelInput(folder=Path("test/path"))
+    # print(res.full_path)
+    func1("tom", 23)
     pass

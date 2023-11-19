@@ -32,7 +32,8 @@ def raw_process(titel):
                 raise ValueError("Bitte gib einen gültigen Rohmaterialordner an.")
             progress_callback.emit("Inputs validiert")
 
-            result = func(inputs, progress_callback, get_data, *args, **kwargs)
+            result = func(inputs=inputs, progress_callback=progress_callback,
+                          get_data=get_data)
             if result:
                 _pretty_send_problems(titel=titel, list_=result, progress_callback=progress_callback)
             return f"{titel} abgeschlossen."
@@ -43,7 +44,7 @@ def raw_process(titel):
 
 
 @raw_process("Korrekte Ordnerstruktur")
-def run_correct_structure(inputs: RawTabInput, progress_callback, get_data, **kwargs) -> List[str]:
+def run_correct_structure(inputs: RawTabInput, get_data, **kwargs) -> List[str]:
     return raw_methods.correct_file_structure(raw_material_folder=inputs.raw_material_folder,
                                               dst_folder=inputs.raw_material_folder.parent / "New",
                                               start=inputs.first_folder_date,
@@ -51,11 +52,11 @@ def run_correct_structure(inputs: RawTabInput, progress_callback, get_data, **kw
 
 
 @raw_process("Dateien umbenennen")
-def run_rename_files(inputs: RawTabInput, progress_callback, get_data, **kwargs) -> List[str]:
+def run_rename_files(inputs: RawTabInput, **kwargs) -> List[str]:
     return raw_methods.run_rename(raw_material_folder=inputs.raw_material_folder)
 
 
-def run_create_excel(inputs: RawTabInput, progress_callback, get_data, **kwargs) -> Path | None:
+def run_create_excel(inputs: RawTabInput, progress_callback, get_data, **kwargs):
     if inputs.excel.option != ExcelOption.CREATE:
         raise AttributeError("Can't call create Excel for existing Excel.")
 
@@ -98,7 +99,7 @@ def run_fill_excel(inputs: RawTabInput, progress_callback, get_data, **kwargs) -
 
 
 @raw_process("Bilderordner erstellen")
-def run_create_picture_folder(inputs: RawTabInput, progress_callback, get_data, **kwargs) -> List[str]:
+def run_create_picture_folder(inputs: RawTabInput, **kwargs) -> List[str]:
     inputs.picture_folder.mkdir()
     if not is_valid_folder(inputs.picture_folder):
         raise ValueError("Bitte gib einen gültigen Zielordner an.")
