@@ -8,7 +8,6 @@ class WorkerSignals(QObject):
     Supported Signals:
     """
     problem_with_input = pyqtSignal(str)
-    # todo errors = pyqtSignal(List[str])
     new_message = pyqtSignal(str)
     finished = pyqtSignal()
     request_data = pyqtSignal(str)

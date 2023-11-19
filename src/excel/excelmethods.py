@@ -18,11 +18,11 @@ def create_emtpy_excel(config: ExcelConfig, override=False) -> Path:
     full_excel_path = config.excel_folder / config.excel_file_name
     if full_excel_path.exists() and not override:
         raise FileExistsError
-    else:
-        sheets: Dict[str, DataFrame] = {}
-        for sheet in config.sheets:
-            sheets[sheet.name] = pd.DataFrame(columns=sheet.columns)
-        save_sheets_to_excel(sheets=sheets, path=full_excel_path)
+
+    sheets: Dict[str, DataFrame] = {}
+    for sheet in config.sheets:
+        sheets[sheet.name] = pd.DataFrame(columns=sheet.columns)
+    save_sheets_to_excel(sheets=sheets, path=full_excel_path)
     return full_excel_path
 
 
