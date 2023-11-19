@@ -19,7 +19,7 @@ def correct_file_structure(raw_material_folder: Path, dst_folder: Path, start: d
         response = get_data(text=f"Im Zielordner {dst_folder.parent}/{dst_folder.name}\n"
                                  f"existieren bereits Dateien/Ordner.\n"
                                  f"Sollen diese Überschrieben werden? j/n")
-        if response.lower != "j":
+        if response != "Ja":
             return ["Abbruch. Zielordner nicht leer"]
 
     all_files: List[File] = _get_all_files(raw_material_folder=raw_material_folder, progress_callback=progress_callback)
@@ -160,7 +160,7 @@ def create_excel(config: ExcelConfig, progress_callback, get_data):
         return path
     except FileExistsError:
         response: str = get_data(text="Excel existiert bereits. Soll sie überschrieben werden? j/n")
-        if response.lower() == "j":
+        if response == "Ja":
             path = create_emtpy_excel(config=config, override=True)
             progress_callback.emit("Excel-Datei erfolgreich erstellt.")
             return path

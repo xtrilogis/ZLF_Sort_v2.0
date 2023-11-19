@@ -266,12 +266,10 @@ class MainWindow(QMainWindow):
 
     @pyqtSlot(str)
     def open_information_input(self, text: str):
-        # feat: text is a code, witch is mapped to a proper InputDialog
-        text, ok = QInputDialog().getText(self, "QInputDialog().getText()",
-                                          text, QLineEdit.Normal,
-                                          "Input")
-        if ok and text:
-            self.sender().data_response.emit(text)
+        answer, ok = QInputDialog().getItem(self, "Eingabe",
+                                          text, ["Ja", "Nein"])
+        if ok and answer:
+            self.sender().data_response.emit(answer)
         self.cond.wakeAll()
 
     @pyqtSlot()
