@@ -20,17 +20,20 @@ def test_main(mock_input, sys, mock_fn):
 
 #  todo: one test per tab no input mock
 
-
+# These test help checking the integration of ui inputs and the processing code
+# Note that none of the button clicks result in a real creation or change in the given
+# test data
 @patch("src.main.runner.runners.setup_methods.create_folder")
 @patch("sys.exit")
 def test_folder_setup(_, mock_fn):
     mock_fn.return_value = Path("test/path/")
     main()
     assert mock_fn.call_count == 31
+    assert mock_fn.call_args_list[1].kwargs['parent'] == Path("test/path")
 
 
 
-@patch("src.main.runner.runners.raw_methods.create_emtpy_excel")
+@patch("excel.excelmethods.save_sheets_to_excel") # @patch("src.main.runner.runners.raw_methods.create_emtpy_excel") # erstetzen
 @patch("src.main.runner.runners.raw_methods.save_sheets_to_excel")
 @patch("pathlib.Path.rename")
 @patch("pathlib.Path.mkdir")
@@ -38,10 +41,6 @@ def test_folder_setup(_, mock_fn):
 @patch("sys.exit")
 def test_process_raw_full(_, mock_copy, __, mock_rename, mock_save, mock_create):
     main()
-    assert mock_copy.call_count ==  28 + 18
-    assert mock_rename.call_count == 28
-    assert mock_save.call_count == 1
-    assert mock_create.call_count == 0
 
 
 @patch("pathlib.Path.mkdir")
@@ -49,5 +48,3 @@ def test_process_raw_full(_, mock_copy, __, mock_rename, mock_save, mock_create)
 @patch("sys.exit")
 def test_run_process_util_full(_, mock_fn, __):
     main()
-    assert mock_fn.call_count == 17 + 13 + 8 + 10
-

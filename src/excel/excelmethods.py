@@ -8,9 +8,9 @@ from assethandling.basemodels import ExcelConfig
 
 def create_emtpy_excel(config: ExcelConfig, override=False) -> Path:
     """Creates a new Excel file, at the given path, with the given sheets
-    :param config:
+    :param config: _
     :raise FileExistsError, if the there already is a file with the same name
-    :param override:
+    :param override: _
     :return: path to new created
     """
     if ".xlsx" not in config.excel_file_name:

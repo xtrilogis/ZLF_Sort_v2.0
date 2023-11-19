@@ -15,7 +15,7 @@ locale.setlocale(locale.LC_TIME, 'de_DE.utf8')
 
 def correct_file_structure(raw_material_folder: Path, dst_folder: Path, start: datetime, get_data) -> List[str]:
     errors = []
-    if [x for x in raw_material_folder.iterdir()]:
+    if [x for x in dst_folder.iterdir()]:
         response = get_data(text=f"Im Zielordner {dst_folder.parent}/{dst_folder.name}\n"
                                  f"existieren bereits Dateien/Ordner.\n"
                                  f"Sollen diese Überschrieben werden? j/n")
@@ -179,13 +179,13 @@ def fill_excel(excel: Path, raw_material_folder: Path) -> List[str]:
 
     for element in raw_material_folder.glob('**/*'):
         if _is_folder_with_material(element):
-            _add_child_files(folder=element, sheets=sheets, errors=errors)
+            _fill_sheets(folder=element, sheets=sheets, errors=errors)
 
     save_sheets_to_excel(sheets=sheets, path=excel)
     return errors
 
 
-def _add_child_files(folder: Path, sheets: Dict[str, pd.DataFrame], errors: List[str]):
+def _fill_sheets(folder: Path, sheets: Dict[str, pd.DataFrame], errors: List[str]):
     picture_folder_written = False
     video_folder_written = False
     for child in folder.iterdir():

@@ -49,7 +49,7 @@ class Worker(QRunnable):
         else:
             if type(result) == list:
                 self.send_result_list("", result)
-            if result:
+            elif result:
                 self.signals.new_message.emit(str(result))
         finally:
             self.signals.new_message.emit("Prozessierung beendet.")
