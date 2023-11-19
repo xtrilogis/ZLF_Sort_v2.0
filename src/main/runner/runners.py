@@ -149,10 +149,8 @@ def util_process():
 
 
 def validate_and_prepare(raw_material_folder: Path, excel_full_filepath: Path) -> Dict[str, DataFrame]:
-    errors = validate_util_paths(raw_material_folder=raw_material_folder,
-                                 excel_full_filepath=excel_full_filepath)
-    if errors:
-        raise ValueError('\n'.join(errors))
+    validate_util_paths(raw_material_folder=raw_material_folder,
+                        excel_full_filepath=excel_full_filepath)
     return util_methods.prepare_dataframes(excel_file=excel_full_filepath,
                                            raw_path=raw_material_folder)
 
