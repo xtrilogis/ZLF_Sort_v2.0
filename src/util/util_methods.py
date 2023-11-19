@@ -38,14 +38,14 @@ def _append_file_paths_to_df(sheets: Dict[str, pd.DataFrame], raw_material_path:
                 df.loc[row, "Dateipfad"] = element
 
 
-def copy_section(df: pd.DataFrame, rating_limit: int) -> List[str]:
+def copy_section(df: pd.DataFrame, rating_limit: int, progress_callback):
     """Iterates through column 'Abschnitt'(Sections), sorts files into given sections
+    :param progress_callback: _
     :arg df pandas DataFrame containing file information
     :arg rating_limit only file with a rating equal or higher will be copied"""
-    problems = []
-    one_copied = False
+    copied_files_nr: int = 0
     for count, value in enumerate(df['Abschnitt']):
-        rating = df.loc[count, 'Bewertung']
+        rating: int = int(df.loc[count, 'Bewertung'])
         if pd.isnull(value) and pd.isnull(rating):
             continue
         if pd.isnull(value):
@@ -53,7 +53,7 @@ def copy_section(df: pd.DataFrame, rating_limit: int) -> List[str]:
         try:
             if rating >= rating_limit:
                 if pd.isnull(df.loc[count, 'Dateipfad']):
-                    problems.append(f"Datei konnte nicht kopiert werden: {df.loc[count, 'Datei']}")
+                    progress_callback.emit(f"Datei konnte nicht kopiert werden: {df.loc[count, 'Datei']}")
                     continue
 
                 file_fullpath = Path(df.loc[count, 'Dateipfad'])
@@ -62,14 +62,12 @@ def copy_section(df: pd.DataFrame, rating_limit: int) -> List[str]:
                                                              section=section)
                 filemethods.copy_file(src_file=file_fullpath,
                                       dst_folder=destination_folder)
-                one_copied = True
+                copied_files_nr += 1
         except (AttributeError, ValueError) as e:
-            problems.append(str(e))
+            progress_callback.emit(str(e))
         except FileNotFoundError as e:
-            problems.append(f"Datei nicht gefunden: {df.loc[count, 'Datei']}")
-    if not one_copied:
-        problems.append("Es wurden keine Dateien kopiert.")
-    return problems
+            progress_callback.emit(f"Datei nicht gefunden: {df.loc[count, 'Datei']}")
+    progress_callback.emit(f"{copied_files_nr} Dateien kopiert.")
 
 
 def _get_section_dst_folder(file_fullpath: Path, section: str) -> Path:
@@ -84,76 +82,70 @@ def _get_section_dst_folder(file_fullpath: Path, section: str) -> Path:
     return destination
 
 
-def copy_selections(df: pd.DataFrame, raw_path: Path, columns: List[str], marker: str):
+def copy_selections(df: pd.DataFrame, raw_path: Path, columns: List[str], marker: str, progress_callback):
     problems = []
     dst_folder = raw_path.parent / "Schnittmaterial" / "Selektionen"
     for column in columns:
         if column in df.columns:
             current_folder = dst_folder / column
-            _copy_marked_files(df=df, column=column, marker=marker, problems=problems,
-                               current_folder=current_folder)
+            _copy_marked_files(df=df, column=column, marker=marker, current_folder=current_folder,
+                               progress_callback=progress_callback)
         else:
-            problems.append(f"Spalte {column} nicht gefunden.")
-    return problems
+            progress_callback.emit(f"Spalte {column} nicht gefunden.")
 
 
-def search_columns(df: pd.DataFrame, raw_path: Path, columns: List[str], markers: List[str], rating: int):
-    problems = []
-    dst_folder = raw_path.parent / "Schnittmaterial" / "Suche"
+def search_columns(df: pd.DataFrame, raw_path: Path, columns: List[str],
+                   markers: List[str], rating: int, progress_callback):
+    dst_folder: Path = raw_path.parent / "Schnittmaterial" / "Suche"
     for marker in markers:
-        current_folder = dst_folder / marker
+        current_folder: Path = dst_folder / marker
         for column in columns:
             if column in df.columns:
-                _copy_marked_files(df=df, column=column, marker=marker, problems=problems,
-                                   current_folder=current_folder, rating=rating)
+                _copy_marked_files(df=df, column=column, marker=marker, current_folder=current_folder,
+                                   rating=rating, progress_callback=progress_callback)
             else:
-                problems.append(f"Spalte {column} nicht gefunden.")
-    return problems
+                progress_callback.emit(f"Spalte {column} nicht gefunden.")
 
 
-def _copy_marked_files(df: pd.DataFrame, column: str, marker: str,
-                       problems: List[str], current_folder: Path,
-                       rating=0):
-    one_copied = False
+def _copy_marked_files(df: pd.DataFrame, column: str, marker: str, current_folder: Path,
+                       progress_callback, rating=0):
+    copied_files_nr: int = 0
     for count, value in enumerate(df[column]):
         if pd.isnull(value):
             pass
         elif marker in value and df.loc[count, 'Bewertung'] >= rating:
             if pd.isnull(df.loc[count, 'Dateipfad']):
-                problems.append(f"Datei konnte nicht kopiert werden: {df.loc[count, 'Datei']}")
+                progress_callback.emit(f"Datei konnte nicht kopiert werden: {df.loc[count, 'Datei']}")
                 continue
-            file_fullpath = df.loc[count, "Dateipfad"]
+            file_fullpath: Path = Path(df.loc[count, "Dateipfad"])
 
             filemethods.copy_file(src_file=file_fullpath,
                                   dst_folder=current_folder)
-            one_copied = True
-    if not one_copied:
-        problems.append(f"Es wurden keine Dateien kopiert. \n Für Spalte {column}, Marker: {marker}")
+            copied_files_nr += 1
+
+    progress_callback.emit(f"{copied_files_nr} Dateien kopiert. \n für Spalte {column}, Marker: {marker}")
 
 
-def copy_pictures_with_rating(df: pd.DataFrame, raw_path: Path, rating_limit: int) -> List[str]:
-    problems = []
-    one_copied = False
-    dst_folder = raw_path.parent / "Schnittmaterial" / f"Bilder bw{rating_limit}"
+def copy_pictures_with_rating(df: pd.DataFrame, raw_path: Path, rating_limit: int, progress_callback):
+    copied_files_nr: int = 0
+    dst_folder: Path = raw_path.parent / "Schnittmaterial" / f"Bilder bw{rating_limit}"
     for count, value in enumerate(df['Dateipfad']):
         if pd.isnull(value):
             if not pd.isnull(df.loc[count, 'Bewertung']):
-                problems.append(f"Datei konnte nicht ausgewertet werden: {df.loc[count, 'Datei']}")
+                progress_callback.emit(f"Datei konnte nicht ausgewertet werden: {df.loc[count, 'Datei']}")
             continue
         if df.loc[count, 'Bewertung'] >= rating_limit:
             filemethods.copy_file(src_file=value,
                                   dst_folder=dst_folder)
-            one_copied = True
-    if not one_copied:
-        problems.append("Es wurden keine Dateien kopiert.")
-    return problems
+            copied_files_nr += 1
+    progress_callback.emit(f"{copied_files_nr} Dateien kopiert.")
 
 
 def create_statistics(raw_path: Path, progress_callback):
-    select = raw_path.parent / "Schnittmaterial"
+    select: Path = raw_path.parent / "Schnittmaterial"
 
     total_duration, problems, duration_per_day = statistics.get_raw_material_duration(path=raw_path)
-    result = [f"Gesamtdauer: {total_duration}"]
+    result: List[str] = [f"Gesamtdauer: {total_duration}"]
     progress_callback.emit("Gesamtdauer ermittelt.")
 
     for day in duration_per_day:

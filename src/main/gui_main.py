@@ -295,12 +295,10 @@ class MainWindow(QMainWindow):
 
     @pyqtSlot(str)
     def open_information_input(self, text: str):
-        # feat: text is a code, witch is mapped to a proper InputDialog
-        text, ok = QInputDialog().getText(self, "QInputDialog().getText()",
-                                          text, QLineEdit.Normal,
-                                          "Input")
-        if ok and text:
-            self.sender().data_response.emit(text)
+        answer, ok = QInputDialog().getItem(self, "Eingabe",
+                                          text, ["Ja", "Nein"])
+        if ok and answer:
+            self.sender().data_response.emit(answer)
         self.cond.wakeAll()
 
     @pyqtSlot()
@@ -451,15 +449,13 @@ class MainWindow(QMainWindow):
         try:
             if self.ui.drop_util_excelfile.text() == "":
                 raise ValueError("Bitte gib eine Excel-Datei an.")
-            path = Path(self.ui.drop_util_excelfile.text())
-            errors = validate_excel_file(excel_file=path)
-            if errors:
-                raise ValueError('\n'.join(errors))
-            items = excelmethods.get_columns(excel=path, sheet=sheet)
+            path: Path = Path(self.ui.drop_util_excelfile.text())
+            validate_excel_file(excel_file=path)
+            items: List[str] = excelmethods.get_columns(excel=path, sheet=sheet)
             dial = SelectionDialog("Spalten Auswahl", "Spalten", items, self)
             if dial.exec_() == QDialog.Accepted:
-                select = dial.itemsSelected()
-                text = ", ".join(select)
+                select: List[str] = dial.itemsSelected()
+                text: str = ", ".join(select)
                 line_edit.setText(text)
         except Exception as e:
             traceback.print_exc()
@@ -467,7 +463,7 @@ class MainWindow(QMainWindow):
 
     @staticmethod
     def get_LineEdit_parts(element: QLineEdit) -> List[str]:
-        cols = []
+        cols: List[str] = []
         for part in element.text().split(','):
             if part.strip():
                 cols.append(part.strip())
@@ -475,7 +471,7 @@ class MainWindow(QMainWindow):
 
     @staticmethod
     def get_PlainTextEdit_parts(element: QPlainTextEdit) -> List[str]:
-        cols = []
+        cols: List[str] = []
         for part in element.document().toRawText().split(','):
             if part.strip():
                 cols.append(part.strip())
