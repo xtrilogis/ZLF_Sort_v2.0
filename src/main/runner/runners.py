@@ -27,13 +27,12 @@ def run_folder_setup(inputs: FolderTabInput, progress_callback, get_data) -> str
 def raw_process():
     def decor(func):
         def wrap(inputs: RawTabInput, progress_callback, get_data, *args, **kwargs) -> str:
-
             if not is_valid_folder(inputs.raw_material_folder):
                 raise ValueError("Bitte gib einen gültigen Rohmaterialordner an.")
             progress_callback.emit("Inputs validiert")
 
             msg: str = func(inputs=inputs, progress_callback=progress_callback,
-                          get_data=get_data)
+                            get_data=get_data)
             return msg
 
         return wrap
@@ -44,10 +43,10 @@ def raw_process():
 @raw_process()
 def run_correct_structure(inputs: RawTabInput, progress_callback, get_data, **kwargs) -> str:
     raw_methods.correct_file_structure(raw_material_folder=inputs.raw_material_folder,
-                                      dst_folder=inputs.raw_material_folder.parent / "New",
-                                      start=inputs.first_folder_date,
-                                      progress_callback=progress_callback,
-                                      get_data=get_data)
+                                       dst_folder=inputs.raw_material_folder.parent / "New",
+                                       start=inputs.first_folder_date,
+                                       progress_callback=progress_callback,
+                                       get_data=get_data)
     return "Korrekte Ordnerstruktur abgeschlossen"
 
 
@@ -67,7 +66,6 @@ def run_create_excel(inputs: RawTabInput, progress_callback, get_data, **kwargs)
     progress_callback.emit("Starte Excel erstellen.")
     config: ExcelConfig = _get_excel_config(excel=inputs.excel)
     raw_methods.create_excel(config=config, progress_callback=progress_callback, get_data=get_data)
-
 
 
 def _get_excel_config(excel: ExcelInput) -> ExcelConfig:
@@ -110,8 +108,8 @@ def run_create_picture_folder(inputs: RawTabInput, progress_callback, **kwargs) 
         raise ValueError("Bitte gib einen gültigen Zielordner an.")
 
     raw_methods.create_picture_folder(picture_folder=inputs.picture_folder,
-                                             raw_material_folder=inputs.raw_material_folder,
-                                             progress_callback=progress_callback)
+                                      raw_material_folder=inputs.raw_material_folder,
+                                      progress_callback=progress_callback)
     return "Bilderordner erstellen abgeschlossen"
 
 
@@ -164,9 +162,9 @@ def run_copy_sections(sheets: Dict[str, DataFrame], inputs: UtilTabInput, progre
     for sheet_name, do_section in [("Videos", inputs.do_video_sections),
                                    ("Bilder", inputs.do_picture_sections)]:
         if do_section and not sheets[sheet_name].empty:
-            results = util_methods.copy_section(df=sheets[sheet_name], rating_limit=inputs.rating_section)
-            _pretty_send_problems(titel=f"{sheet_name}abschnitte erstellt.",
-                                  list_=results, progress_callback=progress_callback)
+            util_methods.copy_section(df=sheets[sheet_name], rating_limit=inputs.rating_section,
+                                      progress_callback=progress_callback)
+            progress_callback.emit(f"{sheet_name}abschnitte erstellt.")
     return "Abschnitte abgeschlossen."
 
 
@@ -175,10 +173,9 @@ def run_copy_selection(sheets: Dict[str, DataFrame], inputs: UtilTabInput, progr
     for sheet_name, columns in [("Videos", inputs.videos_columns_selection),
                                 ("Bilder", inputs.picture_columns_selection)]:
         if columns and not sheets[sheet_name].empty:
-            result = util_methods.copy_selections(df=sheets[sheet_name], raw_path=inputs.raw_material_folder,
-                                                  columns=columns, marker=inputs.marker)
-            _pretty_send_problems(titel=f"{sheet_name}selektion erstellt.",
-                                  list_=result, progress_callback=progress_callback)
+            util_methods.copy_selections(df=sheets[sheet_name], raw_path=inputs.raw_material_folder,
+                                         columns=columns, marker=inputs.marker, progress_callback=progress_callback)
+            progress_callback.emit(f"{sheet_name}selektion erstellt.")
     return "Selektionen abgeschlossen."
 
 
@@ -187,20 +184,20 @@ def run_search(sheets: Dict[str, DataFrame], inputs: UtilTabInput, progress_call
     for sheet_name, columns in [("Videos", inputs.videos_columns_search),
                                 ("Bilder", inputs.picture_columns_search)]:
         if columns and not sheets[sheet_name].empty:
-            result = util_methods.search_columns(df=sheets[sheet_name], columns=columns,
-                                                 raw_path=inputs.raw_material_folder,
-                                                 markers=inputs.keywords, rating=inputs.rating_search)
-            _pretty_send_problems(titel=f"{sheet_name}suche erstellt.",
-                                  list_=result, progress_callback=progress_callback)
+            util_methods.search_columns(df=sheets[sheet_name], columns=columns,
+                                        raw_path=inputs.raw_material_folder,
+                                        markers=inputs.keywords, rating=inputs.rating_search,
+                                        progress_callback=progress_callback)
+            progress_callback.emit(f"{sheet_name}suche erstellt.")
     return "Suche abgeschlossen."
 
 
 @util_process()
 def run_create_rated_picture_folder(sheets: Dict[str, DataFrame], inputs: UtilTabInput, progress_callback) -> str:
-    result = util_methods.copy_pictures_with_rating(df=sheets["Bilder"],
-                                                    raw_path=inputs.raw_material_folder,
-                                                    rating_limit=inputs.rating_pictures)
-    _pretty_send_problems(titel="Bilderordner", list_=result, progress_callback=progress_callback)
+    util_methods.copy_pictures_with_rating(df=sheets["Bilder"],
+                                           raw_path=inputs.raw_material_folder,
+                                           rating_limit=inputs.rating_pictures,
+                                           progress_callback=progress_callback)
     return "Bilderordner erstellt."
 
 
@@ -224,14 +221,6 @@ def run_process_util_full(inputs: UtilTabInput, progress_callback, get_data):
                 progress_callback.emit(
                     value[1](inputs=inputs, progress_callback=progress_callback, get_data=get_data))
             except Exception as e:
-                _pretty_send_problems(titel=f"{key} erstellen.", list_=[str(e)], progress_callback=progress_callback)
+                progress_callback.emit(f"! Problem beim {key} erstellen:\n"
+                                       f"- Fehler: {str(e)}")
     return "Prozessierung abgeschlossen"
-
-
-# Todo duplicate with Worker send_result_list
-# use errors Signal
-def _pretty_send_problems(list_: List[str], progress_callback, titel=""):
-    progress_callback.emit(titel)
-    if list_:
-        progress_callback.emit("Probleme:")
-    [progress_callback.emit(f"- {x}") for x in list_ if x]
