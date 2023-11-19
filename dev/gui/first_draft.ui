@@ -185,7 +185,7 @@ QScrollBar:horizontal
 </string>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="Start">
        <attribute name="title">
@@ -232,8 +232,8 @@ QScrollBar:horizontal
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>418</width>
-             <height>507</height>
+             <width>1128</width>
+             <height>715</height>
             </rect>
            </property>
            <property name="minimumSize">
@@ -503,13 +503,7 @@ p, li { white-space: pre-wrap; }
                     <property name="title">
                      <string>Ordner erstellen</string>
                     </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_7">
-                     <property name="leftMargin">
-                      <number>9</number>
-                     </property>
-                     <property name="topMargin">
-                      <number>0</number>
-                     </property>
+                    <layout class="QVBoxLayout" name="verticalLayout_22">
                      <item>
                       <widget class="QFrame" name="folder_input_frame_2">
                        <property name="minimumSize">
@@ -910,10 +904,71 @@ p, li { white-space: pre-wrap; }
                       </widget>
                      </item>
                      <item>
-                      <widget class="QLabel" name="print_label_setup">
-                       <property name="text">
-                        <string/>
+                      <widget class="QScrollArea" name="process_scrollArea_3">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
                        </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>300</width>
+                         <height>41</height>
+                        </size>
+                       </property>
+                       <property name="styleSheet">
+                        <string notr="true"/>
+                       </property>
+                       <property name="frameShape">
+                        <enum>QFrame::StyledPanel</enum>
+                       </property>
+                       <property name="frameShadow">
+                        <enum>QFrame::Plain</enum>
+                       </property>
+                       <property name="midLineWidth">
+                        <number>0</number>
+                       </property>
+                       <property name="widgetResizable">
+                        <bool>true</bool>
+                       </property>
+                       <widget class="QWidget" name="scrollAreaWidgetContents_3">
+                        <property name="geometry">
+                         <rect>
+                          <x>0</x>
+                          <y>0</y>
+                          <width>453</width>
+                          <height>62</height>
+                         </rect>
+                        </property>
+                        <layout class="QVBoxLayout" name="verticalLayout_7">
+                         <item>
+                          <widget class="QLabel" name="print_label_setup">
+                           <property name="font">
+                            <font>
+                             <family>Gill Sans Nova</family>
+                             <pointsize>12</pointsize>
+                             <weight>50</weight>
+                             <italic>false</italic>
+                             <bold>false</bold>
+                            </font>
+                           </property>
+                           <property name="toolTip">
+                            <string>Zeigt den aktuellen Arbeitsschritt an.</string>
+                           </property>
+                           <property name="styleSheet">
+                            <string notr="true"/>
+                           </property>
+                           <property name="text">
+                            <string/>
+                           </property>
+                           <property name="alignment">
+                            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                           </property>
+                          </widget>
+                         </item>
+                        </layout>
+                       </widget>
                       </widget>
                      </item>
                     </layout>
@@ -1021,6 +1076,201 @@ p, li { white-space: pre-wrap; }
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_4">
               <item>
+               <widget class="QFrame" name="frame_29">
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <layout class="QVBoxLayout" name="verticalLayout_23">
+                 <property name="spacing">
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>5</number>
+                 </property>
+                 <item>
+                  <widget class="QFrame" name="input_frame_2">
+                   <property name="maximumSize">
+                    <size>
+                     <width>16777215</width>
+                     <height>100</height>
+                    </size>
+                   </property>
+                   <property name="frameShape">
+                    <enum>QFrame::StyledPanel</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                   </property>
+                   <layout class="QGridLayout" name="gridLayout_4">
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>8</number>
+                    </property>
+                    <property name="horizontalSpacing">
+                     <number>4</number>
+                    </property>
+                    <property name="verticalSpacing">
+                     <number>6</number>
+                    </property>
+                    <item row="1" column="1">
+                     <widget class="QLineEdit" name="drop_raw_rawpath">
+                      <property name="minimumSize">
+                       <size>
+                        <width>330</width>
+                        <height>30</height>
+                       </size>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>330</width>
+                        <height>30</height>
+                       </size>
+                      </property>
+                      <property name="baseSize">
+                       <size>
+                        <width>30</width>
+                        <height>0</height>
+                       </size>
+                      </property>
+                      <property name="font">
+                       <font>
+                        <family>Gill Sans Nova</family>
+                        <pointsize>12</pointsize>
+                        <weight>50</weight>
+                        <italic>false</italic>
+                        <bold>false</bold>
+                       </font>
+                      </property>
+                      <property name="toolTip">
+                       <string>Dateipfad den Rohmaterial-Ordners</string>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">QLineEdit {
+	color: &quot;red&quot;;
+}</string>
+                      </property>
+                      <property name="inputMask">
+                       <string/>
+                      </property>
+                      <property name="text">
+                       <string/>
+                      </property>
+                      <property name="frame">
+                       <bool>true</bool>
+                      </property>
+                      <property name="echoMode">
+                       <enum>QLineEdit::Normal</enum>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                      </property>
+                      <property name="placeholderText">
+                       <string>Rohmaterialordner</string>
+                      </property>
+                      <property name="clearButtonEnabled">
+                       <bool>true</bool>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="0">
+                     <spacer name="horizontalSpacer_19">
+                      <property name="orientation">
+                       <enum>Qt::Horizontal</enum>
+                      </property>
+                      <property name="sizeHint" stdset="0">
+                       <size>
+                        <width>40</width>
+                        <height>20</height>
+                       </size>
+                      </property>
+                     </spacer>
+                    </item>
+                    <item row="1" column="2">
+                     <widget class="QToolButton" name="tb_raw_rawpath">
+                      <property name="minimumSize">
+                       <size>
+                        <width>30</width>
+                        <height>30</height>
+                       </size>
+                      </property>
+                      <property name="font">
+                       <font>
+                        <family>Gill Sans Nova</family>
+                        <pointsize>12</pointsize>
+                        <weight>50</weight>
+                        <italic>false</italic>
+                        <bold>false</bold>
+                       </font>
+                      </property>
+                      <property name="toolTip">
+                       <string>Ordnerauswahl</string>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true"/>
+                      </property>
+                      <property name="text">
+                       <string>...</string>
+                      </property>
+                      <property name="icon">
+                       <iconset>
+                        <normaloff>../../../Zlf_sort/program/graphics/folder.png</normaloff>../../../Zlf_sort/program/graphics/folder.png</iconset>
+                      </property>
+                      <property name="iconSize">
+                       <size>
+                        <width>20</width>
+                        <height>20</height>
+                       </size>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="1" column="3">
+                     <spacer name="horizontalSpacer_20">
+                      <property name="orientation">
+                       <enum>Qt::Horizontal</enum>
+                      </property>
+                      <property name="sizeHint" stdset="0">
+                       <size>
+                        <width>40</width>
+                        <height>20</height>
+                       </size>
+                      </property>
+                     </spacer>
+                    </item>
+                    <item row="0" column="1">
+                     <widget class="QLabel" name="label_7">
+                      <property name="text">
+                       <string>Immmer angeben*</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="label_8">
+                   <property name="text">
+                    <string>* wenn die Excel mit manuellen Einstellungen erstellt wird nicht zwingend</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
                <widget class="QTabWidget" name="tabWidget_raw">
                 <property name="minimumSize">
                  <size>
@@ -1038,7 +1288,7 @@ p, li { white-space: pre-wrap; }
                  <enum>QTabWidget::North</enum>
                 </property>
                 <property name="currentIndex">
-                 <number>3</number>
+                 <number>0</number>
                 </property>
                 <property name="elideMode">
                  <enum>Qt::ElideNone</enum>
@@ -1046,197 +1296,6 @@ p, li { white-space: pre-wrap; }
                 <property name="documentMode">
                  <bool>true</bool>
                 </property>
-                <widget class="QWidget" name="common">
-                 <attribute name="title">
-                  <string>Allgemein</string>
-                 </attribute>
-                 <widget class="QLabel" name="label_8">
-                  <property name="geometry">
-                   <rect>
-                    <x>10</x>
-                    <y>140</y>
-                    <width>525</width>
-                    <height>18</height>
-                   </rect>
-                  </property>
-                  <property name="text">
-                   <string>* wenn die Excel mit manuellen Einstellungen erstellt wird nicht zwingend</string>
-                  </property>
-                 </widget>
-                 <widget class="QFrame" name="input_frame_2">
-                  <property name="geometry">
-                   <rect>
-                    <x>0</x>
-                    <y>30</y>
-                    <width>712</width>
-                    <height>76</height>
-                   </rect>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>16777215</width>
-                    <height>100</height>
-                   </size>
-                  </property>
-                  <property name="frameShape">
-                   <enum>QFrame::StyledPanel</enum>
-                  </property>
-                  <property name="frameShadow">
-                   <enum>QFrame::Raised</enum>
-                  </property>
-                  <layout class="QGridLayout" name="gridLayout_4">
-                   <property name="leftMargin">
-                    <number>0</number>
-                   </property>
-                   <property name="topMargin">
-                    <number>15</number>
-                   </property>
-                   <property name="rightMargin">
-                    <number>0</number>
-                   </property>
-                   <property name="bottomMargin">
-                    <number>5</number>
-                   </property>
-                   <property name="horizontalSpacing">
-                    <number>4</number>
-                   </property>
-                   <property name="verticalSpacing">
-                    <number>6</number>
-                   </property>
-                   <item row="1" column="2">
-                    <widget class="QToolButton" name="tb_raw_rawpath">
-                     <property name="minimumSize">
-                      <size>
-                       <width>30</width>
-                       <height>30</height>
-                      </size>
-                     </property>
-                     <property name="font">
-                      <font>
-                       <family>Gill Sans Nova</family>
-                       <pointsize>12</pointsize>
-                       <weight>50</weight>
-                       <italic>false</italic>
-                       <bold>false</bold>
-                      </font>
-                     </property>
-                     <property name="toolTip">
-                      <string>Ordnerauswahl</string>
-                     </property>
-                     <property name="styleSheet">
-                      <string notr="true"/>
-                     </property>
-                     <property name="text">
-                      <string>...</string>
-                     </property>
-                     <property name="icon">
-                      <iconset>
-                       <normaloff>../../../Zlf_sort/program/graphics/folder.png</normaloff>../../../Zlf_sort/program/graphics/folder.png</iconset>
-                     </property>
-                     <property name="iconSize">
-                      <size>
-                       <width>20</width>
-                       <height>20</height>
-                      </size>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="1" column="0">
-                    <spacer name="horizontalSpacer_19">
-                     <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>40</width>
-                       <height>20</height>
-                      </size>
-                     </property>
-                    </spacer>
-                   </item>
-                   <item row="1" column="3">
-                    <spacer name="horizontalSpacer_20">
-                     <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>40</width>
-                       <height>20</height>
-                      </size>
-                     </property>
-                    </spacer>
-                   </item>
-                   <item row="1" column="1">
-                    <widget class="QLineEdit" name="drop_raw_rawpath">
-                     <property name="minimumSize">
-                      <size>
-                       <width>330</width>
-                       <height>30</height>
-                      </size>
-                     </property>
-                     <property name="maximumSize">
-                      <size>
-                       <width>330</width>
-                       <height>30</height>
-                      </size>
-                     </property>
-                     <property name="baseSize">
-                      <size>
-                       <width>30</width>
-                       <height>0</height>
-                      </size>
-                     </property>
-                     <property name="font">
-                      <font>
-                       <family>Gill Sans Nova</family>
-                       <pointsize>12</pointsize>
-                       <weight>50</weight>
-                       <italic>false</italic>
-                       <bold>false</bold>
-                      </font>
-                     </property>
-                     <property name="toolTip">
-                      <string>Dateipfad den Rohmaterial-Ordners</string>
-                     </property>
-                     <property name="styleSheet">
-                      <string notr="true">QLineEdit {
-	color: &quot;red&quot;;
-}</string>
-                     </property>
-                     <property name="inputMask">
-                      <string/>
-                     </property>
-                     <property name="text">
-                      <string/>
-                     </property>
-                     <property name="frame">
-                      <bool>true</bool>
-                     </property>
-                     <property name="echoMode">
-                      <enum>QLineEdit::Normal</enum>
-                     </property>
-                     <property name="alignment">
-                      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-                     </property>
-                     <property name="placeholderText">
-                      <string>Rohmaterialordner</string>
-                     </property>
-                     <property name="clearButtonEnabled">
-                      <bool>true</bool>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="0" column="1">
-                    <widget class="QLabel" name="label_7">
-                     <property name="text">
-                      <string>Immmer angeben*</string>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </widget>
-                </widget>
                 <widget class="QWidget" name="folder_structure">
                  <attribute name="title">
                   <string>Ordnerstruktur</string>
@@ -1258,6 +1317,12 @@ p, li { white-space: pre-wrap; }
                          <horstretch>60</horstretch>
                          <verstretch>0</verstretch>
                         </sizepolicy>
+                       </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>200</height>
+                        </size>
                        </property>
                        <property name="plainText">
                         <string>Rechts siehst du die Struktur in der die Dateien im Rohmaterial Ordner sein sollten. Das hat sich so bewährt.
@@ -1540,8 +1605,8 @@ Vielleicht kommt hier mal noch eine Möglichkeit die Benennung anzupassen.</stri
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>698</width>
-                       <height>1013</height>
+                       <width>418</width>
+                       <height>990</height>
                       </rect>
                      </property>
                      <layout class="QVBoxLayout" name="verticalLayout_19">
@@ -2421,19 +2486,6 @@ p, li { white-space: pre-wrap; }
                 </property>
                 <layout class="QVBoxLayout" name="verticalLayout_20">
                  <item>
-                  <widget class="QCheckBox" name="cb_structure">
-                   <property name="focusPolicy">
-                    <enum>Qt::NoFocus</enum>
-                   </property>
-                   <property name="text">
-                    <string>Richtige Struktur</string>
-                   </property>
-                   <property name="checked">
-                    <bool>false</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
                   <widget class="QCheckBox" name="cb_rename">
                    <property name="font">
                     <font>
@@ -2528,6 +2580,37 @@ p, li { white-space: pre-wrap; }
                <number>0</number>
               </property>
               <item>
+               <widget class="QLabel" name="label_12">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>20</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <family>Gill Sans Nova</family>
+                  <pointsize>13</pointsize>
+                  <weight>50</weight>
+                  <italic>false</italic>
+                  <bold>false</bold>
+                 </font>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">font: 13pt &quot;Gill Sans Nova&quot;;</string>
+                </property>
+                <property name="text">
+                 <string>Prozess</string>
+                </property>
+               </widget>
+              </item>
+              <item>
                <widget class="QScrollArea" name="process_scrollArea">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -2562,7 +2645,7 @@ p, li { white-space: pre-wrap; }
                    <x>0</x>
                    <y>0</y>
                    <width>363</width>
-                   <height>313</height>
+                   <height>287</height>
                   </rect>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout">
@@ -2584,7 +2667,7 @@ p, li { white-space: pre-wrap; }
                      <string notr="true"/>
                     </property>
                     <property name="text">
-                     <string>Prozess</string>
+                     <string/>
                     </property>
                     <property name="alignment">
                      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -3093,7 +3176,7 @@ erstellte Excel-Liste aus.</string>
                           <cursorShape>PointingHandCursor</cursorShape>
                          </property>
                          <property name="toolTip">
-                          <string>Nur Dateien mit einer höheren Bewertung werden kopiert. Min: 2, Max: 7</string>
+                          <string>Nur Dateien mit gleicher oder besserer Bewertung werden kopiert.</string>
                          </property>
                          <property name="styleSheet">
                           <string notr="true"/>
@@ -3243,8 +3326,7 @@ erstellte Excel-Liste aus.</string>
                     </font>
                    </property>
                    <property name="toolTip">
-                    <string>Jede angegebene Spalte wir nach dem Marker durchsucht.
-Alle Dateien, die markiert werden werden in einen Ordner mit dem Spaltennamen unter Schnittmaterial/Selektionen kopiert</string>
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Jede angegebene Spalte wir nach dem Marker durchsucht.&lt;/p&gt;&lt;p&gt;Alle Dateien, die markiert werden werden in einen Ordner &lt;/p&gt;&lt;p&gt;mit dem Spaltennamen unter Schnittmaterial/Selektionen kopiert&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                    </property>
                    <property name="title">
                     <string>Selektionen</string>
@@ -3290,6 +3372,9 @@ Alle Dateien, die markiert werden werden in einen Ordner mit dem Spaltennamen un
                            <width>30</width>
                            <height>30</height>
                           </size>
+                         </property>
+                         <property name="toolTip">
+                          <string>Wähle die Spalten aus der Excel-Datei.</string>
                          </property>
                          <property name="text">
                           <string>...</string>
@@ -3401,6 +3486,9 @@ Alle Dateien, die markiert werden werden in einen Ordner mit dem Spaltennamen un
                            <width>30</width>
                            <height>30</height>
                           </size>
+                         </property>
+                         <property name="toolTip">
+                          <string>Wähle die Spalten aus der Excel-Datei.</string>
                          </property>
                          <property name="text">
                           <string>...</string>
@@ -3578,7 +3666,7 @@ Alle Dateien, die markiert werden werden in einen Ordner mit dem Spaltennamen un
                           </font>
                          </property>
                          <property name="toolTip">
-                          <string>Startet die Auswertung</string>
+                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Startet die Auswertung&lt;/p&gt;&lt;p&gt;Gibt einen Marker und mind. eine Spalte an&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                          </property>
                          <property name="styleSheet">
                           <string notr="true"/>
@@ -3944,6 +4032,9 @@ für jeden Begriff wir ein Ordner in Schnittmaterial/Suche erstellt.</string>
                            <height>30</height>
                           </size>
                          </property>
+                         <property name="toolTip">
+                          <string>Wähle die Spalten aus der Excel-Datei.</string>
+                         </property>
                          <property name="text">
                           <string>...</string>
                          </property>
@@ -4054,6 +4145,9 @@ für jeden Begriff wir ein Ordner in Schnittmaterial/Suche erstellt.</string>
                            <width>30</width>
                            <height>30</height>
                           </size>
+                         </property>
+                         <property name="toolTip">
+                          <string>Wähle die Spalten aus der Excel-Datei.</string>
                          </property>
                          <property name="text">
                           <string>...</string>
@@ -4330,7 +4424,7 @@ für jeden Begriff wir ein Ordner in Schnittmaterial/Suche erstellt.</string>
                           </font>
                          </property>
                          <property name="toolTip">
-                          <string>Startet die Auswertung</string>
+                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Startet die Auswertung&lt;/p&gt;&lt;p&gt;Gibt einen Sucgbegriff und mind. eine Spalte an&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                          </property>
                          <property name="styleSheet">
                           <string notr="true"/>
@@ -4556,6 +4650,22 @@ für jeden Begriff wir ein Ordner in Schnittmaterial/Suche erstellt.</string>
                   </spacer>
                  </item>
                  <item>
+                  <widget class="QLabel" name="label_13">
+                   <property name="maximumSize">
+                    <size>
+                     <width>16777215</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">font: 13pt &quot;Gill Sans Nova&quot;;</string>
+                   </property>
+                   <property name="text">
+                    <string>Prozess</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
                   <widget class="QFrame" name="all">
                    <property name="frameShape">
                     <enum>QFrame::StyledPanel</enum>
@@ -4611,7 +4721,7 @@ für jeden Begriff wir ein Ordner in Schnittmaterial/Suche erstellt.</string>
                          <x>0</x>
                          <y>0</y>
                          <width>398</width>
-                         <height>334</height>
+                         <height>308</height>
                         </rect>
                        </property>
                        <layout class="QVBoxLayout" name="verticalLayout_18">
@@ -4633,7 +4743,7 @@ für jeden Begriff wir ein Ordner in Schnittmaterial/Suche erstellt.</string>
                            <string notr="true"/>
                           </property>
                           <property name="text">
-                           <string>Prozess</string>
+                           <string/>
                           </property>
                           <property name="alignment">
                            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
