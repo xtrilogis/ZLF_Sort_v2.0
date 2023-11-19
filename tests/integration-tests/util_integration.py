@@ -5,11 +5,12 @@ from assethandling.basemodels import UtilTabInput
 from src.main.gui_main import main
 
 # this is a sample how to test the gui without actually doing the core work like copying
+@patch("src.main.gui_main.MainWindow.util_buttons_status")
 @patch("pathlib.Path.mkdir")
 @patch("src.main.runner.runners.util_methods.filemethods.copy_file")
 @patch("sys.exit")
 @patch("src.main.gui_main.MainWindow.get_util_input")
-def test_run_copy_sections(mock_input, _, mock_fn, __):
+def test_run_copy_sections(mock_input, _, mock_fn, __, ___):
     mock_input.return_value = UtilTabInput(
         raw_material_folder=TEST_PATH / "util/Rohmaterial",
         excel_full_filepath=TEST_PATH / "util/Zeltlagerfilm 2023.xlsx",
@@ -27,12 +28,11 @@ def test_run_copy_sections(mock_input, _, mock_fn, __):
     assert "Schnittmaterial" in mock_fn.call_args_list[0].kwargs["dst_folder"].parts
 
 
-
-
+@patch("src.main.gui_main.MainWindow.util_buttons_status")
 @patch("src.main.runner.runners.util_methods.filemethods.copy_file")
 @patch("sys.exit")
 @patch("src.main.gui_main.MainWindow.get_util_input")
-def test_run_copy_sections_errors(mock_input, _, mock_fn):
+def test_run_copy_sections_errors(mock_input, _, mock_fn, __):
     mock_input.side_effect = [
         UtilTabInput(
             raw_material_folder=TEST_PATH / "util/Rohmaterial",
@@ -64,10 +64,11 @@ def test_run_copy_sections_errors(mock_input, _, mock_fn):
 
 
 
+@patch("src.main.gui_main.MainWindow.util_buttons_status")
 @patch("src.main.runner.runners.util_methods.filemethods.copy_file")
 @patch("sys.exit")
 @patch("src.main.gui_main.MainWindow.get_util_input")
-def test_run_copy_selection(mock_input, _, mock_fn):
+def test_run_copy_selection(mock_input, _, mock_fn, __):
     mock_input.return_value = UtilTabInput(
         raw_material_folder=TEST_PATH / "util/Rohmaterial",
         excel_full_filepath=TEST_PATH / "util/Zeltlagerfilm 2023.xlsx",
@@ -80,10 +81,11 @@ def test_run_copy_selection(mock_input, _, mock_fn):
     assert mock_fn.call_count == 13
 
 
+@patch("src.main.gui_main.MainWindow.util_buttons_status")
 @patch("src.main.runner.runners.util_methods.filemethods.copy_file")
 @patch("sys.exit")
 @patch("src.main.gui_main.MainWindow.get_util_input")
-def test_run_copy_selection_errors(mock_input, _, mock_fn):
+def test_run_copy_selection_errors(mock_input, _, mock_fn, __):
     mock_input.side_effect = [
         UtilTabInput(
             raw_material_folder=TEST_PATH / "util/Rohmaterial",
@@ -122,10 +124,11 @@ def test_run_copy_selection_errors(mock_input, _, mock_fn):
     assert mock_fn.call_count == 0
 
 
+@patch("src.main.gui_main.MainWindow.util_buttons_status")
 @patch("src.main.runner.runners.util_methods.filemethods.copy_file")
 @patch("sys.exit")
 @patch("src.main.gui_main.MainWindow.get_util_input")
-def test_run_search(mock_input, _, mock_fn):
+def test_run_search(mock_input, _, mock_fn, __):
     mock_input.return_value = UtilTabInput(
         raw_material_folder=TEST_PATH / "util/Rohmaterial",
         excel_full_filepath=TEST_PATH / "util/Zeltlagerfilm 2023.xlsx",
@@ -139,10 +142,11 @@ def test_run_search(mock_input, _, mock_fn):
     assert mock_fn.call_count == 8
 
 
+@patch("src.main.gui_main.MainWindow.util_buttons_status")
 @patch("src.main.runner.runners.util_methods.filemethods.copy_file")
 @patch("sys.exit")
 @patch("src.main.gui_main.MainWindow.get_util_input")
-def test_run_search_errors(mock_input, _, mock_fn):
+def test_run_search_errors(mock_input, _, mock_fn, __):
     mock_input.side_effect = [
         UtilTabInput(
             raw_material_folder=TEST_PATH / "util/Rohmaterial",
@@ -185,10 +189,11 @@ def test_run_search_errors(mock_input, _, mock_fn):
     assert mock_fn.call_count == 0
 
 
+@patch("src.main.gui_main.MainWindow.util_buttons_status")
 @patch("src.main.runner.runners.util_methods.filemethods.copy_file")
 @patch("sys.exit")
 @patch("src.main.gui_main.MainWindow.get_util_input")
-def test_run_create_rated_picture_folder(mock_input, _, mock_fn):
+def test_run_create_rated_picture_folder(mock_input, _, mock_fn, __):
     mock_input.return_value = UtilTabInput(
         raw_material_folder=TEST_PATH / "util/Rohmaterial",
         excel_full_filepath=TEST_PATH / "util/Zeltlagerfilm 2023.xlsx",
@@ -198,10 +203,11 @@ def test_run_create_rated_picture_folder(mock_input, _, mock_fn):
     main()
     assert mock_fn.call_count == 10
 
+@patch("src.main.gui_main.MainWindow.util_buttons_status")
 @patch("src.main.runner.runners.util_methods.filemethods.copy_file")
 @patch("sys.exit")
 @patch("src.main.gui_main.MainWindow.get_util_input")
-def test_run_create_rated_picture_folder_errors(mock_input, _, mock_fn):
+def test_run_create_rated_picture_folder_errors(mock_input, _, mock_fn, __):
     mock_input.side_effect = [
         UtilTabInput(
             raw_material_folder=TEST_PATH / "util/Rohmaterial",
@@ -226,9 +232,10 @@ def test_run_create_rated_picture_folder_errors(mock_input, _, mock_fn):
     assert mock_fn.call_count == 0
 
 
+@patch("src.main.gui_main.MainWindow.util_buttons_status")
 @patch("sys.exit")
 @patch("src.main.gui_main.MainWindow.get_util_input")
-def test_run_statistics(mock_input, _):
+def test_run_statistics(mock_input, _, __):
     mock_input.return_value = UtilTabInput(
         raw_material_folder=TEST_PATH / "util/Rohmaterial",
         excel_full_filepath=TEST_PATH / "util/Zeltlagerfilm 2023.xlsx",
@@ -236,11 +243,12 @@ def test_run_statistics(mock_input, _):
     main()
 
 
+@patch("src.main.gui_main.MainWindow.util_buttons_status")
 @patch("pathlib.Path.mkdir")
 @patch("src.main.runner.runners.util_methods.filemethods.copy_file")
 @patch("sys.exit")
 @patch("src.main.gui_main.MainWindow.get_util_input")
-def test_run_process_util_full(mock_input, _, mock_fn, __):
+def test_run_process_util_full(mock_input, _, mock_fn, __, ___):
     mock_input.return_value = UtilTabInput(
         raw_material_folder=TEST_PATH / "util/Rohmaterial",
         excel_full_filepath=TEST_PATH / "util/Zeltlagerfilm 2023.xlsx",

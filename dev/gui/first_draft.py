@@ -9,10 +9,12 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from ui.dialogs.drop_line_edit import DropLineEditFolder, DropLineEditExcel
+from assethandling.asset_manager import window_icon
 
 
 class Ui_MainWindow(object):
-    def setupUi(self, MainWindow):
+    def __init__(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1130, 749)
         font = QtGui.QFont()
@@ -22,12 +24,12 @@ class Ui_MainWindow(object):
         font.setItalic(False)
         font.setWeight(50)
         MainWindow.setFont(font)
-        icon = QtGui.QIcon.fromTheme(".")
+        icon = QtGui.QIcon(window_icon)
         MainWindow.setWindowIcon(icon)
         MainWindow.setStyleSheet("font: 12pt \"Gill Sans Nova\";\n"
-"span {\n"
-"font: 12pt \"Gill Sans Nova\";\n"
-"}")
+                                 "span {\n"
+                                 "font: 12pt \"Gill Sans Nova\";\n"
+                                 "}")
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setStyleSheet("background-color: rgb(204, 204, 204)")
         self.centralwidget.setObjectName("centralwidget")
@@ -37,133 +39,133 @@ class Ui_MainWindow(object):
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.tabWidget = QtWidgets.QTabWidget(self.centralwidget)
         self.tabWidget.setStyleSheet("QTabWidget::pane {\n"
-"      border: 1px solid lightgray;\n"
-"  top:-1px; \n"
-"  background: rgb(245, 245, 245);\n"
-"} \n"
-"\n"
-"QTabBar::tab {\n"
-"  background: rgb(171, 202, 213);\n"
-"  border: 1px solid lightgray; \n"
-"  padding: 5px;\n"
-"    width: 90%;\n"
-"} \n"
-"\n"
-"QTabBar::tab:selected { \n"
-"  background: rgb(245, 245, 245); \n"
-"  margin-bottom: -1px; \n"
-"}\n"
-"QTabBar::tab:hover { \n"
-"  background: rgb(190, 215, 225);\n"
-"  margin-bottom: -1px; \n"
-"}\n"
-"\n"
-"QWidget {\n"
-"background-color: rgb(249, 249, 249)\n"
-"}\n"
-"\n"
-"\n"
-"QPushButton{\n"
-"    background-color: rgb(82, 180, 222);\n"
-"    border-radius: 5px;\n"
-"    padding: 2px;\n"
-"}\n"
-"QPushButton::hover{\n"
-"    background-color: rgb(100, 138, 166);\n"
-"    border-radius: 5px;\n"
-"    color: rgb(233, 233, 235);\n"
-"}\n"
-"QToolButton{\n"
-"    background-color: rgb(186, 186, 186);\n"
-"    border-radius: 5px;\n"
-"    color: rgb(233, 233, 235);\n"
-"}\n"
-"QToolButton::hover{\n"
-"    background-color:  rgb(170, 170, 170);\n"
-"    border-radius: 5px;\n"
-"    color: rgb(233, 233, 235);\n"
-"}\n"
-"\n"
-"QCheckBox::hover{\n"
-"    color: rgb(190, 196, 198)\n"
-"}\n"
-"QScrollBar:horizontal\n"
-"    {\n"
-"        height: 15px;\n"
-"        margin: 3px 15px 3px 15px;\n"
-"        border: 1px transparent #2A2929;\n"
-"        border-radius: 4px;\n"
-"        background-color: rgb(221, 221, 221);    /* #2A2929; */\n"
-"    }\n"
-"\n"
-"    QScrollBar::handle:horizontal\n"
-"    {\n"
-"        background-color: rgb(188, 188, 188);      /* #605F5F; */\n"
-"        min-width: 5px;\n"
-"        border-radius: 4px;\n"
-"    }\n"
-"\n"
-"\n"
-"    QScrollBar:vertical\n"
-"    {\n"
-"        background-color: rgb(221, 221, 221);\n"
-"        width: 15px;\n"
-"        margin: 15px 3px 15px 3px;\n"
-"        border: 1px transparent #2A2929;\n"
-"        border-radius: 4px;\n"
-"    }\n"
-"\n"
-"    QScrollBar::handle:vertical\n"
-"    {\n"
-"        background-color:  rgb(188, 188, 188);         /* #605F5F; */\n"
-"        min-height: 5px;\n"
-"        border-radius: 4px;\n"
-"    }\n"
-"\n"
-"    QScrollBar::sub-line:vertical\n"
-"    {\n"
-"         background: none;\n"
-"\n"
-"    }\n"
-"\n"
-"    QScrollBar::add-line:vertical\n"
-"    {\n"
-"         background: none;\n"
-"\n"
-"    }\n"
-"\n"
-"    QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical\n"
-"    {\n"
-"        background: none;\n"
-"    }\n"
-"\n"
-"    QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical\n"
-"    {\n"
-"        background: none;\n"
-"    }\n"
-"\n"
-"    QScrollBar::sub-line:horizontal\n"
-"    {\n"
-"         background: none;\n"
-"\n"
-"    }\n"
-"\n"
-"    QScrollBar::add-line:horizontal\n"
-"    {\n"
-"         background: none;\n"
-"\n"
-"    }\n"
-"\n"
-"    QScrollBar::up-arrow:horizontal, QScrollBar::down-arrow:horizontal\n"
-"    {\n"
-"        background: none;\n"
-"    }\n"
-"\n"
-"    QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical\n"
-"    {\n"
-"        background: none;\n"
-"    }\n"
-"")
+                                     "      border: 1px solid lightgray;\n"
+                                     "  top:-1px; \n"
+                                     "  background: rgb(245, 245, 245);\n"
+                                     "} \n"
+                                     "\n"
+                                     "QTabBar::tab {\n"
+                                     "  background: rgb(171, 202, 213);\n"
+                                     "  border: 1px solid lightgray; \n"
+                                     "  padding: 5px;\n"
+                                     "    width: 90%;\n"
+                                     "} \n"
+                                     "\n"
+                                     "QTabBar::tab:selected { \n"
+                                     "  background: rgb(245, 245, 245); \n"
+                                     "  margin-bottom: -1px; \n"
+                                     "}\n"
+                                     "QTabBar::tab:hover { \n"
+                                     "  background: rgb(190, 215, 225);\n"
+                                     "  margin-bottom: -1px; \n"
+                                     "}\n"
+                                     "\n"
+                                     "QWidget {\n"
+                                     "background-color: rgb(249, 249, 249)\n"
+                                     "}\n"
+                                     "\n"
+                                     "\n"
+                                     "QPushButton{\n"
+                                     "    background-color: rgb(82, 180, 222);\n"
+                                     "    border-radius: 5px;\n"
+                                     "    padding: 2px;\n"
+                                     "}\n"
+                                     "QPushButton::hover{\n"
+                                     "    background-color: rgb(100, 138, 166);\n"
+                                     "    border-radius: 5px;\n"
+                                     "    color: rgb(233, 233, 235);\n"
+                                     "}\n"
+                                     "QToolButton{\n"
+                                     "    background-color: rgb(186, 186, 186);\n"
+                                     "    border-radius: 5px;\n"
+                                     "    color: rgb(233, 233, 235);\n"
+                                     "}\n"
+                                     "QToolButton::hover{\n"
+                                     "    background-color:  rgb(170, 170, 170);\n"
+                                     "    border-radius: 5px;\n"
+                                     "    color: rgb(233, 233, 235);\n"
+                                     "}\n"
+                                     "\n"
+                                     "QCheckBox::hover{\n"
+                                     "    color: rgb(190, 196, 198)\n"
+                                     "}\n"
+                                     "QScrollBar:horizontal\n"
+                                     "    {\n"
+                                     "        height: 15px;\n"
+                                     "        margin: 3px 15px 3px 15px;\n"
+                                     "        border: 1px transparent #2A2929;\n"
+                                     "        border-radius: 4px;\n"
+                                     "        background-color: rgb(221, 221, 221);    /* #2A2929; */\n"
+                                     "    }\n"
+                                     "\n"
+                                     "    QScrollBar::handle:horizontal\n"
+                                     "    {\n"
+                                     "        background-color: rgb(188, 188, 188);      /* #605F5F; */\n"
+                                     "        min-width: 5px;\n"
+                                     "        border-radius: 4px;\n"
+                                     "    }\n"
+                                     "\n"
+                                     "\n"
+                                     "    QScrollBar:vertical\n"
+                                     "    {\n"
+                                     "        background-color: rgb(221, 221, 221);\n"
+                                     "        width: 15px;\n"
+                                     "        margin: 15px 3px 15px 3px;\n"
+                                     "        border: 1px transparent #2A2929;\n"
+                                     "        border-radius: 4px;\n"
+                                     "    }\n"
+                                     "\n"
+                                     "    QScrollBar::handle:vertical\n"
+                                     "    {\n"
+                                     "        background-color:  rgb(188, 188, 188);         /* #605F5F; */\n"
+                                     "        min-height: 5px;\n"
+                                     "        border-radius: 4px;\n"
+                                     "    }\n"
+                                     "\n"
+                                     "    QScrollBar::sub-line:vertical\n"
+                                     "    {\n"
+                                     "         background: none;\n"
+                                     "\n"
+                                     "    }\n"
+                                     "\n"
+                                     "    QScrollBar::add-line:vertical\n"
+                                     "    {\n"
+                                     "         background: none;\n"
+                                     "\n"
+                                     "    }\n"
+                                     "\n"
+                                     "    QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical\n"
+                                     "    {\n"
+                                     "        background: none;\n"
+                                     "    }\n"
+                                     "\n"
+                                     "    QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical\n"
+                                     "    {\n"
+                                     "        background: none;\n"
+                                     "    }\n"
+                                     "\n"
+                                     "    QScrollBar::sub-line:horizontal\n"
+                                     "    {\n"
+                                     "         background: none;\n"
+                                     "\n"
+                                     "    }\n"
+                                     "\n"
+                                     "    QScrollBar::add-line:horizontal\n"
+                                     "    {\n"
+                                     "         background: none;\n"
+                                     "\n"
+                                     "    }\n"
+                                     "\n"
+                                     "    QScrollBar::up-arrow:horizontal, QScrollBar::down-arrow:horizontal\n"
+                                     "    {\n"
+                                     "        background: none;\n"
+                                     "    }\n"
+                                     "\n"
+                                     "    QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical\n"
+                                     "    {\n"
+                                     "        background: none;\n"
+                                     "    }\n"
+                                     "")
         self.tabWidget.setObjectName("tabWidget")
         self.Start = QtWidgets.QWidget()
         self.Start.setObjectName("Start")
@@ -213,8 +215,8 @@ class Ui_MainWindow(object):
         font.setWeight(50)
         self.Willkommen.setFont(font)
         self.Willkommen.setStyleSheet("QLabel {\n"
-"font: 36pt \"Gill Sans Nova\";\n"
-"}")
+                                      "font: 36pt \"Gill Sans Nova\";\n"
+                                      "}")
         self.Willkommen.setAlignment(QtCore.Qt.AlignCenter)
         self.Willkommen.setObjectName("Willkommen")
         self.verticalLayout_2.addWidget(self.Willkommen)
@@ -276,9 +278,8 @@ class Ui_MainWindow(object):
         self.folder_setup_groupB.setStatusTip("")
         self.folder_setup_groupB.setStyleSheet("")
         self.folder_setup_groupB.setObjectName("folder_setup_groupB")
-        self.verticalLayout_7 = QtWidgets.QVBoxLayout(self.folder_setup_groupB)
-        self.verticalLayout_7.setContentsMargins(9, 0, -1, -1)
-        self.verticalLayout_7.setObjectName("verticalLayout_7")
+        self.verticalLayout_22 = QtWidgets.QVBoxLayout(self.folder_setup_groupB)
+        self.verticalLayout_22.setObjectName("verticalLayout_22")
         self.folder_input_frame_2 = QtWidgets.QFrame(self.folder_setup_groupB)
         self.folder_input_frame_2.setMinimumSize(QtCore.QSize(0, 31))
         self.folder_input_frame_2.setFrameShape(QtWidgets.QFrame.StyledPanel)
@@ -290,7 +291,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_9.setObjectName("horizontalLayout_9")
         spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_9.addItem(spacerItem3)
-        self.drop_harddrive = QtWidgets.QLineEdit(self.folder_input_frame_2)
+        self.drop_harddrive = DropLineEditFolder(self.folder_input_frame_2)
         self.drop_harddrive.setMinimumSize(QtCore.QSize(330, 31))
         self.drop_harddrive.setMaximumSize(QtCore.QSize(16777215, 31))
         font = QtGui.QFont()
@@ -301,14 +302,14 @@ class Ui_MainWindow(object):
         font.setWeight(50)
         self.drop_harddrive.setFont(font)
         self.drop_harddrive.setStyleSheet("QLineEdit {\n"
-"    \n"
-"    color: \"red\";\n"
-"}")
+                                          "    \n"
+                                          "    color: \"red\";\n"
+                                          "}")
         self.drop_harddrive.setInputMask("")
         self.drop_harddrive.setText("")
         self.drop_harddrive.setFrame(True)
         self.drop_harddrive.setEchoMode(QtWidgets.QLineEdit.Normal)
-        self.drop_harddrive.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.drop_harddrive.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.drop_harddrive.setClearButtonEnabled(True)
         self.drop_harddrive.setObjectName("drop_harddrive")
         self.horizontalLayout_9.addWidget(self.drop_harddrive)
@@ -333,7 +334,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_9.addWidget(self.tb_harddrive)
         spacerItem4 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_9.addItem(spacerItem4)
-        self.verticalLayout_7.addWidget(self.folder_input_frame_2)
+        self.verticalLayout_22.addWidget(self.folder_input_frame_2)
         self.frame_6 = QtWidgets.QFrame(self.folder_setup_groupB)
         self.frame_6.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.frame_6.setFrameShadow(QtWidgets.QFrame.Raised)
@@ -350,7 +351,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_5.addWidget(self.label)
         spacerItem6 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_5.addItem(spacerItem6)
-        self.verticalLayout_7.addWidget(self.frame_6)
+        self.verticalLayout_22.addWidget(self.frame_6)
         self.frame_5 = QtWidgets.QFrame(self.folder_setup_groupB)
         self.frame_5.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.frame_5.setFrameShadow(QtWidgets.QFrame.Raised)
@@ -372,7 +373,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_4.addWidget(self.date_lkw)
         spacerItem8 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_4.addItem(spacerItem8)
-        self.verticalLayout_7.addWidget(self.frame_5)
+        self.verticalLayout_22.addWidget(self.frame_5)
         self.folder_start_frame_2 = QtWidgets.QFrame(self.folder_setup_groupB)
         self.folder_start_frame_2.setMinimumSize(QtCore.QSize(0, 31))
         self.folder_start_frame_2.setFrameShape(QtWidgets.QFrame.StyledPanel)
@@ -397,11 +398,41 @@ class Ui_MainWindow(object):
         self.horizontalLayout_10.addWidget(self.pb_foldersetup)
         spacerItem10 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_10.addItem(spacerItem10)
-        self.verticalLayout_7.addWidget(self.folder_start_frame_2)
-        self.print_label_setup = QtWidgets.QLabel(self.folder_setup_groupB)
+        self.verticalLayout_22.addWidget(self.folder_start_frame_2)
+        self.process_scrollArea_3 = QtWidgets.QScrollArea(self.folder_setup_groupB)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding,
+                                           QtWidgets.QSizePolicy.MinimumExpanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.process_scrollArea_3.sizePolicy().hasHeightForWidth())
+        self.process_scrollArea_3.setSizePolicy(sizePolicy)
+        self.process_scrollArea_3.setMinimumSize(QtCore.QSize(300, 41))
+        self.process_scrollArea_3.setStyleSheet("")
+        self.process_scrollArea_3.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.process_scrollArea_3.setFrameShadow(QtWidgets.QFrame.Plain)
+        self.process_scrollArea_3.setMidLineWidth(0)
+        self.process_scrollArea_3.setWidgetResizable(True)
+        self.process_scrollArea_3.setObjectName("process_scrollArea_3")
+        self.scrollAreaWidgetContents_3 = QtWidgets.QWidget()
+        self.scrollAreaWidgetContents_3.setGeometry(QtCore.QRect(0, 0, 453, 62))
+        self.scrollAreaWidgetContents_3.setObjectName("scrollAreaWidgetContents_3")
+        self.verticalLayout_7 = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents_3)
+        self.verticalLayout_7.setObjectName("verticalLayout_7")
+        self.print_label_setup = QtWidgets.QLabel(self.scrollAreaWidgetContents_3)
+        font = QtGui.QFont()
+        font.setFamily("Gill Sans Nova")
+        font.setPointSize(12)
+        font.setBold(False)
+        font.setItalic(False)
+        font.setWeight(50)
+        self.print_label_setup.setFont(font)
+        self.print_label_setup.setStyleSheet("")
         self.print_label_setup.setText("")
+        self.print_label_setup.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
         self.print_label_setup.setObjectName("print_label_setup")
         self.verticalLayout_7.addWidget(self.print_label_setup)
+        self.process_scrollArea_3.setWidget(self.scrollAreaWidgetContents_3)
+        self.verticalLayout_22.addWidget(self.process_scrollArea_3)
         self.horizontalLayout_3.addWidget(self.folder_setup_groupB)
         spacerItem11 = QtWidgets.QSpacerItem(152, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_3.addItem(spacerItem11)
@@ -436,52 +467,24 @@ class Ui_MainWindow(object):
         self.groupBox_3.setObjectName("groupBox_3")
         self.verticalLayout_4 = QtWidgets.QVBoxLayout(self.groupBox_3)
         self.verticalLayout_4.setObjectName("verticalLayout_4")
-        self.tabWidget_raw = QtWidgets.QTabWidget(self.groupBox_3)
-        self.tabWidget_raw.setMinimumSize(QtCore.QSize(0, 0))
-        self.tabWidget_raw.setStyleSheet("QTabBar::tab {\n"
-"    width: 110%;\n"
-"} \n"
-"")
-        self.tabWidget_raw.setTabPosition(QtWidgets.QTabWidget.North)
-        self.tabWidget_raw.setElideMode(QtCore.Qt.ElideNone)
-        self.tabWidget_raw.setDocumentMode(True)
-        self.tabWidget_raw.setObjectName("tabWidget_raw")
-        self.common = QtWidgets.QWidget()
-        self.common.setObjectName("common")
-        self.label_8 = QtWidgets.QLabel(self.common)
-        self.label_8.setGeometry(QtCore.QRect(10, 140, 525, 18))
-        self.label_8.setObjectName("label_8")
-        self.input_frame_2 = QtWidgets.QFrame(self.common)
-        self.input_frame_2.setGeometry(QtCore.QRect(0, 30, 712, 76))
+        self.frame_29 = QtWidgets.QFrame(self.groupBox_3)
+        self.frame_29.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.frame_29.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.frame_29.setObjectName("frame_29")
+        self.verticalLayout_23 = QtWidgets.QVBoxLayout(self.frame_29)
+        self.verticalLayout_23.setContentsMargins(-1, 0, -1, 5)
+        self.verticalLayout_23.setSpacing(0)
+        self.verticalLayout_23.setObjectName("verticalLayout_23")
+        self.input_frame_2 = QtWidgets.QFrame(self.frame_29)
         self.input_frame_2.setMaximumSize(QtCore.QSize(16777215, 100))
         self.input_frame_2.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.input_frame_2.setFrameShadow(QtWidgets.QFrame.Raised)
         self.input_frame_2.setObjectName("input_frame_2")
         self.gridLayout_4 = QtWidgets.QGridLayout(self.input_frame_2)
-        self.gridLayout_4.setContentsMargins(0, 15, 0, 5)
+        self.gridLayout_4.setContentsMargins(0, 0, 0, 8)
         self.gridLayout_4.setHorizontalSpacing(4)
         self.gridLayout_4.setVerticalSpacing(6)
         self.gridLayout_4.setObjectName("gridLayout_4")
-        self.tb_raw_rawpath = QtWidgets.QToolButton(self.input_frame_2)
-        self.tb_raw_rawpath.setMinimumSize(QtCore.QSize(30, 30))
-        font = QtGui.QFont()
-        font.setFamily("Gill Sans Nova")
-        font.setPointSize(12)
-        font.setBold(False)
-        font.setItalic(False)
-        font.setWeight(50)
-        self.tb_raw_rawpath.setFont(font)
-        self.tb_raw_rawpath.setStyleSheet("")
-        icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap("../../../Zlf_sort/program/graphics/folder.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.tb_raw_rawpath.setIcon(icon1)
-        self.tb_raw_rawpath.setIconSize(QtCore.QSize(20, 20))
-        self.tb_raw_rawpath.setObjectName("tb_raw_rawpath")
-        self.gridLayout_4.addWidget(self.tb_raw_rawpath, 1, 2, 1, 1)
-        spacerItem14 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.gridLayout_4.addItem(spacerItem14, 1, 0, 1, 1)
-        spacerItem15 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.gridLayout_4.addItem(spacerItem15, 1, 3, 1, 1)
         self.drop_raw_rawpath = QtWidgets.QLineEdit(self.input_frame_2)
         self.drop_raw_rawpath.setMinimumSize(QtCore.QSize(330, 30))
         self.drop_raw_rawpath.setMaximumSize(QtCore.QSize(330, 30))
@@ -494,20 +497,55 @@ class Ui_MainWindow(object):
         font.setWeight(50)
         self.drop_raw_rawpath.setFont(font)
         self.drop_raw_rawpath.setStyleSheet("QLineEdit {\n"
-"    color: \"red\";\n"
-"}")
+                                            "    color: \"red\";\n"
+                                            "}")
         self.drop_raw_rawpath.setInputMask("")
         self.drop_raw_rawpath.setText("")
         self.drop_raw_rawpath.setFrame(True)
         self.drop_raw_rawpath.setEchoMode(QtWidgets.QLineEdit.Normal)
-        self.drop_raw_rawpath.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.drop_raw_rawpath.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.drop_raw_rawpath.setClearButtonEnabled(True)
         self.drop_raw_rawpath.setObjectName("drop_raw_rawpath")
         self.gridLayout_4.addWidget(self.drop_raw_rawpath, 1, 1, 1, 1)
+        spacerItem14 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.gridLayout_4.addItem(spacerItem14, 1, 0, 1, 1)
+        self.tb_raw_rawpath = QtWidgets.QToolButton(self.input_frame_2)
+        self.tb_raw_rawpath.setMinimumSize(QtCore.QSize(30, 30))
+        font = QtGui.QFont()
+        font.setFamily("Gill Sans Nova")
+        font.setPointSize(12)
+        font.setBold(False)
+        font.setItalic(False)
+        font.setWeight(50)
+        self.tb_raw_rawpath.setFont(font)
+        self.tb_raw_rawpath.setStyleSheet("")
+        icon1 = QtGui.QIcon()
+        icon1.addPixmap(QtGui.QPixmap("../../../Zlf_sort/program/graphics/folder.png"), QtGui.QIcon.Normal,
+                        QtGui.QIcon.Off)
+        self.tb_raw_rawpath.setIcon(icon1)
+        self.tb_raw_rawpath.setIconSize(QtCore.QSize(20, 20))
+        self.tb_raw_rawpath.setObjectName("tb_raw_rawpath")
+        self.gridLayout_4.addWidget(self.tb_raw_rawpath, 1, 2, 1, 1)
+        spacerItem15 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.gridLayout_4.addItem(spacerItem15, 1, 3, 1, 1)
         self.label_7 = QtWidgets.QLabel(self.input_frame_2)
         self.label_7.setObjectName("label_7")
         self.gridLayout_4.addWidget(self.label_7, 0, 1, 1, 1)
-        self.tabWidget_raw.addTab(self.common, "")
+        self.verticalLayout_23.addWidget(self.input_frame_2)
+        self.label_8 = QtWidgets.QLabel(self.frame_29)
+        self.label_8.setObjectName("label_8")
+        self.verticalLayout_23.addWidget(self.label_8)
+        self.verticalLayout_4.addWidget(self.frame_29)
+        self.tabWidget_raw = QtWidgets.QTabWidget(self.groupBox_3)
+        self.tabWidget_raw.setMinimumSize(QtCore.QSize(0, 0))
+        self.tabWidget_raw.setStyleSheet("QTabBar::tab {\n"
+                                         "    width: 110%;\n"
+                                         "} \n"
+                                         "")
+        self.tabWidget_raw.setTabPosition(QtWidgets.QTabWidget.North)
+        self.tabWidget_raw.setElideMode(QtCore.Qt.ElideNone)
+        self.tabWidget_raw.setDocumentMode(True)
+        self.tabWidget_raw.setObjectName("tabWidget_raw")
         self.folder_structure = QtWidgets.QWidget()
         self.folder_structure.setObjectName("folder_structure")
         self.verticalLayout_17 = QtWidgets.QVBoxLayout(self.folder_structure)
@@ -548,21 +586,21 @@ class Ui_MainWindow(object):
         self.date_correct_fs = QtWidgets.QDateEdit(self.folder_structure)
         self.date_correct_fs.setMinimumSize(QtCore.QSize(365, 30))
         self.date_correct_fs.setStyleSheet("\n"
-"  /* normal days */\n"
-"QDateEdit QAbstractItemView:enabled \n"
-"  {\n"
-"    selection-background-color: rgb(112, 174, 255);\n"
-"    selection-color: #152c4a; \n"
-"  }\n"
-"\n"
-"QCalendarWidget QToolButton#qt_calendar_prevmonth \n"
-"{\n"
-"    qproperty-icon: url(\"D:/Users/Wisdom/Lernen/Coding_Python/ZLF_Sort_v2.0/dev/gui/icons/left_arrow.png\") top center no-repeat;\n"
-"}\n"
-"QCalendarWidget QToolButton#qt_calendar_nextmonth \n"
-"{\n"
-"    qproperty-icon: url(\"D:/Users/Wisdom/Lernen/Coding_Python/ZLF_Sort_v2.0/dev/gui/icons/right_arrow.png\") top center no-repeat;\n"
-"}")
+                                           "  /* normal days */\n"
+                                           "QDateEdit QAbstractItemView:enabled \n"
+                                           "  {\n"
+                                           "    selection-background-color: rgb(112, 174, 255);\n"
+                                           "    selection-color: #152c4a; \n"
+                                           "  }\n"
+                                           "\n"
+                                           "QCalendarWidget QToolButton#qt_calendar_prevmonth \n"
+                                           "{\n"
+                                           "    qproperty-icon: url(\"D:/Users/Wisdom/Lernen/Coding_Python/ZLF_Sort_v2.0/dev/gui/icons/left_arrow.png\") top center no-repeat;\n"
+                                           "}\n"
+                                           "QCalendarWidget QToolButton#qt_calendar_nextmonth \n"
+                                           "{\n"
+                                           "    qproperty-icon: url(\"D:/Users/Wisdom/Lernen/Coding_Python/ZLF_Sort_v2.0/dev/gui/icons/right_arrow.png\") top center no-repeat;\n"
+                                           "}")
         self.date_correct_fs.setButtonSymbols(QtWidgets.QAbstractSpinBox.UpDownArrows)
         self.date_correct_fs.setCurrentSection(QtWidgets.QDateTimeEdit.YearSection)
         self.date_correct_fs.setCalendarPopup(True)
@@ -615,7 +653,7 @@ class Ui_MainWindow(object):
         self.scrollArea_3.setWidgetResizable(True)
         self.scrollArea_3.setObjectName("scrollArea_3")
         self.scrollAreaWidgetContents_5 = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents_5.setGeometry(QtCore.QRect(0, -393, 698, 1013))
+        self.scrollAreaWidgetContents_5.setGeometry(QtCore.QRect(0, 0, 698, 1013))
         self.scrollAreaWidgetContents_5.setObjectName("scrollAreaWidgetContents_5")
         self.verticalLayout_19 = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents_5)
         self.verticalLayout_19.setObjectName("verticalLayout_19")
@@ -636,11 +674,11 @@ class Ui_MainWindow(object):
         self.help_standard_excel = QtWidgets.QTextBrowser(self.scrollAreaWidgetContents_5)
         self.help_standard_excel.setMinimumSize(QtCore.QSize(0, 300))
         self.help_standard_excel.setStyleSheet("QTextBrowser{\n"
-"font: 12pt \"Gill Sans Nova\";\n"
-"}\n"
-"p{\n"
-"font: 12pt \"Gill Sans Nova\";\n"
-"}")
+                                               "font: 12pt \"Gill Sans Nova\";\n"
+                                               "}\n"
+                                               "p{\n"
+                                               "font: 12pt \"Gill Sans Nova\";\n"
+                                               "}")
         self.help_standard_excel.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.help_standard_excel.setObjectName("help_standard_excel")
         self.verticalLayout_19.addWidget(self.help_standard_excel)
@@ -730,7 +768,7 @@ class Ui_MainWindow(object):
         self.gridLayout_6.addWidget(self.tb_excel_folder, 3, 3, 1, 1)
         spacerItem20 = QtWidgets.QSpacerItem(141, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.gridLayout_6.addItem(spacerItem20, 3, 0, 1, 1)
-        self.drop_excel_folder = QtWidgets.QLineEdit(self.frame_8)
+        self.drop_excel_folder = DropLineEditFolder(self.frame_8)
         self.drop_excel_folder.setMinimumSize(QtCore.QSize(330, 30))
         self.drop_excel_folder.setMaximumSize(QtCore.QSize(330, 30))
         self.drop_excel_folder.setBaseSize(QtCore.QSize(30, 0))
@@ -742,13 +780,13 @@ class Ui_MainWindow(object):
         font.setWeight(50)
         self.drop_excel_folder.setFont(font)
         self.drop_excel_folder.setStyleSheet("QLineEdit {\n"
-"    color: \"red\";\n"
-"}")
+                                             "    color: \"red\";\n"
+                                             "}")
         self.drop_excel_folder.setInputMask("")
         self.drop_excel_folder.setText("")
         self.drop_excel_folder.setFrame(True)
         self.drop_excel_folder.setEchoMode(QtWidgets.QLineEdit.Normal)
-        self.drop_excel_folder.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.drop_excel_folder.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.drop_excel_folder.setClearButtonEnabled(True)
         self.drop_excel_folder.setObjectName("drop_excel_folder")
         self.gridLayout_6.addWidget(self.drop_excel_folder, 3, 2, 1, 1)
@@ -770,7 +808,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_11.setObjectName("horizontalLayout_11")
         spacerItem22 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_11.addItem(spacerItem22)
-        self.drop_raw_excel_file = QtWidgets.QLineEdit(self.excel_path)
+        self.drop_raw_excel_file = DropLineEditExcel(self.excel_path)
         self.drop_raw_excel_file.setMinimumSize(QtCore.QSize(330, 30))
         self.drop_raw_excel_file.setMaximumSize(QtCore.QSize(330, 30))
         font = QtGui.QFont()
@@ -781,13 +819,13 @@ class Ui_MainWindow(object):
         font.setWeight(50)
         self.drop_raw_excel_file.setFont(font)
         self.drop_raw_excel_file.setStyleSheet("QLineEdit {\n"
-"    color: \"red\";\n"
-"}")
+                                               "    color: \"red\";\n"
+                                               "}")
         self.drop_raw_excel_file.setInputMask("")
         self.drop_raw_excel_file.setText("")
         self.drop_raw_excel_file.setFrame(True)
         self.drop_raw_excel_file.setEchoMode(QtWidgets.QLineEdit.Normal)
-        self.drop_raw_excel_file.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.drop_raw_excel_file.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.drop_raw_excel_file.setClearButtonEnabled(True)
         self.drop_raw_excel_file.setObjectName("drop_raw_excel_file")
         self.horizontalLayout_11.addWidget(self.drop_raw_excel_file)
@@ -842,7 +880,7 @@ class Ui_MainWindow(object):
         self.custom_picture_folder.setObjectName("custom_picture_folder")
         self.horizontalLayout_6 = QtWidgets.QHBoxLayout(self.custom_picture_folder)
         self.horizontalLayout_6.setObjectName("horizontalLayout_6")
-        self.drop_picture_folder = QtWidgets.QLineEdit(self.custom_picture_folder)
+        self.drop_picture_folder = DropLineEditFolder(self.custom_picture_folder)
         self.drop_picture_folder.setMinimumSize(QtCore.QSize(330, 30))
         self.drop_picture_folder.setMaximumSize(QtCore.QSize(330, 30))
         self.drop_picture_folder.setBaseSize(QtCore.QSize(30, 0))
@@ -854,13 +892,13 @@ class Ui_MainWindow(object):
         font.setWeight(50)
         self.drop_picture_folder.setFont(font)
         self.drop_picture_folder.setStyleSheet("QLineEdit {\n"
-"    color: \"red\";\n"
-"}")
+                                               "    color: \"red\";\n"
+                                               "}")
         self.drop_picture_folder.setInputMask("")
         self.drop_picture_folder.setText("")
         self.drop_picture_folder.setFrame(True)
         self.drop_picture_folder.setEchoMode(QtWidgets.QLineEdit.Normal)
-        self.drop_picture_folder.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.drop_picture_folder.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.drop_picture_folder.setClearButtonEnabled(True)
         self.drop_picture_folder.setObjectName("drop_picture_folder")
         self.horizontalLayout_6.addWidget(self.drop_picture_folder)
@@ -923,11 +961,6 @@ class Ui_MainWindow(object):
         self.frame_25.setObjectName("frame_25")
         self.verticalLayout_20 = QtWidgets.QVBoxLayout(self.frame_25)
         self.verticalLayout_20.setObjectName("verticalLayout_20")
-        self.cb_structure = QtWidgets.QCheckBox(self.frame_25)
-        self.cb_structure.setFocusPolicy(QtCore.Qt.NoFocus)
-        self.cb_structure.setChecked(False)
-        self.cb_structure.setObjectName("cb_structure")
-        self.verticalLayout_20.addWidget(self.cb_structure)
         self.cb_rename = QtWidgets.QCheckBox(self.frame_25)
         font = QtGui.QFont()
         font.setFamily("Gill Sans Nova")
@@ -968,8 +1001,26 @@ class Ui_MainWindow(object):
         self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.frame_21)
         self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout_3.setObjectName("verticalLayout_3")
+        self.label_12 = QtWidgets.QLabel(self.frame_21)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.label_12.sizePolicy().hasHeightForWidth())
+        self.label_12.setSizePolicy(sizePolicy)
+        self.label_12.setMaximumSize(QtCore.QSize(16777215, 20))
+        font = QtGui.QFont()
+        font.setFamily("Gill Sans Nova")
+        font.setPointSize(13)
+        font.setBold(False)
+        font.setItalic(False)
+        font.setWeight(50)
+        self.label_12.setFont(font)
+        self.label_12.setStyleSheet("font: 13pt \"Gill Sans Nova\";")
+        self.label_12.setObjectName("label_12")
+        self.verticalLayout_3.addWidget(self.label_12)
         self.process_scrollArea = QtWidgets.QScrollArea(self.frame_21)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding,
+                                           QtWidgets.QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.process_scrollArea.sizePolicy().hasHeightForWidth())
@@ -982,7 +1033,7 @@ class Ui_MainWindow(object):
         self.process_scrollArea.setWidgetResizable(True)
         self.process_scrollArea.setObjectName("process_scrollArea")
         self.scrollAreaWidgetContents_2 = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 363, 313))
+        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 363, 287))
         self.scrollAreaWidgetContents_2.setObjectName("scrollAreaWidgetContents_2")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents_2)
         self.verticalLayout.setObjectName("verticalLayout")
@@ -995,7 +1046,8 @@ class Ui_MainWindow(object):
         font.setWeight(50)
         self.print_labelraw.setFont(font)
         self.print_labelraw.setStyleSheet("")
-        self.print_labelraw.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
+        self.print_labelraw.setText("")
+        self.print_labelraw.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
         self.print_labelraw.setObjectName("print_labelraw")
         self.verticalLayout.addWidget(self.print_labelraw)
         self.process_scrollArea.setWidget(self.scrollAreaWidgetContents_2)
@@ -1027,7 +1079,7 @@ class Ui_MainWindow(object):
         self.groupBox.setObjectName("groupBox")
         self.gridLayout_8 = QtWidgets.QGridLayout(self.groupBox)
         self.gridLayout_8.setObjectName("gridLayout_8")
-        self.drop_util_rawpath = QtWidgets.QLineEdit(self.groupBox)
+        self.drop_util_rawpath = DropLineEditFolder(self.groupBox)
         self.drop_util_rawpath.setMinimumSize(QtCore.QSize(330, 30))
         self.drop_util_rawpath.setMaximumSize(QtCore.QSize(330, 30))
         self.drop_util_rawpath.setBaseSize(QtCore.QSize(30, 0))
@@ -1043,7 +1095,7 @@ class Ui_MainWindow(object):
         self.drop_util_rawpath.setText("")
         self.drop_util_rawpath.setFrame(True)
         self.drop_util_rawpath.setEchoMode(QtWidgets.QLineEdit.Normal)
-        self.drop_util_rawpath.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.drop_util_rawpath.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.drop_util_rawpath.setClearButtonEnabled(True)
         self.drop_util_rawpath.setObjectName("drop_util_rawpath")
         self.gridLayout_8.addWidget(self.drop_util_rawpath, 1, 1, 1, 1)
@@ -1063,7 +1115,7 @@ class Ui_MainWindow(object):
         self.tb_util_rawpath.setIconSize(QtCore.QSize(20, 20))
         self.tb_util_rawpath.setObjectName("tb_util_rawpath")
         self.gridLayout_8.addWidget(self.tb_util_rawpath, 1, 2, 1, 1)
-        self.drop_util_excelfile = QtWidgets.QLineEdit(self.groupBox)
+        self.drop_util_excelfile = DropLineEditExcel(self.groupBox)
         self.drop_util_excelfile.setMinimumSize(QtCore.QSize(330, 30))
         self.drop_util_excelfile.setMaximumSize(QtCore.QSize(330, 30))
         font = QtGui.QFont()
@@ -1078,7 +1130,7 @@ class Ui_MainWindow(object):
         self.drop_util_excelfile.setText("")
         self.drop_util_excelfile.setFrame(True)
         self.drop_util_excelfile.setEchoMode(QtWidgets.QLineEdit.Normal)
-        self.drop_util_excelfile.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.drop_util_excelfile.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.drop_util_excelfile.setClearButtonEnabled(True)
         self.drop_util_excelfile.setObjectName("drop_util_excelfile")
         self.gridLayout_8.addWidget(self.drop_util_excelfile, 2, 1, 1, 1)
@@ -1283,7 +1335,8 @@ class Ui_MainWindow(object):
         self.le_selection_vid_columns.setText("")
         self.le_selection_vid_columns.setFrame(True)
         self.le_selection_vid_columns.setEchoMode(QtWidgets.QLineEdit.Normal)
-        self.le_selection_vid_columns.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.le_selection_vid_columns.setAlignment(
+            QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.le_selection_vid_columns.setClearButtonEnabled(True)
         self.le_selection_vid_columns.setObjectName("le_selection_vid_columns")
         self.gridLayout_9.addWidget(self.le_selection_vid_columns, 1, 0, 1, 1)
@@ -1301,7 +1354,8 @@ class Ui_MainWindow(object):
         self.le_selection_pic_columns.setText("")
         self.le_selection_pic_columns.setFrame(True)
         self.le_selection_pic_columns.setEchoMode(QtWidgets.QLineEdit.Normal)
-        self.le_selection_pic_columns.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.le_selection_pic_columns.setAlignment(
+            QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.le_selection_pic_columns.setClearButtonEnabled(True)
         self.le_selection_pic_columns.setObjectName("le_selection_pic_columns")
         self.gridLayout_9.addWidget(self.le_selection_pic_columns, 0, 0, 1, 1)
@@ -1354,7 +1408,7 @@ class Ui_MainWindow(object):
         self.marker_selection.setText("")
         self.marker_selection.setFrame(True)
         self.marker_selection.setEchoMode(QtWidgets.QLineEdit.Normal)
-        self.marker_selection.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.marker_selection.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.marker_selection.setClearButtonEnabled(True)
         self.marker_selection.setObjectName("marker_selection")
         self.horizontalLayout_18.addWidget(self.marker_selection)
@@ -1535,7 +1589,7 @@ class Ui_MainWindow(object):
         self.le_search_vid_columns.setText("")
         self.le_search_vid_columns.setFrame(True)
         self.le_search_vid_columns.setEchoMode(QtWidgets.QLineEdit.Normal)
-        self.le_search_vid_columns.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.le_search_vid_columns.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.le_search_vid_columns.setClearButtonEnabled(True)
         self.le_search_vid_columns.setObjectName("le_search_vid_columns")
         self.gridLayout_5.addWidget(self.le_search_vid_columns, 1, 0, 1, 1)
@@ -1553,7 +1607,7 @@ class Ui_MainWindow(object):
         self.le_search_pic_columns.setText("")
         self.le_search_pic_columns.setFrame(True)
         self.le_search_pic_columns.setEchoMode(QtWidgets.QLineEdit.Normal)
-        self.le_search_pic_columns.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.le_search_pic_columns.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.le_search_pic_columns.setClearButtonEnabled(True)
         self.le_search_pic_columns.setObjectName("le_search_pic_columns")
         self.gridLayout_5.addWidget(self.le_search_pic_columns, 0, 0, 1, 1)
@@ -1735,6 +1789,11 @@ class Ui_MainWindow(object):
         self.verticalLayout_21.addWidget(self.frame_28)
         spacerItem53 = QtWidgets.QSpacerItem(20, 10, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
         self.verticalLayout_21.addItem(spacerItem53)
+        self.label_13 = QtWidgets.QLabel(self.frame_22)
+        self.label_13.setMaximumSize(QtCore.QSize(16777215, 20))
+        self.label_13.setStyleSheet("font: 13pt \"Gill Sans Nova\";")
+        self.label_13.setObjectName("label_13")
+        self.verticalLayout_21.addWidget(self.label_13)
         self.all = QtWidgets.QFrame(self.frame_22)
         self.all.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.all.setFrameShadow(QtWidgets.QFrame.Raised)
@@ -1743,7 +1802,8 @@ class Ui_MainWindow(object):
         self.verticalLayout_16.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout_16.setObjectName("verticalLayout_16")
         self.process_scrollArea_2 = QtWidgets.QScrollArea(self.all)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding,
+                                           QtWidgets.QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.process_scrollArea_2.sizePolicy().hasHeightForWidth())
@@ -1756,7 +1816,7 @@ class Ui_MainWindow(object):
         self.process_scrollArea_2.setWidgetResizable(True)
         self.process_scrollArea_2.setObjectName("process_scrollArea_2")
         self.scrollAreaWidgetContents_4 = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents_4.setGeometry(QtCore.QRect(0, 0, 398, 334))
+        self.scrollAreaWidgetContents_4.setGeometry(QtCore.QRect(0, 0, 398, 308))
         self.scrollAreaWidgetContents_4.setObjectName("scrollAreaWidgetContents_4")
         self.verticalLayout_18 = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents_4)
         self.verticalLayout_18.setObjectName("verticalLayout_18")
@@ -1769,7 +1829,8 @@ class Ui_MainWindow(object):
         font.setWeight(50)
         self.print_label_util.setFont(font)
         self.print_label_util.setStyleSheet("")
-        self.print_label_util.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
+        self.print_label_util.setText("")
+        self.print_label_util.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
         self.print_label_util.setObjectName("print_label_util")
         self.verticalLayout_18.addWidget(self.print_label_util)
         self.process_scrollArea_2.setWidget(self.scrollAreaWidgetContents_4)
@@ -1790,26 +1851,27 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(1)
-        self.tabWidget_raw.setCurrentIndex(3)
+        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget_raw.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "Namexyz"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Zlf Sort"))
         self.Willkommen.setText(_translate("MainWindow", "Willkommen"))
-        self.Einleitung.setHtml(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'Gill Sans Nova\'; font-size:12pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt;\">Dieses Programm unterstützt bei der Dateiverwaltung beim Zeltlagerfilm.</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt;\">D.h. Dulli arbeiten werden vom Programm übernommen:</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt;\">Funktionen sind:</span></p>\n"
-"<ul style=\"margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;\"><li style=\" font-size:14pt;\" style=\" margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Erstellen des Allgemeinen Ordner</li>\n"
-"<li style=\" font-size:14pt;\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Material von Zeltlager in eine bewährte Dateistruktur bringen</li>\n"
-"<li style=\" font-size:14pt;\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Bilderordner erstellen</li>\n"
-"<li style=\" font-size:14pt;\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"> Dateien umbennen und in Excel-Liste eintragen</li>\n"
-"<li style=\" font-size:14pt;\" style=\" margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Fertig ausgefüllte Excel auswerten</li></ul></body></html>"))
+        self.Einleitung.setHtml(_translate("MainWindow",
+                                           "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+                                           "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+                                           "p, li { white-space: pre-wrap; }\n"
+                                           "</style></head><body style=\" font-family:\'Gill Sans Nova\'; font-size:12pt; font-weight:400; font-style:normal;\">\n"
+                                           "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt;\">Dieses Programm unterstützt bei der Dateiverwaltung beim Zeltlagerfilm.</span></p>\n"
+                                           "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt;\">D.h. Dulli arbeiten werden vom Programm übernommen:</span></p>\n"
+                                           "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt;\">Funktionen sind:</span></p>\n"
+                                           "<ul style=\"margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;\"><li style=\" font-size:14pt;\" style=\" margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Erstellen des Allgemeinen Ordner</li>\n"
+                                           "<li style=\" font-size:14pt;\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Material von Zeltlager in eine bewährte Dateistruktur bringen</li>\n"
+                                           "<li style=\" font-size:14pt;\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Bilderordner erstellen</li>\n"
+                                           "<li style=\" font-size:14pt;\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"> Dateien umbennen und in Excel-Liste eintragen</li>\n"
+                                           "<li style=\" font-size:14pt;\" style=\" margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Fertig ausgefüllte Excel auswerten</li></ul></body></html>"))
         self.folder_setup_groupB.setToolTip(_translate("MainWindow", "Erstellen der Ordnerstruktur"))
         self.folder_setup_groupB.setTitle(_translate("MainWindow", "Ordner erstellen"))
         self.drop_harddrive.setToolTip(_translate("MainWindow", "Dateipfad zur PJHF Festplatte"))
@@ -1819,20 +1881,22 @@ class Ui_MainWindow(object):
         self.label.setText(_translate("MainWindow", "Datum vom LKW einladen"))
         self.pb_foldersetup.setToolTip(_translate("MainWindow", "Startet das Erstellen"))
         self.pb_foldersetup.setText(_translate("MainWindow", "Erstellen"))
+        self.print_label_setup.setToolTip(_translate("MainWindow", "Zeigt den aktuellen Arbeitsschritt an."))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.Start), _translate("MainWindow", "Start"))
         self.groupBox_3.setTitle(_translate("MainWindow", "Einstellungen + Detailierte Informationen"))
-        self.label_8.setText(_translate("MainWindow", "* wenn die Excel mit manuellen Einstellungen erstellt wird nicht zwingend"))
-        self.tb_raw_rawpath.setToolTip(_translate("MainWindow", "Ordnerauswahl"))
-        self.tb_raw_rawpath.setText(_translate("MainWindow", "..."))
         self.drop_raw_rawpath.setToolTip(_translate("MainWindow", "Dateipfad den Rohmaterial-Ordners"))
         self.drop_raw_rawpath.setPlaceholderText(_translate("MainWindow", "Rohmaterialordner"))
+        self.tb_raw_rawpath.setToolTip(_translate("MainWindow", "Ordnerauswahl"))
+        self.tb_raw_rawpath.setText(_translate("MainWindow", "..."))
         self.label_7.setText(_translate("MainWindow", "Immmer angeben*"))
-        self.tabWidget_raw.setTabText(self.tabWidget_raw.indexOf(self.common), _translate("MainWindow", "Allgemein"))
-        self.explainFolderstruct.setPlainText(_translate("MainWindow", "Rechts siehst du die Struktur in der die Dateien im Rohmaterial Ordner sein sollten. Das hat sich so bewährt.\n"
-"\n"
-"Über den Button kannst du die Dateien in diese Form bringen. Dazu musst du oben den Dateipfad zu dem Ordner angeben indem alles an Rohmaterial gespeichert ist.\n"
-"\n"
-"Diese Aktion wird auch durchgeführt, wenn du links den Haken bei \"Richtige Struktur\" setzt."))
+        self.label_8.setText(
+            _translate("MainWindow", "* wenn die Excel mit manuellen Einstellungen erstellt wird nicht zwingend"))
+        self.explainFolderstruct.setPlainText(_translate("MainWindow",
+                                                         "Rechts siehst du die Struktur in der die Dateien im Rohmaterial Ordner sein sollten. Das hat sich so bewährt.\n"
+                                                         "\n"
+                                                         "Über den Button kannst du die Dateien in diese Form bringen. Dazu musst du oben den Dateipfad zu dem Ordner angeben indem alles an Rohmaterial gespeichert ist.\n"
+                                                         "\n"
+                                                         "Diese Aktion wird auch durchgeführt, wenn du links den Haken bei \"Richtige Struktur\" setzt."))
         self.example_fs.headerItem().setText(0, _translate("MainWindow", "Rohmaterial"))
         __sortingEnabled = self.example_fs.isSortingEnabled()
         self.example_fs.setSortingEnabled(False)
@@ -1848,39 +1912,42 @@ class Ui_MainWindow(object):
         self.example_fs.topLevelItem(3).child(1).setText(0, _translate("MainWindow", "Videos"))
         self.example_fs.setSortingEnabled(__sortingEnabled)
         self.pb_correct_fs.setText(_translate("MainWindow", "Richtige Struktur"))
-        self.tabWidget_raw.setTabText(self.tabWidget_raw.indexOf(self.folder_structure), _translate("MainWindow", "Ordnerstruktur"))
+        self.tabWidget_raw.setTabText(self.tabWidget_raw.indexOf(self.folder_structure),
+                                      _translate("MainWindow", "Ordnerstruktur"))
         self.plainTextEdit.setPlainText(_translate("MainWindow", "Aktuell werden Dateien wie folgt benannt:\n"
-"\n"
-"08-03-Do_001.JPG\n"
-"Also:\n"
-"Monat-Tag-Wochentag_[Nr im Ordner].[Dateiendung]\n"
-"\n"
-"Vielleicht kommt hier mal noch eine Möglichkeit die Benennung anzupassen."))
+                                                                 "\n"
+                                                                 "08-03-Do_001.JPG\n"
+                                                                 "Also:\n"
+                                                                 "Monat-Tag-Wochentag_[Nr im Ordner].[Dateiendung]\n"
+                                                                 "\n"
+                                                                 "Vielleicht kommt hier mal noch eine Möglichkeit die Benennung anzupassen."))
         self.pb_rename.setText(_translate("MainWindow", "Dateien benennen"))
         self.tabWidget_raw.setTabText(self.tabWidget_raw.indexOf(self.rename), _translate("MainWindow", "Bennenung"))
         self.excel_option.setItemText(0, _translate("MainWindow", "Standard"))
         self.excel_option.setItemText(1, _translate("MainWindow", "Manuelle Einstellungen"))
         self.excel_option.setItemText(2, _translate("MainWindow", "Vorhandene Excel-Datei"))
-        self.help_standard_excel.setHtml(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'Gill Sans Nova\'; font-size:12pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Die Standard Excel besteht aus 2 Excel Arbeitsmappen (die Seiten innerhalb einer Excel Datei).</p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Gib den Rohmaterial ordner an!!</p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Eine Arbeitsmappe für Videos mit den Spalten:</p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">- Name (der Dateiname)</p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">- Bewertung (Bewertung von 2-7)</p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">- Bemerkung (Was/Wer zu sehen ist?)</p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">- Outtakes (Video für Outtakes vormerken)</p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:\'Georgia Pro Cond Semibold\'; font-weight:600;\"><br /></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Eine Arbeitsmappe für Bilder mit den Spalten:</p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">- Name (der Dateiname)</p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">- Bewertung (Bewertung von 2-7)</p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">- Bemerkung (Was/Wer zu sehen ist?)</p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">- NZS (Neutraler Zwischenschnitt)</p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">- Webseite/Insta</p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">- Outtakes (Video für Outtakes vormerken)</p></body></html>"))
-        self.manuel_col_help.setText(_translate("MainWindow", "Beide Mappen enthalten automatisch die Spalten \'Datei\', \'Abschnitt\' und \'Bewertung\'. Hier kannst du konfigurieren, welche Spalten noch dazu kommen.Füge neue mit \", Spaltenname\" hinzu."))
+        self.help_standard_excel.setHtml(_translate("MainWindow",
+                                                    "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+                                                    "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+                                                    "p, li { white-space: pre-wrap; }\n"
+                                                    "</style></head><body style=\" font-family:\'Gill Sans Nova\'; font-size:12pt; font-weight:400; font-style:normal;\">\n"
+                                                    "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Die Standard Excel besteht aus 2 Excel Arbeitsmappen (die Seiten innerhalb einer Excel Datei).</p>\n"
+                                                    "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Gib den Rohmaterial ordner an!!</p>\n"
+                                                    "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Eine Arbeitsmappe für Videos mit den Spalten:</p>\n"
+                                                    "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">- Name (der Dateiname)</p>\n"
+                                                    "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">- Bewertung (Bewertung von 2-7)</p>\n"
+                                                    "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">- Bemerkung (Was/Wer zu sehen ist?)</p>\n"
+                                                    "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">- Outtakes (Video für Outtakes vormerken)</p>\n"
+                                                    "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:\'Georgia Pro Cond Semibold\'; font-weight:600;\"><br /></p>\n"
+                                                    "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Eine Arbeitsmappe für Bilder mit den Spalten:</p>\n"
+                                                    "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">- Name (der Dateiname)</p>\n"
+                                                    "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">- Bewertung (Bewertung von 2-7)</p>\n"
+                                                    "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">- Bemerkung (Was/Wer zu sehen ist?)</p>\n"
+                                                    "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">- NZS (Neutraler Zwischenschnitt)</p>\n"
+                                                    "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">- Webseite/Insta</p>\n"
+                                                    "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">- Outtakes (Video für Outtakes vormerken)</p></body></html>"))
+        self.manuel_col_help.setText(_translate("MainWindow",
+                                                "Beide Mappen enthalten automatisch die Spalten \'Datei\', \'Abschnitt\' und \'Bewertung\'. Hier kannst du konfigurieren, welche Spalten noch dazu kommen.Füge neue mit \", Spaltenname\" hinzu."))
         self.manuel_col_vid.setText(_translate("MainWindow", "Spalten für Videos"))
         self.vid_columns.setPlainText(_translate("MainWindow", " Bemerkung, Outtakes"))
         self.pb_vid_sugestions.setText(_translate("MainWindow", "Vorschläge"))
@@ -1901,25 +1968,26 @@ class Ui_MainWindow(object):
         self.tb_raw_excel_file.setText(_translate("MainWindow", "..."))
         self.pb_fill_excel.setText(_translate("MainWindow", "Datein in Excel eintragen"))
         self.tabWidget_raw.setTabText(self.tabWidget_raw.indexOf(self.excel), _translate("MainWindow", "Excel-Datei"))
-        self.help_picture_folder.setText(_translate("MainWindow", "Erstellt eine Ordner \"Alle Bilder\" im Zeltlagerfilmordner oder in dem individuellen Ordner"))
+        self.help_picture_folder.setText(_translate("MainWindow",
+                                                    "Erstellt eine Ordner \"Alle Bilder\" im Zeltlagerfilmordner oder in dem individuellen Ordner"))
         self.custom_picture_folder.setTitle(_translate("MainWindow", "Individuellen Ordner nutzen"))
         self.drop_picture_folder.setToolTip(_translate("MainWindow", "Dateipfad den Rohmaterial-Ordners"))
         self.drop_picture_folder.setPlaceholderText(_translate("MainWindow", "Bilderordner"))
         self.tb_picture_folder.setToolTip(_translate("MainWindow", "Ordnerauswahl"))
         self.tb_picture_folder.setText(_translate("MainWindow", "..."))
         self.pb_create_picture_folder.setText(_translate("MainWindow", "Bilderordner erstellen"))
-        self.tabWidget_raw.setTabText(self.tabWidget_raw.indexOf(self.pictures), _translate("MainWindow", "Bilderordner"))
+        self.tabWidget_raw.setTabText(self.tabWidget_raw.indexOf(self.pictures),
+                                      _translate("MainWindow", "Bilderordner"))
         self.execution.setTitle(_translate("MainWindow", "GroupBox"))
         self.label_10.setText(_translate("MainWindow", "**Excel wird entsprechend der Einstellung erstellt"))
-        self.cb_structure.setText(_translate("MainWindow", "Richtige Struktur"))
         self.cb_rename.setToolTip(_translate("MainWindow", "Wurden die Dateien schon umbenannt?"))
         self.cb_rename.setText(_translate("MainWindow", "Dateien bennenen"))
         self.cb_fill_excel.setText(_translate("MainWindow", "Datein in Excel eintragen**"))
         self.cb_diashow.setToolTip(_translate("MainWindow", "Soll ein Ordner mit allen Bildern erstellt werden?"))
         self.cb_diashow.setText(_translate("MainWindow", "Bilderordner erstellen"))
         self.pb_start_raw_full.setText(_translate("MainWindow", "Gesammelt ausführen"))
+        self.label_12.setText(_translate("MainWindow", "Prozess"))
         self.print_labelraw.setToolTip(_translate("MainWindow", "Zeigt den aktuellen Arbeitsschritt an."))
-        self.print_labelraw.setText(_translate("MainWindow", "Prozess"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.raw), _translate("MainWindow", "Rohmaterial"))
         self.groupBox.setTitle(_translate("MainWindow", "Input"))
         self.drop_util_rawpath.setToolTip(_translate("MainWindow", "Dateipfad den Rohmaterial-Ordners"))
@@ -1932,65 +2000,81 @@ class Ui_MainWindow(object):
         self.tb_util_excelfile.setText(_translate("MainWindow", "..."))
         self.label_6.setText(_translate("MainWindow", "Immer angeben:"))
         self.excel_groupB.setToolTip(_translate("MainWindow", "Wertet die beim Rohmaterial anschauen \n"
-"erstellte Excel-Liste aus."))
+                                                              "erstellte Excel-Liste aus."))
         self.excel_groupB.setTitle(_translate("MainWindow", "Excel auswerten"))
-        self.section.setToolTip(_translate("MainWindow", "<html><head/><body><p>Wertet die Spalte &quot; Abschnitte &quot; aus. Erstellt 1 Unterordner pro Abschnitt. Dabei werden nur Elemente genommen die gleich oder besser als die Bewertungsgrenze bewertet wurden.</p></body></html>"))
+        self.section.setToolTip(_translate("MainWindow",
+                                           "<html><head/><body><p>Wertet die Spalte &quot; Abschnitte &quot; aus. Erstellt 1 Unterordner pro Abschnitt. Dabei werden nur Elemente genommen die gleich oder besser als die Bewertungsgrenze bewertet wurden.</p></body></html>"))
         self.section.setTitle(_translate("MainWindow", "Abschnitte"))
         self.cb_segment_videos.setToolTip(_translate("MainWindow", "Sollen die Videos in Abschnitte sortiert werden?"))
         self.cb_segment_videos.setText(_translate("MainWindow", "Abschnitte Videos"))
         self.cb_segment_picture.setToolTip(_translate("MainWindow", "Sollen die Bilder in Abschnitte sortiert werden?"))
         self.cb_segment_picture.setText(_translate("MainWindow", "Abschnitte Bilder"))
-        self.rating_label.setToolTip(_translate("MainWindow", "Nur Dateien mit gleicher oder besserer Bewertung werden kopiert."))
+        self.rating_label.setToolTip(
+            _translate("MainWindow", "Nur Dateien mit gleicher oder besserer Bewertung werden kopiert."))
         self.rating_label.setText(_translate("MainWindow", "Bewertungsgrenze:"))
-        self.sb_rating_section.setToolTip(_translate("MainWindow", "Nur Dateien mit einer höheren Bewertung werden kopiert. Min: 2, Max: 7"))
+        self.sb_rating_section.setToolTip(
+            _translate("MainWindow", "Nur Dateien mit gleicher oder besserer Bewertung werden kopiert."))
         self.pb_section.setToolTip(_translate("MainWindow", "Startet die Auswertung"))
         self.pb_section.setText(_translate("MainWindow", "Start"))
-        self.selection.setToolTip(_translate("MainWindow", "Jede angegebene Spalte wir nach dem Marker durchsucht.\n"
-"Alle Dateien, die markiert werden werden in einen Ordner mit dem Spaltennamen unter Schnittmaterial/Selektionen kopiert"))
+        self.selection.setToolTip(_translate("MainWindow",
+                                             "<html><head/><body><p>Jede angegebene Spalte wir nach dem Marker durchsucht.</p><p>Alle Dateien, die markiert werden werden in einen Ordner </p><p>mit dem Spaltennamen unter Schnittmaterial/Selektionen kopiert</p></body></html>"))
         self.selection.setTitle(_translate("MainWindow", "Selektionen"))
+        self.pb_select_pic_columns.setToolTip(_translate("MainWindow", "Wähle die Spalten aus der Excel-Datei."))
         self.pb_select_pic_columns.setText(_translate("MainWindow", "..."))
         self.le_selection_vid_columns.setToolTip(_translate("MainWindow", "Spalten in denen Videos markiert wurden. "))
         self.le_selection_vid_columns.setPlaceholderText(_translate("MainWindow", "Spalten Videos"))
         self.le_selection_pic_columns.setToolTip(_translate("MainWindow", "Spalten in denen Bilder markiert wurden. "))
         self.le_selection_pic_columns.setPlaceholderText(_translate("MainWindow", "Spalten Bilder"))
+        self.pb_select_vid_columns.setToolTip(_translate("MainWindow", "Wähle die Spalten aus der Excel-Datei."))
         self.pb_select_vid_columns.setText(_translate("MainWindow", "..."))
-        self.marker_label.setToolTip(_translate("MainWindow", "Zeichen, dass zur Markierung der Dateien benutzt wurde."))
+        self.marker_label.setToolTip(
+            _translate("MainWindow", "Zeichen, dass zur Markierung der Dateien benutzt wurde."))
         self.marker_label.setText(_translate("MainWindow", "Marker"))
         self.marker_selection.setToolTip(_translate("MainWindow", "Standard: x"))
         self.marker_selection.setPlaceholderText(_translate("MainWindow", " x"))
-        self.pb_start_selection.setToolTip(_translate("MainWindow", "Startet die Auswertung"))
+        self.pb_start_selection.setToolTip(_translate("MainWindow",
+                                                      "<html><head/><body><p>Startet die Auswertung</p><p>Gibt einen Marker und mind. eine Spalte an</p></body></html>"))
         self.pb_start_selection.setText(_translate("MainWindow", "Start"))
-        self.pictures_2.setToolTip(_translate("MainWindow", "Erstellt einen Ordner mit allen Bilder, die gleich oder besser als die Grenze bewertet wurden\n"
-""))
+        self.pictures_2.setToolTip(_translate("MainWindow",
+                                              "Erstellt einen Ordner mit allen Bilder, die gleich oder besser als die Grenze bewertet wurden\n"
+                                              ""))
         self.pictures_2.setTitle(_translate("MainWindow", "Bilderordner"))
         self.label_11.setToolTip(_translate("MainWindow", "Nur Dateien mit einer höheren Bewertung werden kopiert."))
         self.label_11.setText(_translate("MainWindow", "Bewertungsgrenze:"))
-        self.sp_rating_picturefolder_2.setToolTip(_translate("MainWindow", "Nur Dateien mit gleicher oder besserer Bewertung werden kopiert."))
+        self.sp_rating_picturefolder_2.setToolTip(
+            _translate("MainWindow", "Nur Dateien mit gleicher oder besserer Bewertung werden kopiert."))
         self.pb_picturefolder.setToolTip(_translate("MainWindow", "Startet die Auswertung"))
         self.pb_picturefolder.setText(_translate("MainWindow", "Start"))
         self.label_9.setText(_translate("MainWindow", "Alle Ergebnisse dieser Seite landen im Schnittmaterialordner"))
-        self.search.setToolTip(_translate("MainWindow", "Durchsucht die gewählten Spalten nach den angegebenen Begriffen.\n"
-"für jeden Begriff wir ein Ordner in Schnittmaterial/Suche erstellt."))
+        self.search.setToolTip(
+            _translate("MainWindow", "Durchsucht die gewählten Spalten nach den angegebenen Begriffen.\n"
+                                     "für jeden Begriff wir ein Ordner in Schnittmaterial/Suche erstellt."))
         self.search.setTitle(_translate("MainWindow", "Suche"))
+        self.pb_search_pic_columns.setToolTip(_translate("MainWindow", "Wähle die Spalten aus der Excel-Datei."))
         self.pb_search_pic_columns.setText(_translate("MainWindow", "..."))
         self.le_search_vid_columns.setToolTip(_translate("MainWindow", "Spalten in denen Videos markiert wurden. "))
         self.le_search_vid_columns.setPlaceholderText(_translate("MainWindow", "Spalten Videos"))
         self.le_search_pic_columns.setToolTip(_translate("MainWindow", "Spalten in denen Bilder markiert wurden. "))
         self.le_search_pic_columns.setPlaceholderText(_translate("MainWindow", "Spalten Bilder"))
+        self.pb_search_vid_columns.setToolTip(_translate("MainWindow", "Wähle die Spalten aus der Excel-Datei."))
         self.pb_search_vid_columns.setText(_translate("MainWindow", "..."))
-        self.marker_label_2.setToolTip(_translate("MainWindow", "Zeichen, dass zur Markierung der Dateien benutzt wurde."))
+        self.marker_label_2.setToolTip(
+            _translate("MainWindow", "Zeichen, dass zur Markierung der Dateien benutzt wurde."))
         self.marker_label_2.setText(_translate("MainWindow", "Suchbegriff(e):"))
         self.marker_search.setToolTip(_translate("MainWindow", "Standard: x"))
         self.marker_search.setPlaceholderText(_translate("MainWindow", "Suchbegriff(e)"))
-        self.rating_label_3.setToolTip(_translate("MainWindow", "Nur Dateien mit einer höheren Bewertung werden kopiert."))
+        self.rating_label_3.setToolTip(
+            _translate("MainWindow", "Nur Dateien mit einer höheren Bewertung werden kopiert."))
         self.rating_label_3.setText(_translate("MainWindow", "Bewertungsgrenze:"))
-        self.sb_rating_search.setToolTip(_translate("MainWindow", "Nur Dateien mit gleicher oder besserer Bewertung werden kopiert."))
-        self.pb_search.setToolTip(_translate("MainWindow", "Startet die Auswertung"))
+        self.sb_rating_search.setToolTip(
+            _translate("MainWindow", "Nur Dateien mit gleicher oder besserer Bewertung werden kopiert."))
+        self.pb_search.setToolTip(_translate("MainWindow",
+                                             "<html><head/><body><p>Startet die Auswertung</p><p>Gibt einen Sucgbegriff und mind. eine Spalte an</p></body></html>"))
         self.pb_search.setText(_translate("MainWindow", "Start"))
         self.label_4.setText(_translate("MainWindow", "Alles, ob im Titel der Haken gesetzt ist ausführen."))
         self.pb_util_all.setText(_translate("MainWindow", "Alles ausführen"))
         self.label_5.setText(_translate("MainWindow", "Erstellt versch Statistiken. Ergebnis Sats.txt"))
         self.pb_statistic.setText(_translate("MainWindow", "Statistiken"))
+        self.label_13.setText(_translate("MainWindow", "Prozess"))
         self.print_label_util.setToolTip(_translate("MainWindow", "Zeigt den aktuellen Arbeitsschritt an."))
-        self.print_label_util.setText(_translate("MainWindow", "Prozess"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.util), _translate("MainWindow", "Auswertung"))

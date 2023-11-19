@@ -111,6 +111,33 @@ class MainWindow(QMainWindow):
             lambda text: self.ui.drop_harddrive.setStyleSheet(
                 "QLineEdit { color: %s}" % ('green' if text else 'red')))
 
+        self.ui.cb_segment_videos.clicked.connect(self.util_buttons_status)
+        self.ui.cb_segment_picture.clicked.connect(self.util_buttons_status)
+
+        self.ui.le_selection_pic_columns.textChanged.connect(self.util_buttons_status)
+        self.ui.le_selection_vid_columns.textChanged.connect(self.util_buttons_status)
+        self.ui.marker_selection.textChanged.connect(self.util_buttons_status)
+
+        self.ui.le_search_pic_columns.textChanged.connect(self.util_buttons_status)
+        self.ui.le_search_vid_columns.textChanged.connect(self.util_buttons_status)
+        self.ui.marker_search.textChanged.connect(self.util_buttons_status)
+
+        self.util_buttons_status()
+
+    def util_buttons_status(self):
+        self.ui.pb_section.setEnabled(
+            self.ui.cb_segment_videos.isChecked() or self.ui.cb_segment_picture.isChecked()
+        )
+        self.ui.pb_start_selection.setEnabled(
+            bool(self.ui.marker_selection.text()) and (
+                    bool(self.ui.le_selection_vid_columns.text()) or bool(self.ui.le_selection_pic_columns.text())
+            )
+        )
+        self.ui.pb_search.setEnabled(
+            bool(self.ui.marker_search.text()) and (
+                    bool(self.ui.le_search_pic_columns.text()) or bool(self.ui.le_search_vid_columns.text())
+            )
+        )
     def setup_input_buttons(self):
         # ##### BUTTONS "Ordner erstellt" ##### #
         self.ui.tb_harddrive.clicked.connect(self.show_filedialog_harddrive_path)
@@ -238,6 +265,8 @@ class MainWindow(QMainWindow):
         self.ui.pb_picturefolder.setEnabled(True)
         self.ui.pb_util_all.setEnabled(True)
         self.ui.pb_statistic.setEnabled(True)
+
+        self.util_buttons_status()
 
     @staticmethod
     def add_label_text(msg, label: QLabel):
