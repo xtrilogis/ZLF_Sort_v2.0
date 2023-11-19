@@ -31,7 +31,6 @@ def correct_file_structure(raw_material_folder: Path, dst_folder: Path, start: d
 
     # _check_if_right_structure(structure, raw_material_folder, progress_callback)
     _copy_file_structure(structure=structure, dst_folder=dst_folder, progress_callback=progress_callback)
-    # feat: Feedback how many files were copied
 
 
 def _check_if_right_structure(structure, raw_material_folder: Path, progress_callback):
@@ -108,26 +107,27 @@ def _fill_structure(structure: Dict[str | date, Dict[str, List[File]]], all_file
 
 def _copy_file_structure(structure: Dict[str | date, Dict[str, List[File]]], dst_folder: Path, progress_callback):
     letter = 97
+    copied_files_nr: int = 0
     for key, value in structure.items():
         if isinstance(key, date):
             folder = dst_folder / f'{chr(letter)}-{key.strftime("%d.%m")}-{key.strftime("%A")}'
         else:
             folder = dst_folder / f'{chr(letter)}-{"Sonstiges"}'
 
-        # todo reduce duplication
-        for element in value[FileType.VIDEO.value]:
-            try:
-                copy_file(element.full_path, folder / "Videos")
-            except Exception as e:
-                progress_callback.emit(f"Fehler: Datei {element.full_path.name} konnte nicht kopiert werden.")
-
-        for element in value[FileType.IMAGE.value]:
-            try:
-                copy_file(element.full_path, folder / "Bilder")
-            except Exception as e:
-                progress_callback.emit(f"Fehler: Datei {element.full_path.name} konnte nicht kopiert werden.")
+        copied_files_nr += _copy_files(value[FileType.VIDEO.value], folder / "Videos", progress_callback)
+        copied_files_nr += _copy_files(value[FileType.IMAGE.value], folder / "Bilder", progress_callback)
         letter += 1
+    progress_callback.emit(f"{copied_files_nr} Dateien kopiert.")
 
+def _copy_files(elements: List[File], folder_name: Path, progress_callback) -> int:
+    copied_files_nr: int = 0
+    for element in elements:
+        try:
+            copy_file(element.full_path, folder_name)
+            copied_files_nr += 1
+        except Exception as e:
+            progress_callback.emit(f"Fehler: Datei {element.full_path.name} konnte nicht kopiert werden.")
+    return copied_files_nr
 
 def run_rename(raw_material_folder: Path, progress_callback):
     # todo: msg when no files renamed
