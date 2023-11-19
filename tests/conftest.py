@@ -29,6 +29,14 @@ def correct_excel():
 def correct_raw():
     return ROOT / "Rohmaterial"
 
+class Signals:
+    def emit(self, text):
+        print(text)
+
+
+@fixture()
+def pyqt_signal_dummy():
+    return Signals()
 
 @fixture()
 def get_raw_input():

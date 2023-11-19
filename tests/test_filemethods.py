@@ -29,7 +29,7 @@ def test_copy_file(mock_copy, testdata_path, dummy_file):
 
 
 @mock.patch("pathlib.Path.rename")
-def test_rename_files(mock_rename, testdata_path):
+def test_rename_files(mock_rename, pyqt_signal_dummy, testdata_path):
     errors = []
     files = [File(full_path=testdata_path / "/Rohmaterial/a 27.07. Mi/Videos/07-27-Mi_001.MP4",
                   date=datetime(2022, 7, 27, 12, 30), dst_folder=None, type=FileType.VIDEO),
@@ -39,7 +39,7 @@ def test_rename_files(mock_rename, testdata_path):
                   date=datetime(2022, 7, 27, 12, 31), dst_folder=None, type=FileType.VIDEO)
              ]
 
-    rename_files(folder=testdata_path, all_files=files, errors=errors)
+    rename_files(folder=testdata_path, all_files=files, progress_callback=pyqt_signal_dummy)
     assert mock_rename.call_count == 3
     assert len(errors) == 0
     assert mock_rename.call_args_list[0].args[0].name == "07_27_Mi-001.MP4"
@@ -47,18 +47,18 @@ def test_rename_files(mock_rename, testdata_path):
     assert mock_rename.call_args_list[2].args[0].name == "07_27_Mi-003.AVI"
 
 
-def test_rename_files_bad(testdata_path):
+def test_rename_files_bad(testdata_path, pyqt_signal_dummy):
     errors = []
     rename_files(folder=testdata_path,
                  all_files=[File(full_path=testdata_path / "/Rohmaterial/a 27.07. Mi/Videos/07_27_Mi-001.AVI",
                                  date=datetime(2022, 7, 27, 12, 30),
-                                 dst_folder=None, type=FileType.VIDEO)], errors=errors)
+                                 dst_folder=None, type=FileType.VIDEO)], progress_callback=pyqt_signal_dummy)
     assert len(errors) == 1
 
     rename_files(folder=testdata_path,
                  all_files=[File(full_path=testdata_path / "/Rohmaterial/a 27.07. Mi/Videos/07_2_Mi-001.AVI",
                                  date=datetime(2022, 7, 27, 12, 30),
-                                 dst_folder=None, type=FileType.VIDEO)], errors=errors)
+                                 dst_folder=None, type=FileType.VIDEO)], progress_callback=pyqt_signal_dummy)
     assert len(errors) == 2
 
 

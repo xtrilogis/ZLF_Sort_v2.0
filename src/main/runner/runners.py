@@ -24,36 +24,37 @@ def run_folder_setup(inputs: FolderTabInput, progress_callback, get_data) -> str
 
 
 # ### RAW ### #
-def raw_process(titel):
+def raw_process():
     def decor(func):
-        def wrap(inputs: RawTabInput, progress_callback, get_data, *args, **kwargs):
+        def wrap(inputs: RawTabInput, progress_callback, get_data, *args, **kwargs) -> str:
 
             if not is_valid_folder(inputs.raw_material_folder):
                 raise ValueError("Bitte gib einen gültigen Rohmaterialordner an.")
             progress_callback.emit("Inputs validiert")
 
-            result = func(inputs=inputs, progress_callback=progress_callback,
+            msg: str = func(inputs=inputs, progress_callback=progress_callback,
                           get_data=get_data)
-            if result:
-                _pretty_send_problems(titel=titel, list_=result, progress_callback=progress_callback)
-            return f"{titel} abgeschlossen."
+            return msg
 
         return wrap
 
     return decor
 
 
-@raw_process("Korrekte Ordnerstruktur")
-def run_correct_structure(inputs: RawTabInput, get_data, **kwargs) -> List[str]:
-    return raw_methods.correct_file_structure(raw_material_folder=inputs.raw_material_folder,
-                                              dst_folder=inputs.raw_material_folder.parent / "New",
-                                              start=inputs.first_folder_date,
-                                              get_data=get_data)
+@raw_process()
+def run_correct_structure(inputs: RawTabInput, progress_callback, get_data, **kwargs) -> str:
+    raw_methods.correct_file_structure(raw_material_folder=inputs.raw_material_folder,
+                                      dst_folder=inputs.raw_material_folder.parent / "New",
+                                      start=inputs.first_folder_date,
+                                      progress_callback=progress_callback,
+                                      get_data=get_data)
+    return "Korrekte Ordnerstruktur abgeschlossen"
 
 
-@raw_process("Dateien umbenennen")
-def run_rename_files(inputs: RawTabInput, **kwargs) -> List[str]:
-    return raw_methods.run_rename(raw_material_folder=inputs.raw_material_folder)
+@raw_process()
+def run_rename_files(inputs: RawTabInput, progress_callback, **kwargs) -> str:
+    raw_methods.run_rename(raw_material_folder=inputs.raw_material_folder, progress_callback=progress_callback)
+    return "Dateien umbenennen abgeschlossen"
 
 
 def run_create_excel(inputs: RawTabInput, progress_callback, get_data, **kwargs):
@@ -64,8 +65,9 @@ def run_create_excel(inputs: RawTabInput, progress_callback, get_data, **kwargs)
         raise AttributeError("The given folder is not a valid folder.")
 
     progress_callback.emit("Starte Excel erstellen.")
-    config = _get_excel_config(excel=inputs.excel)
-    raw_methods.create_excel(config, progress_callback, get_data)
+    config: ExcelConfig = _get_excel_config(excel=inputs.excel)
+    raw_methods.create_excel(config=config, progress_callback=progress_callback, get_data=get_data)
+
 
 
 def _get_excel_config(excel: ExcelInput) -> ExcelConfig:
@@ -74,9 +76,9 @@ def _get_excel_config(excel: ExcelInput) -> ExcelConfig:
     :param excel: user input concerning the Excel file
     :return: Configuration
     """
-    vid = constants.minimal_columns.copy()
+    vid: List[str] = constants.minimal_columns.copy()
     vid.extend(excel.video_columns)
-    pic = constants.minimal_columns.copy()
+    pic: List[str] = constants.minimal_columns.copy()
     pic.extend(excel.picture_columns)
     return ExcelConfig(
         excel_folder=excel.folder,
@@ -86,8 +88,8 @@ def _get_excel_config(excel: ExcelInput) -> ExcelConfig:
     )
 
 
-@raw_process("Dateien in Excel schreiben")
-def run_fill_excel(inputs: RawTabInput, progress_callback, get_data, **kwargs) -> List[str]:
+@raw_process()
+def run_fill_excel(inputs: RawTabInput, progress_callback, get_data, **kwargs) -> str:
     if inputs.excel.option == ExcelOption.CREATE:
         run_create_excel(inputs, progress_callback, get_data)
 
@@ -95,17 +97,22 @@ def run_fill_excel(inputs: RawTabInput, progress_callback, get_data, **kwargs) -
     if errors:
         errors.insert(0, "Dateien in Excel schreiben.")
         raise ValueError('\n'.join(errors))
-    return raw_methods.fill_excel(excel=inputs.excel.full_path, raw_material_folder=inputs.raw_material_folder)
+    raw_methods.fill_excel(excel=inputs.excel.full_path,
+                           raw_material_folder=inputs.raw_material_folder,
+                           progress_callback=progress_callback)
+    return "Dateien in Excel schreiben abgeschlossen"
 
 
-@raw_process("Bilderordner erstellen")
-def run_create_picture_folder(inputs: RawTabInput, **kwargs) -> List[str]:
+@raw_process()
+def run_create_picture_folder(inputs: RawTabInput, progress_callback, **kwargs) -> str:
     inputs.picture_folder.mkdir()
     if not is_valid_folder(inputs.picture_folder):
         raise ValueError("Bitte gib einen gültigen Zielordner an.")
 
-    return raw_methods.create_picture_folder(picture_folder=inputs.picture_folder,
-                                             raw_material_folder=inputs.raw_material_folder)
+    raw_methods.create_picture_folder(picture_folder=inputs.picture_folder,
+                                             raw_material_folder=inputs.raw_material_folder,
+                                             progress_callback=progress_callback)
+    return "Bilderordner erstellen abgeschlossen"
 
 
 def run_process_raw_full(inputs: RawTabInput, progress_callback, get_data) -> str:
@@ -119,10 +126,11 @@ def run_process_raw_full(inputs: RawTabInput, progress_callback, get_data) -> st
     for key, value in mapping.items():
         if value[0]:
             try:
-                result = value[1](inputs=inputs, progress_callback=progress_callback, get_data=get_data)
-                progress_callback.emit(result)
+                msg: str = value[1](inputs=inputs, progress_callback=progress_callback, get_data=get_data)
+                progress_callback.emit(msg)
             except Exception as e:
-                _pretty_send_problems(titel=f"{key} erstellen.", list_=[str(e)], progress_callback=progress_callback)
+                progress_callback.emit(f"! Problem beim {key} erstellen:\n"
+                                       f"- Fehler: {str(e)}")
     return "Gesammelt ausführen abgeschlossen."
 
 

@@ -40,19 +40,19 @@ def copy_file(src_file: Path, dst_folder: Path):
     # return new location
 
 
-def rename_files(folder: Path, all_files: List[File], errors: List[str]):
+def rename_files(folder: Path, all_files: List[File], progress_callback):
     length = 3 if len(all_files) < 999 else 4
 
-    do = ("sonstiges" in folder.parent.name.lower() or
+    special_folder = ("sonstiges" in folder.parent.name.lower() or
           "sonstiges" in folder.parent.parent.name.lower())
     for index, file in enumerate(all_files):
         try:
-            name = "Sonstiges" if do else file.date.strftime('%m_%d_%a')
+            name = "Sonstiges" if special_folder else file.date.strftime('%m_%d_%a')
             new_filepath = file.full_path.with_name(
                 name=f"{name}-{format(index + 1).zfill(length)}{file.full_path.suffix}")
             file.full_path.rename(new_filepath)
         except (FileNotFoundError, FileExistsError, WindowsError) as e:
-            errors.append(f"{file.full_path.name}, Fehler: {type(e).__name__}")
+            progress_callback.emit(f"Datei {file.full_path.name} wurde nicht umbenannt\n- Fehler: {type(e).__name__}")
 
 
 def get_file_type(file: Path) -> FileType:
