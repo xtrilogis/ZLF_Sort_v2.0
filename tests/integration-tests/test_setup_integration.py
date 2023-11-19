@@ -5,10 +5,11 @@ from unittest.mock import patch
 from assethandling.basemodels import FolderTabInput
 from src.main.gui_main import main
 
+
 @patch("src.main.runner.runners.setup_methods.create_folder")
 @patch("sys.exit")
 @patch("src.main.gui_main.MainWindow.get_folder_input")
-def test_folder_setup(mock_input, sys, mock_fn):
+def test_folder_setup(mock_input, _, mock_fn):
     mock_input.return_value = FolderTabInput(
             folder=Path.cwd(),
             date=datetime(2023, 10, 5)

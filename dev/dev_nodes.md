@@ -75,3 +75,4 @@ https://www.programiz.com/python-programming/docstrings
 
 ## Features
 - replace all errors = [] with progress_callback.emit() per error
+- try QTest and QTestMouseClick

@@ -297,7 +297,6 @@ class MainWindow(QMainWindow):
             return
         self.run_action(function=function, slot=self.write_process_setup, input_=data)
 
-    # ------------------------- todo ------------------
     def get_raw_input(self) -> RawTabInput:
         data = {
             "do_structure": self.ui.cb_structure.isChecked(),
@@ -352,8 +351,6 @@ class MainWindow(QMainWindow):
             self.open_problem_input(error=str(e))
             return
         self.run_action(function=function, slot=self.write_process_raw, input_=data)
-
-    # ------------------------- to do ------------------
 
     def run_util_action(self, function):
         try:

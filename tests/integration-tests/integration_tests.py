@@ -18,7 +18,6 @@ def test_main(mock_input, sys, mock_fn):
     main()
     assert type(mock_fn.call_args.kwargs["inputs"]) == FolderTabInput
 
-#  todo: one test per tab no input mock
 
 # These test help checking the integration of ui inputs and the processing code
 # Note that none of the button clicks result in a real creation or change in the given
