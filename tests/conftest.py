@@ -3,7 +3,7 @@ from pathlib import Path
 import locale
 
 from pytest import fixture
-from assethandling.basemodels import RawTabInput
+from src.assethandling.basemodels import RawTabInput
 
 
 ROOT = Path.cwd() / "testData"

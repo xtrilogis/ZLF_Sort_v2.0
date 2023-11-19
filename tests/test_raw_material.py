@@ -1,13 +1,18 @@
 from unittest import mock
 import pandas as pd
 from rawmaterial.raw_material import correct_file_structure, run_rename, \
-    fill_excel, create_picture_folder
+    fill_excel, create_picture_folder, _read_structure
 
 
 @mock.patch("rawmaterial.raw_material.copy_file")
 def test_correct_folder_structure(mock_copy, correct_raw):
     # TODO implementation
+    # test if _copy_file_strcture is called with the right structure -> len(keys), per key len(images) and len(videos)
     pass
+
+def test_read_file_structure(testdata_path):
+    # TODO implementation
+    _read_structure(raw_material_folder=testdata_path / "raw/structured1" )
 
 
 @mock.patch("rawmaterial.raw_material.rename_files")
@@ -41,3 +46,5 @@ def test_create_picture_folder(mock_copy, testdata_path):
                           raw_material_folder=testdata_path / "Zeltlagerfilm 2023")
     assert mock_copy.called
     assert mock_copy.call_count == 3
+
+

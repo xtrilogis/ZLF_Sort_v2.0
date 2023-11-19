@@ -8,29 +8,38 @@ from pydantic import BaseModel
 from assethandling.asset_manager import settings
 
 
+class FolderTabInput(BaseModel):
+    folder: Path
+    date: datetime
+
+
 class SheetConfig(BaseModel):
     name: str
     columns: List[str]
 
 
-class ExcelOptions(Enum):
+class ExcelInputOptions(Enum):
     # TODO bessere Beschriftung
     STANDARD = "Standard"
     MANUAL = "Manuelle Einstellungen"
     EXISTING = "Vorhandene Excel-Datei"
 
 
-class FolderTabInput(BaseModel):
-    folder: Path
-    date: datetime
+class ExcelOption(Enum):
+    EXISTING = "existing"
+    CREATE = "create"
 
 
 class ExcelInput(BaseModel):
-    excel_folder: Path | None
-    excel_file_name: str = f"Zeltlagerfilm {datetime.now().date().year}.xlsx"
+    option: ExcelOption
+    name: str = f"Zeltlagerfilm {datetime.now().date().year}.xlsx"
+    folder: Path
     video_columns: List[str] = settings["standard-video-columns"]
     picture_columns: List[str] = settings["standard-picture-columns"]
-    override: bool = False
+
+    @property
+    def full_path(self) -> Path:
+        return self.folder / self.name
 
 
 class ExcelConfig(BaseModel):
@@ -40,34 +49,34 @@ class ExcelConfig(BaseModel):
 
 
 class RawTabInput(BaseModel):
-    do_structure: bool
-    do_rename: bool
-    fill_excel: bool
-    create_picture_folder: bool
+    do_structure: bool = False
+    do_rename: bool = False
+    fill_excel: bool = False
+    create_picture_folder: bool = False
     raw_material_folder: Path
     first_folder_date: datetime
-    excel: Path | ExcelInput | None
+    excel: ExcelInput
     picture_folder: Path
 
 
 class UtilTabInput(BaseModel):
     raw_material_folder: Path
     excel_full_filepath: Path
-    do_sections: bool
-    do_video_sections: bool
-    do_picture_sections: bool
-    rating_section: int
-    do_selections: bool
-    videos_columns_selection: List[str]
-    picture_columns_selection: List[str]
-    marker: str
-    do_search: bool
-    videos_columns_search: List[str]
-    picture_columns_search: List[str]
-    keywords: List[str]
-    rating_search: int
-    create_picture_folder: bool
-    rating_pictures: int
+    do_sections: bool = False
+    do_video_sections: bool = False
+    do_picture_sections: bool = False
+    rating_section: int = -1
+    do_selections: bool = False
+    videos_columns_selection: List[str] = []
+    picture_columns_selection: List[str] = []
+    marker: str = ""
+    do_search: bool = False
+    videos_columns_search: List[str] = []
+    picture_columns_search: List[str] = []
+    keywords: List[str] = []
+    rating_search: int = -1
+    create_picture_folder: bool = False
+    rating_pictures: int = -1
 
 
 class FileType(Enum):

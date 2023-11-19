@@ -5,7 +5,8 @@ from datetime import datetime
 from typing import List
 
 from PyQt5 import QtGui
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QFileDialog, QLineEdit, QDialog, QPlainTextEdit
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QFileDialog, QLineEdit, QDialog, QPlainTextEdit, \
+    QInputDialog
 from PyQt5.QtCore import *
 import sys
 from pathlib import Path
@@ -13,9 +14,11 @@ from pathlib import Path
 from pydantic import ValidationError
 
 from assethandling.asset_manager import settings
-from assethandling.basemodels import UtilTabInput, RawTabInput, FolderTabInput, ExcelOptions, ExcelInput
-from ui import Ui_MainWindow, messageboxes, Worker, SelectionDialog
-from adapt import runners
+from assethandling.basemodels import UtilTabInput, RawTabInput, FolderTabInput, \
+    ExcelInputOptions, ExcelInput, ExcelOption
+from ui import Ui_MainWindow, messageboxes, SelectionDialog
+from src.main.threadworker.thread_worker import Worker
+from src.main.runner import runners
 from inputhandling.validation import validate_excel_file
 from excel import excelmethods
 from assethandling.asset_manager import gif
@@ -30,15 +33,14 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.ui = Ui_MainWindow(self)
         self.setup_ui()
-        self.setup_button_connections()
-        self.threadpool = QThreadPool()
-        self.current_function = None
+        self.setup_input_buttons()
+        self.setup_executions_buttons()
 
-        self.movie = QtGui.QMovie(gif)
-        self.ui.process_gif_label.setMovie(self.movie)
-        self.ui.process_gif_label_2.setMovie(self.movie)
-        self.movie.start()
-        self.movie.stop()
+        self.mutex = QMutex()
+        self.cond = QWaitCondition()
+        self.threadpool = QThreadPool()
+
+        self.current_function = None
 
     def setup_ui(self):
         self.ui.tabWidget.setCurrentIndex(0)
@@ -55,15 +57,21 @@ class MainWindow(QMainWindow):
 
         self.setup_responsive_styles()
 
+        self.movie = QtGui.QMovie(gif)
+        self.ui.process_gif_label.setMovie(self.movie)
+        self.ui.process_gif_label_2.setMovie(self.movie)
+        self.movie.start()
+        self.movie.stop()
+
     def show_frame(self):
         text = self.ui.excel_option.currentText()
-        if text == ExcelOptions.STANDARD.value:
+        if text == ExcelInputOptions.STANDARD.value:
             self.ui.help_standard_excel.show()
             self.ui.excel_path.hide()
             self.ui.manuel_columns.hide()
             self.ui.frame_8.show()
             self.ui.pb_create_excel.show()
-        elif text == ExcelOptions.EXISTING.value:
+        elif text == ExcelInputOptions.EXISTING.value:
             self.ui.help_standard_excel.hide()
             self.ui.excel_path.show()
             self.ui.manuel_columns.hide()
@@ -103,27 +111,12 @@ class MainWindow(QMainWindow):
             lambda text: self.ui.drop_harddrive.setStyleSheet(
                 "QLineEdit { color: %s}" % ('green' if text else 'red')))
 
-    def setup_button_connections(self):
+    def setup_input_buttons(self):
         # ##### BUTTONS "Ordner erstellt" ##### #
         self.ui.tb_harddrive.clicked.connect(self.show_filedialog_harddrive_path)
-        self.ui.pb_foldersetup.clicked.connect(
-            lambda: self.run_folder_setup(function=runners.run_folder_setup))
-
         # ##### BUTTONS "Rohmaterial verarbeiten" ##### #
         self.ui.tb_raw_rawpath.clicked.connect(
             lambda: self.show_filedialog_folder(self.ui.drop_raw_rawpath))
-        self.ui.pb_start_raw_full.clicked.connect(
-            lambda: self.raw_with_excel(function=runners.run_process_raw_full))
-        self.ui.pb_correct_fs.clicked.connect(
-            lambda: self.run_raw_action(function=runners.run_correct_structure))
-        self.ui.pb_rename.clicked.connect(
-            lambda: self.run_raw_action(function=runners.run_rename_files))
-
-        self.ui.pb_create_excel.clicked.connect(
-            lambda: self.raw_with_excel(function=runners.create_excel))
-        self.ui.pb_fill_excel.clicked.connect(
-            lambda: self.raw_with_excel(function=runners.run_fill_excel))
-
         self.ui.pb_vid_sugestions.clicked.connect(
             lambda: self.show_suggestions(text_edit=self.ui.vid_columns,
                                           suggestions=settings["suggestions-video-columns"])
@@ -142,10 +135,6 @@ class MainWindow(QMainWindow):
         self.ui.tb_picture_folder.clicked.connect(
             lambda: self.show_filedialog_folder(self.ui.drop_picture_folder)
         )
-        self.ui.pb_create_picture_folder.clicked.connect(
-            lambda: self.run_raw_action(function=runners.run_create_picture_folder)
-        )
-
         # ##### BUTTONS "Auswertung" ##### #
         self.ui.tb_util_rawpath.clicked.connect(
             lambda: self.show_filedialog_folder(self.ui.drop_util_rawpath)
@@ -153,20 +142,6 @@ class MainWindow(QMainWindow):
         self.ui.tb_util_excelfile.clicked.connect(
             lambda: self.show_filedialog_excel_file_path(self.ui.drop_util_excelfile)
         )
-
-        self.ui.pb_section.clicked.connect(
-            lambda: self.run_util_action(function=runners.run_copy_sections))
-        self.ui.pb_start_selection.clicked.connect(
-            lambda: self.run_util_action(function=runners.run_copy_selection))
-        self.ui.pb_search.clicked.connect(
-            lambda: self.run_util_action(function=runners.run_search))
-        self.ui.pb_picturefolder.clicked.connect(
-            lambda: self.run_util_action(function=runners.run_create_rated_picture_folder))
-        self.ui.pb_util_all.clicked.connect(
-            lambda: self.run_util_action(function=runners.run_process_util_full))
-        self.ui.pb_statistic.clicked.connect(
-            lambda: self.run_util_action(function=runners.run_statistics))
-
         self.ui.pb_select_pic_columns.clicked.connect(
             lambda: self.select_columns(line_edit=self.ui.le_selection_pic_columns, sheet="Bilder")
         )
@@ -179,6 +154,42 @@ class MainWindow(QMainWindow):
         self.ui.pb_search_vid_columns.clicked.connect(
             lambda: self.select_columns(line_edit=self.ui.le_search_vid_columns, sheet="Videos")
         )
+
+    def setup_executions_buttons(self):
+        # ##### BUTTONS "Ordner erstellt" ##### #
+        self.ui.pb_foldersetup.clicked.connect(
+            lambda: self.run_folder_setup(function=runners.run_folder_setup))
+
+
+        # ##### BUTTONS "Rohmaterial verarbeiten" ##### #
+        self.ui.pb_start_raw_full.clicked.connect(
+            lambda: self.run_raw_action(function=runners.run_process_raw_full))
+        self.ui.pb_correct_fs.clicked.connect(
+            lambda: self.run_raw_action(function=runners.run_correct_structure))
+        self.ui.pb_rename.clicked.connect(
+            lambda: self.run_raw_action(function=runners.run_rename_files))
+        self.ui.pb_create_excel.clicked.connect(
+            lambda: self.run_raw_action(function=runners.run_create_excel))
+        self.ui.pb_fill_excel.clicked.connect(
+            lambda: self.run_raw_action(function=runners.run_fill_excel))
+        self.ui.pb_create_picture_folder.clicked.connect(
+            lambda: self.run_raw_action(function=runners.run_create_picture_folder)
+        )
+
+
+        # ##### BUTTONS "Auswertung" ##### #
+        self.ui.pb_section.clicked.connect(
+            lambda: self.run_util_action(function=runners.run_copy_sections))
+        self.ui.pb_start_selection.clicked.connect(
+            lambda: self.run_util_action(function=runners.run_copy_selection))
+        self.ui.pb_search.clicked.connect(
+            lambda: self.run_util_action(function=runners.run_search))
+        self.ui.pb_picturefolder.clicked.connect(
+            lambda: self.run_util_action(function=runners.run_create_rated_picture_folder))
+        self.ui.pb_util_all.clicked.connect(
+            lambda: self.run_util_action(function=runners.run_process_util_full))
+        self.ui.pb_statistic.clicked.connect(
+            lambda: self.run_util_action(function=runners.run_statistics))
 
     # ##### GENERAL METHODS ##### #
     def disable_work_buttons(self):
@@ -253,16 +264,15 @@ class MainWindow(QMainWindow):
         msg = messageboxes.problem_with_input(error)
         msg.exec()
 
-    @pyqtSlot()
-    def open_excel_exists(self):
-        """Opens a message box displaying a given error"""
-        msg = messageboxes.excel_exists("Die angegebene Excel-Datei existiert bereits.")
-        msg.buttonClicked.connect(self.handle_excel_choice)
-        msg.exec()
-
-    def handle_excel_choice(self, i):
-        if "Überschreiben" in i.text():
-            self.raw_with_excel(function=self.current_function, override=True)
+    @pyqtSlot(str)
+    def open_information_input(self, text: str):
+        # feat: text is a code, witch is mapped to a proper InputDialog
+        text, ok = QInputDialog().getText(self, "QInputDialog().getText()",
+                                          text, QLineEdit.Normal,
+                                          "Input")
+        if ok and text:
+            self.sender().data_response.emit(text)
+        self.cond.wakeAll()
 
     @pyqtSlot()
     def process_finished(self):
@@ -270,33 +280,24 @@ class MainWindow(QMainWindow):
         self.movie.stop()
 
     # ##### Actions ##### #
+    def get_folder_input(self) -> FolderTabInput:
+        if self.ui.drop_harddrive.text() == "":
+            raise ValueError("Bitte gib einen Dateipfad an.")
+        return FolderTabInput(
+            folder=Path(self.ui.drop_harddrive.text()),
+            date=self.ui.date_lkw.date().toPyDate()
+        )
+
     def run_folder_setup(self, function):
         try:
-            if self.ui.drop_harddrive.text() == "":
-                self.open_problem_input(error="Bitte gib einen Dateipfad an.")
-                return
-            data = FolderTabInput(
-                folder=Path(self.ui.drop_harddrive.text()),
-                date=self.ui.date_lkw.date().toPyDate()
-            )
+            data: FolderTabInput = self.get_folder_input()
         except ValidationError as e:
             traceback.print_exc()
             self.open_problem_input(msg=str(e))
             return
         self.run_action(function=function, slot=self.write_process_setup, input_=data)
 
-    def run_raw_action(self, function):
-        try:
-            self.current_function = function
-            data: RawTabInput = self.get_raw_input()
-        except (ValidationError, ValueError) as e:
-            traceback.print_exc()
-            self.open_problem_input(error=str(e))
-            return
-        self.current_function = None
-        self.run_action(function=function, slot=self.write_process_raw, input_=data)
-
-    def get_raw_input(self, excel=None) -> RawTabInput:
+    def get_raw_input(self) -> RawTabInput:
         data = {
             "do_structure": self.ui.cb_structure.isChecked(),
             "do_rename": self.ui.cb_rename.isChecked(),
@@ -304,71 +305,52 @@ class MainWindow(QMainWindow):
             "create_picture_folder": self.ui.cb_diashow.isChecked(),
             "raw_material_folder": Path(self.ui.drop_raw_rawpath.text()),
             "first_folder_date": self.ui.date_correct_fs.date().toPyDate(),
-            "excel": excel,
+            "excel": self._get_excel_input()
         }
+        data["picture_folder"] = self._get_picture_folder(data["raw_material_folder"])
+        return RawTabInput(**data)
+
+    def _get_excel_input(self) -> ExcelInput:
+        excel_input_option: ExcelInputOptions = ExcelInputOptions(self.ui.excel_option.currentText())
+        if excel_input_option == ExcelInputOptions.EXISTING:
+            filepath: Path = Path(self.ui.drop_raw_excel_file.text())
+            data = {
+                "option": ExcelOption.EXISTING,
+                "name": filepath.name,
+                "folder": filepath.parent,
+                "video_columns": [],  # use default value instead?
+                "picture_columns": []
+            }
+        elif excel_input_option == ExcelInputOptions.MANUAL:
+            data = {
+                "option": ExcelOption.CREATE,
+                "name": self.ui.le_excel_file_name.text(),
+                "folder": Path(self.ui.drop_excel_folder.text()),
+                "video_columns": self.get_PlainTextEdit_parts(self.ui.vid_columns),
+                "picture_columns": self.get_PlainTextEdit_parts(self.ui.pic_columns)
+            }
+        else:
+            data = {
+                "option": ExcelOption.CREATE,
+                "folder": Path(self.ui.drop_raw_rawpath.text()).parent,
+            }
+        return ExcelInput(**data)
+
+    def _get_picture_folder(self, raw_material_folder: Path):
         if self.ui.custom_picture_folder.isChecked():
             if self.ui.drop_picture_folder.text() == "":
                 raise ValueError("Bitte gib einen Speicherort für den Bilderordner an.")
-            data["picture_folder"] = Path(self.ui.drop_picture_folder.text())
-        else:
-            data["picture_folder"] = data.get("raw_material_folder").parent / "Bilderordner"
+            return Path(self.ui.drop_picture_folder.text())
+        return raw_material_folder.parent / "Bilderordner"
 
-        return RawTabInput(**data)
-
-    def raw_with_excel(self, function, override=False):
+    def run_raw_action(self, function):
         try:
-            self.current_function = function
-            data: RawTabInput = self.get_raw_input(self.excel(override=override))
+            data: RawTabInput = self.get_raw_input()
         except (ValidationError, ValueError) as e:
             traceback.print_exc()
             self.open_problem_input(error=str(e))
             return
-        self.current_function = None
         self.run_action(function=function, slot=self.write_process_raw, input_=data)
-
-    def excel(self, override) -> Path | ExcelInput | None:
-        if not self.ui.cb_fill_excel:
-            return None
-        excel_option: ExcelOptions = ExcelOptions(self.ui.excel_option.currentText())
-        if excel_option == ExcelOptions.EXISTING:
-            return Path(self.ui.drop_raw_excel_file.text())
-        else:
-            try:
-                config = self._get_excel_input(option=excel_option)
-                config.override = override
-                if (config.excel_folder / config.excel_file_name).exists() and not override:
-                    self.open_excel_exists()
-                    return
-                return config
-            except Exception as e:
-                traceback.print_exc()
-                self.open_problem_input(str(e))
-
-    def _get_excel_input(self, option) -> ExcelInput:
-        if option != ExcelOptions.STANDARD and option != ExcelOptions.MANUAL:
-            error = "Interner Fehler, der Button 'Excel erstellen'\n" \
-                    "sollte nicht klickbar sein mit der Option \n" \
-                    "vorhandene Excel nutzen. Neustarten."
-            raise ValueError(error)
-        elif self.ui.drop_raw_rawpath.text() == "":
-            error = "Bitte gib einen Speicherort für die Excel-Datei an.\n" \
-                    "Dazu kannst du bei 'Excel-Datei' einen Ordner \n" \
-                    "angeben oder für den Standardweg den Rohmaterialorder \nangeben." \
-                    "Für Standards schau dir doch gerne die Anleitung an."
-            raise ValueError(error)
-        else:
-            if option == ExcelOptions.MANUAL:
-                config = ExcelInput(
-                    excel_folder=Path(self.ui.drop_excel_folder.text()),
-                    excel_file_name=self.ui.le_excel_file_name.text(),
-                    video_columns=self.get_PlainTextEdit_parts(self.ui.vid_columns),
-                    picture_columns=self.get_PlainTextEdit_parts(self.ui.pic_columns)
-                )
-            else:
-                config = ExcelInput(
-                    excel_folder=Path(self.ui.drop_raw_rawpath.text())
-                )
-            return config
 
     def run_util_action(self, function):
         try:
@@ -378,16 +360,6 @@ class MainWindow(QMainWindow):
             self.open_problem_input(error=str(e))
             return
         self.run_action(function=function, slot=self.write_process_util, input_=data)
-
-    def run_action(self, function, slot, input_):
-        self.disable_work_buttons()
-        self.movie.start()
-        worker = Worker(function, inputs=input_)
-        worker.signals.new_message.connect(slot)
-        worker.signals.problem_with_input.connect(self.open_problem_input)
-        worker.signals.finished.connect(self.process_finished)
-
-        self.threadpool.start(worker)
 
     def get_util_input(self) -> UtilTabInput:
         if self.ui.drop_util_rawpath.text() == "" or \
@@ -413,6 +385,17 @@ class MainWindow(QMainWindow):
             "rating_pictures": self.ui.sp_rating_picturefolder_2.value(),
         }
         return UtilTabInput(**data)
+
+    def run_action(self, function, slot, input_):
+        self.disable_work_buttons()
+        self.movie.start()
+        worker = Worker(function, self.mutex, self.cond, inputs=input_)
+        worker.signals.new_message.connect(slot)
+        worker.signals.problem_with_input.connect(self.open_problem_input)
+        worker.signals.finished.connect(self.process_finished)
+        worker.signals.request_data.connect(self.open_information_input)
+
+        self.threadpool.start(worker)
 
     # ##### FileDialogs ##### #
     def show_filedialog_harddrive_path(self):
@@ -470,8 +453,12 @@ class MainWindow(QMainWindow):
         return cols
 
 
-if __name__ == '__main__':
+def main():
     app = QApplication(sys.argv)
     window = MainWindow()
     window.show()
     sys.exit(app.exec())
+
+
+if __name__ == '__main__':
+    main()

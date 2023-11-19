@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import pytest
+
 from src.inputhandling import validation
 
 
@@ -35,9 +37,11 @@ def test_validate_setup(testdata_path):
 
 
 def test_validate_raw(get_raw_input, get_raw_input_non_valids):
-    assert len(validation.validate_raw(get_raw_input)) == 0
+    with pytest.raises(ValueError):
+        validation.validate_raw(get_raw_input)
     for input_ in get_raw_input_non_valids:
-        assert len(validation.validate_raw(input_)) != 0
+        with pytest.raises(ValueError):
+            validation.validate_raw(input_)
 
 
 def test_validate_util_good(testdata_path):

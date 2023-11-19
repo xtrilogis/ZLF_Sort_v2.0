@@ -51,30 +51,30 @@ def _validate_sheet(df: pd.DataFrame) -> List[str]:
     return errors
 
 
-def validate_setup_path(path: Path) -> List[str]:
+def validate_setup_path(path: Path):
     """Validates input for setting up the folders
     :arg path
     """
-    if is_valid_folder(path):
-        if "Rohmaterial" in path.as_uri():
-            return ["Der Pfad enthält das Wort 'Rohmaterial'.\n"
-                    "Dies kann später zu Problemen führen.\n"
-                    "Bitte Ändern!"]
-        return []
-    return ["Der angegebene Pfad ist kein valider Ordnerpfad."]
+    if not is_valid_folder(path):
+        raise ValueError("Der angegebene Pfad ist kein valider Ordnerpfad.")
+    if "Rohmaterial" in path.as_uri():
+        raise ValueError("Der Pfad enthält das Wort 'Rohmaterial'.\n"
+                         "Dies kann später zu Problemen führen.\n"
+                         "Bitte Ändern!")
 
 
-def validate_raw(inputs: RawTabInput) -> List[str]:
+def validate_raw(inputs: RawTabInput):
     errors = []
     if not is_valid_folder(inputs.raw_material_folder):
         errors.append("Bitte einen gültigen Rohmaterialordner angeben.")
-    if inputs.do_structure and not isinstance(inputs.first_folder_date, datetime):
+    if inputs.do_structure and not isinstance(inputs.first_folder_date, datetime): # isinstance übernimmt pydantic
         errors.append("Bitte ein gültiges Datum angeben, ab dem die Ordner erstellt werden.")
     if inputs.fill_excel:
-        errors.extend(validate_excel_file(inputs.excel_file_fullpath))
+        errors.extend(validate_excel_file(inputs.excel.full_path))
     if inputs.create_picture_folder and inputs.picture_folder.drive == "":
         errors.append("Bitte eine gültigen Pfad für die Bilder angeben.")
-    return errors
+    if errors:
+        raise ValueError("\n".join(errors))
 
 
 def validate_util_paths(raw_material_folder: Path, excel_full_filepath: Path) -> List[str]:

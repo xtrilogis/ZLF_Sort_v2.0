@@ -1,15 +1,45 @@
-# This is a sample Python script.
-
-# Press Umschalt+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f"Hi, {name}")  # Press Strg+F8 to toggle the breakpoint.
-
-# Press the green button in the gutter to run the script.
-if __name__ == "__main__":
-    print_hi("PyCharm")
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+# #!/usr/bin/env python
+# """
+# This example demonstrates a simple use of pycallgraph.
+#
+# """
+#
+# from pycallgraph2 import PyCallGraph
+# from pycallgraph2.output import GraphvizOutput
+#
+#
+# class Banana:
+#
+#     def eat(self):
+#         pass
+#
+#
+# class Person:
+#
+#     def __init__(self):
+#         self.no_bananas()
+#
+#     def no_bananas(self):
+#         self.bananas = []
+#
+#     def add_banana(self, banana):
+#         self.bananas.append(banana)
+#
+#     def eat_bananas(self):
+#         [banana.eat() for banana in self.bananas]
+#         self.no_bananas()
+#
+#
+# def main():
+#     graphviz = GraphvizOutput()
+#     graphviz.output_file = 'basic.png'
+#
+#     with PyCallGraph(output=graphviz):
+#         person = Person()
+#         for a in range(10):
+#             person.add_banana(Banana())
+#         person.eat_bananas()
+#
+#
+# if __name__ == '__main__':
+#     main()
