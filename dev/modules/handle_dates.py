@@ -2,7 +2,9 @@ import os
 import struct
 import time
 from datetime import datetime as dt
+
 pfad = "D:/Users/Wisdom/Lernen/Coding_Python/Zlf_sort/Dateien/level9000/Rohmaterial always copy/b Donnerstag 25.07/"
+
 
 # INTEGRIEREN und umbenennen probieren einfach hier mit raname 1 2 3 ...
 # ############ Test mit Bildern -> sollten nicht verändert werden
@@ -28,7 +30,9 @@ def problem_with_Media_created(path_data):
                     pass
                 else:
                     new_mtime = time.mktime(new_date.timetuple())
-                    os.utime(root+file, (new_mtime, new_mtime))  # os.path.getatime(root+file)
+                    os.utime(
+                        root + file, (new_mtime, new_mtime)
+                    )  # os.path.getatime(root+file)
                     print("Modification Date changed")
         files.sort(key=lambda x: os.path.getmtime(os.path.join(root, x)), reverse=False)
         print(files)
@@ -42,25 +46,27 @@ def get_Media_created(file_path):
     with open(file_path, "rb") as f:
         while True:
             atom_header = f.read(ATOM_HEADER_SIZE)
-            if atom_header[4:8] == b'moov':
+            if atom_header[4:8] == b"moov":
                 break  # found
             else:
-                atom_size = struct.unpack('>I', atom_header[0:4])[0]
+                atom_size = struct.unpack(">I", atom_header[0:4])[0]
                 f.seek(atom_size - 8, 1)
 
         # found 'moov', look for 'mvhd' and timestamps
         atom_header = f.read(ATOM_HEADER_SIZE)
-        if atom_header[4:8] == b'cmov':
+        if atom_header[4:8] == b"cmov":
             return False
-        elif atom_header[4:8] != b'mvhd':
+        elif atom_header[4:8] != b"mvhd":
             print(file_path)
-            print("No access to 'Media created'. Please input Date manually:")  # 'expected to find "mvhd" header.')
+            print(
+                "No access to 'Media created'. Please input Date manually:"
+            )  # 'expected to find "mvhd" header.')
 
             creation_time = input_date()
             return creation_time
         else:
             f.seek(4, 1)
-            creation_time = struct.unpack('>I', f.read(4))[0] - EPOCH_ADJUSTER
+            creation_time = struct.unpack(">I", f.read(4))[0] - EPOCH_ADJUSTER
             creation_time = dt.fromtimestamp(creation_time)
             if creation_time.year < 1990:  # invalid or censored data
                 print("Something is wrong with the timestamp")
@@ -81,7 +87,7 @@ def input_date():
     date = dt(year=year, month=month, day=day, hour=hour, minute=minute, second=second)
     return date
 
+
 if __name__ == "__main__":
     print(problem_with_Media_created(pfad))
     # print(input_date())
-

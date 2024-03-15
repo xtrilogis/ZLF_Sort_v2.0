@@ -16,7 +16,7 @@ excel_input_manual: ExcelInput = ExcelInput(
     name=f"Zeltlagerfilm custom.xlsx",
     folder=TEST_PATH,
     video_columns=["column1"],
-    picture_columns=["column2"]
+    picture_columns=["column2"],
 )
 
 excel_input_existing: ExcelInput = ExcelInput(
@@ -33,25 +33,25 @@ rti_single_button = RawTabInput(
     raw_material_folder=TEST_PATH,
     first_folder_date=datetime.now(),
     excel=excel_input_standard,
-    picture_folder=TEST_PATH
+    picture_folder=TEST_PATH,
 )
 
 no_input_util = UtilTabInput(
     raw_material_folder=TEST_PATH,
     excel_full_filepath=TEST_PATH / "ok_data.xlsx",
-    do_sections= False,
-    do_video_sections= False,
-    do_picture_sections= False,
+    do_sections=False,
+    do_video_sections=False,
+    do_picture_sections=False,
     rating_section=0,
     do_selections=False,
     videos_columns_selection=[],
     picture_columns_selection=[],
     marker="",
-    do_search= False,
+    do_search=False,
     videos_columns_search=[],
     picture_columns_search=[],
     keywords=[],
     rating_search=0,
-    create_picture_folder= False,
-    rating_pictures=0
+    create_picture_folder=False,
+    rating_pictures=0,
 )

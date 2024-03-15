@@ -1,15 +1,15 @@
 # ##### This file is only for building and testing new modules ##### #
 # ##### Working Code needs to be included in the project-code  ##### #
-from PyQt5.QtWidgets import *
+import os
+import shutil
+import sys
+from datetime import date
+
+import pandas as pd
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
-import sys
-import shutil
-import os
-from datetime import date
-import pandas as pd
-
+from PyQt5.QtWidgets import *
 
 BASE = "D:/Users/Wisdom/Lernen/Coding_Python/Zlf_sort/Dateien/"
 FILE_ROOT_LOCATION = BASE + "finale Tests Basics/Bilder_Videos/Rohmaterial/"
@@ -209,8 +209,9 @@ App = QApplication(sys.argv)
 # start the app
 # sys.exit(App.exec())
 import sys
-from PyQt5.QtGui import *
+
 from PyQt5.QtCore import *
+from PyQt5.QtGui import *
 
 
 class combo(QComboBox):
@@ -258,6 +259,7 @@ def main():
 
 
 import sys
+
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *  # type: ignore
 from PyQt5.QtWidgets import QApplication

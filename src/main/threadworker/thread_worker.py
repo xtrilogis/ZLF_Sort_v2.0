@@ -7,6 +7,7 @@ class WorkerSignals(QObject):
     """Defines the signals available from a running worker thread.
     Supported Signals:
     """
+
     problem_with_input = pyqtSignal(str)
     new_message = pyqtSignal(str)
     finished = pyqtSignal()
@@ -15,7 +16,6 @@ class WorkerSignals(QObject):
 
 
 class Worker(QRunnable):
-
     def __init__(self, function, mutex, condition, *args, **kwargs):
         super(Worker, self).__init__()
 
@@ -26,9 +26,9 @@ class Worker(QRunnable):
         self.kwargs = kwargs
         self.signals = WorkerSignals()
 
-        self.kwargs['progress_callback'] = self.signals.new_message
+        self.kwargs["progress_callback"] = self.signals.new_message
 
-        self.kwargs['get_data'] = self.get_input
+        self.kwargs["get_data"] = self.get_input
         self.signals.data_response.connect(self.set_input)
         self.user_input = None
 

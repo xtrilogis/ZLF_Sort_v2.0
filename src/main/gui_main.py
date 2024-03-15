@@ -1,34 +1,46 @@
 """Start der App"""
 # print("Python Code Starting")
+import sys
 import traceback
 from datetime import datetime
+from pathlib import Path
 from typing import List
 
-from PyQt5 import QtGui
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QFileDialog, QLineEdit, QDialog, QPlainTextEdit, \
-    QInputDialog
-from PyQt5.QtCore import *
-import sys
-from pathlib import Path
-
 from pydantic import ValidationError
+from PyQt5 import QtGui
+from PyQt5.QtCore import *
+from PyQt5.QtWidgets import (
+    QApplication,
+    QDialog,
+    QFileDialog,
+    QInputDialog,
+    QLabel,
+    QLineEdit,
+    QMainWindow,
+    QPlainTextEdit,
+)
 
-from assethandling.asset_manager import settings
-from assethandling.basemodels import UtilTabInput, RawTabInput, FolderTabInput, \
-    ExcelInputOptions, ExcelInput, ExcelOption
-from ui import Ui_MainWindow, messageboxes, SelectionDialog
-from src.main.threadworker.thread_worker import Worker
-from src.main.runner import runners
-from inputhandling.validation import validate_excel_file
+from assethandling.asset_manager import gif, settings
+from assethandling.basemodels import (
+    ExcelInput,
+    ExcelInputOptions,
+    ExcelOption,
+    FolderTabInput,
+    RawTabInput,
+    UtilTabInput,
+)
 from excel import excelmethods
-from assethandling.asset_manager import gif
-
+from inputhandling.validation import validate_excel_file
+from src.main.runner import runners
+from src.main.threadworker.thread_worker import Worker
+from ui import SelectionDialog, Ui_MainWindow, messageboxes
 
 print("Imports done")
 
 
 class MainWindow(QMainWindow):
     """Class handels UI interaction and input."""
+
     def __init__(self):
         super().__init__()
         self.ui = Ui_MainWindow(self)
@@ -52,8 +64,12 @@ class MainWindow(QMainWindow):
         self.show_frame()
         self.ui.excel_option.currentIndexChanged.connect(self.show_frame)
         self.ui.vid_columns.setPlainText(", ".join(settings["standard-video-columns"]))
-        self.ui.pic_columns.setPlainText(", ".join(settings["standard-picture-columns"]))
-        self.ui.le_excel_file_name.setText(f"Zeltlagerfilm {datetime.now().date().year}.xlsx")
+        self.ui.pic_columns.setPlainText(
+            ", ".join(settings["standard-picture-columns"])
+        )
+        self.ui.le_excel_file_name.setText(
+            f"Zeltlagerfilm {datetime.now().date().year}.xlsx"
+        )
 
         self.setup_responsive_styles()
 
@@ -94,22 +110,34 @@ class MainWindow(QMainWindow):
 
         self.ui.drop_util_excelfile.textChanged.connect(
             lambda text: self.ui.drop_util_excelfile.setStyleSheet(
-                "QLineEdit { color: %s}" % ('green' if text else 'red')))
+                "QLineEdit { color: %s}" % ("green" if text else "red")
+            )
+        )
         self.ui.drop_util_rawpath.textChanged.connect(
             lambda text: self.ui.drop_util_rawpath.setStyleSheet(
-                "QLineEdit { color: %s}" % ('green' if text else 'red')))
+                "QLineEdit { color: %s}" % ("green" if text else "red")
+            )
+        )
         self.ui.drop_raw_rawpath.textChanged.connect(
             lambda text: self.ui.drop_raw_rawpath.setStyleSheet(
-                "QLineEdit { color: %s}" % ('green' if text else 'red')))
+                "QLineEdit { color: %s}" % ("green" if text else "red")
+            )
+        )
         self.ui.drop_raw_excel_file.textChanged.connect(
             lambda text: self.ui.drop_raw_excel_file.setStyleSheet(
-                "QLineEdit { color: %s}" % ('green' if text else 'red')))
+                "QLineEdit { color: %s}" % ("green" if text else "red")
+            )
+        )
         self.ui.drop_picture_folder.textChanged.connect(
             lambda text: self.ui.drop_picture_folder.setStyleSheet(
-                "QLineEdit { color: %s}" % ('green' if text else 'red')))
+                "QLineEdit { color: %s}" % ("green" if text else "red")
+            )
+        )
         self.ui.drop_harddrive.textChanged.connect(
             lambda text: self.ui.drop_harddrive.setStyleSheet(
-                "QLineEdit { color: %s}" % ('green' if text else 'red')))
+                "QLineEdit { color: %s}" % ("green" if text else "red")
+            )
+        )
 
         self.ui.cb_segment_videos.clicked.connect(self.util_buttons_status)
         self.ui.cb_segment_picture.clicked.connect(self.util_buttons_status)
@@ -126,31 +154,42 @@ class MainWindow(QMainWindow):
 
     def util_buttons_status(self):
         self.ui.pb_section.setEnabled(
-            self.ui.cb_segment_videos.isChecked() or self.ui.cb_segment_picture.isChecked()
+            self.ui.cb_segment_videos.isChecked()
+            or self.ui.cb_segment_picture.isChecked()
         )
         self.ui.pb_start_selection.setEnabled(
-            bool(self.ui.marker_selection.text()) and (
-                    bool(self.ui.le_selection_vid_columns.text()) or bool(self.ui.le_selection_pic_columns.text())
+            bool(self.ui.marker_selection.text())
+            and (
+                bool(self.ui.le_selection_vid_columns.text())
+                or bool(self.ui.le_selection_pic_columns.text())
             )
         )
         self.ui.pb_search.setEnabled(
-            bool(self.ui.marker_search.text()) and (
-                    bool(self.ui.le_search_pic_columns.text()) or bool(self.ui.le_search_vid_columns.text())
+            bool(self.ui.marker_search.text())
+            and (
+                bool(self.ui.le_search_pic_columns.text())
+                or bool(self.ui.le_search_vid_columns.text())
             )
         )
+
     def setup_input_buttons(self):
         # ##### BUTTONS "Ordner erstellt" ##### #
         self.ui.tb_harddrive.clicked.connect(self.show_filedialog_harddrive_path)
         # ##### BUTTONS "Rohmaterial verarbeiten" ##### #
         self.ui.tb_raw_rawpath.clicked.connect(
-            lambda: self.show_filedialog_folder(self.ui.drop_raw_rawpath))
+            lambda: self.show_filedialog_folder(self.ui.drop_raw_rawpath)
+        )
         self.ui.pb_vid_sugestions.clicked.connect(
-            lambda: self.show_suggestions(text_edit=self.ui.vid_columns,
-                                          suggestions=settings["suggestions-video-columns"])
+            lambda: self.show_suggestions(
+                text_edit=self.ui.vid_columns,
+                suggestions=settings["suggestions-video-columns"],
+            )
         )
         self.ui.pb_pic_sugestions.clicked.connect(
-            lambda: self.show_suggestions(text_edit=self.ui.pic_columns,
-                                          suggestions=settings["suggestions-picture-columns"])
+            lambda: self.show_suggestions(
+                text_edit=self.ui.pic_columns,
+                suggestions=settings["suggestions-picture-columns"],
+            )
         )
         self.ui.tb_excel_folder.clicked.connect(
             lambda: self.show_filedialog_folder(self.ui.drop_excel_folder)
@@ -170,53 +209,73 @@ class MainWindow(QMainWindow):
             lambda: self.show_filedialog_excel_file_path(self.ui.drop_util_excelfile)
         )
         self.ui.pb_select_pic_columns.clicked.connect(
-            lambda: self.select_columns(line_edit=self.ui.le_selection_pic_columns, sheet="Bilder")
+            lambda: self.select_columns(
+                line_edit=self.ui.le_selection_pic_columns, sheet="Bilder"
+            )
         )
         self.ui.pb_select_vid_columns.clicked.connect(
-            lambda: self.select_columns(line_edit=self.ui.le_selection_vid_columns, sheet="Videos")
+            lambda: self.select_columns(
+                line_edit=self.ui.le_selection_vid_columns, sheet="Videos"
+            )
         )
         self.ui.pb_search_pic_columns.clicked.connect(
-            lambda: self.select_columns(line_edit=self.ui.le_search_pic_columns, sheet="Bilder")
+            lambda: self.select_columns(
+                line_edit=self.ui.le_search_pic_columns, sheet="Bilder"
+            )
         )
         self.ui.pb_search_vid_columns.clicked.connect(
-            lambda: self.select_columns(line_edit=self.ui.le_search_vid_columns, sheet="Videos")
+            lambda: self.select_columns(
+                line_edit=self.ui.le_search_vid_columns, sheet="Videos"
+            )
         )
 
     def setup_executions_buttons(self):
         # ##### BUTTONS "Ordner erstellt" ##### #
         self.ui.pb_foldersetup.clicked.connect(
-            lambda: self.run_folder_setup(function=runners.run_folder_setup))
-
+            lambda: self.run_folder_setup(function=runners.run_folder_setup)
+        )
 
         # ##### BUTTONS "Rohmaterial verarbeiten" ##### #
         self.ui.pb_start_raw_full.clicked.connect(
-            lambda: self.run_raw_action(function=runners.run_process_raw_full))
+            lambda: self.run_raw_action(function=runners.run_process_raw_full)
+        )
         self.ui.pb_correct_fs.clicked.connect(
-            lambda: self.run_raw_action(function=runners.run_correct_structure))
+            lambda: self.run_raw_action(function=runners.run_correct_structure)
+        )
         self.ui.pb_rename.clicked.connect(
-            lambda: self.run_raw_action(function=runners.run_rename_files))
+            lambda: self.run_raw_action(function=runners.run_rename_files)
+        )
         self.ui.pb_create_excel.clicked.connect(
-            lambda: self.run_raw_action(function=runners.run_create_excel))
+            lambda: self.run_raw_action(function=runners.run_create_excel)
+        )
         self.ui.pb_fill_excel.clicked.connect(
-            lambda: self.run_raw_action(function=runners.run_fill_excel))
+            lambda: self.run_raw_action(function=runners.run_fill_excel)
+        )
         self.ui.pb_create_picture_folder.clicked.connect(
             lambda: self.run_raw_action(function=runners.run_create_picture_folder)
         )
 
-
         # ##### BUTTONS "Auswertung" ##### #
         self.ui.pb_section.clicked.connect(
-            lambda: self.run_util_action(function=runners.run_copy_sections))
+            lambda: self.run_util_action(function=runners.run_copy_sections)
+        )
         self.ui.pb_start_selection.clicked.connect(
-            lambda: self.run_util_action(function=runners.run_copy_selection))
+            lambda: self.run_util_action(function=runners.run_copy_selection)
+        )
         self.ui.pb_search.clicked.connect(
-            lambda: self.run_util_action(function=runners.run_search))
+            lambda: self.run_util_action(function=runners.run_search)
+        )
         self.ui.pb_picturefolder.clicked.connect(
-            lambda: self.run_util_action(function=runners.run_create_rated_picture_folder))
+            lambda: self.run_util_action(
+                function=runners.run_create_rated_picture_folder
+            )
+        )
         self.ui.pb_util_all.clicked.connect(
-            lambda: self.run_util_action(function=runners.run_process_util_full))
+            lambda: self.run_util_action(function=runners.run_process_util_full)
+        )
         self.ui.pb_statistic.clicked.connect(
-            lambda: self.run_util_action(function=runners.run_statistics))
+            lambda: self.run_util_action(function=runners.run_statistics)
+        )
 
     # ##### GENERAL METHODS ##### #
     def disable_work_buttons(self):
@@ -295,8 +354,7 @@ class MainWindow(QMainWindow):
 
     @pyqtSlot(str)
     def open_information_input(self, text: str):
-        answer, ok = QInputDialog().getItem(self, "Eingabe",
-                                          text, ["Ja", "Nein"])
+        answer, ok = QInputDialog().getItem(self, "Eingabe", text, ["Ja", "Nein"])
         if ok and answer:
             self.sender().data_response.emit(answer)
         self.cond.wakeAll()
@@ -312,7 +370,7 @@ class MainWindow(QMainWindow):
             raise ValueError("Bitte gib einen Dateipfad an.")
         return FolderTabInput(
             folder=Path(self.ui.drop_harddrive.text()),
-            date=self.ui.date_lkw.date().toPyDate()
+            date=self.ui.date_lkw.date().toPyDate(),
         )
 
     def run_folder_setup(self, function):
@@ -332,13 +390,15 @@ class MainWindow(QMainWindow):
             "create_picture_folder": self.ui.cb_diashow.isChecked(),
             "raw_material_folder": Path(self.ui.drop_raw_rawpath.text()),
             "first_folder_date": self.ui.date_correct_fs.date().toPyDate(),
-            "excel": self._get_excel_input()
+            "excel": self._get_excel_input(),
         }
         data["picture_folder"] = self._get_picture_folder(data["raw_material_folder"])
         return RawTabInput(**data)
 
     def _get_excel_input(self) -> ExcelInput:
-        excel_input_option: ExcelInputOptions = ExcelInputOptions(self.ui.excel_option.currentText())
+        excel_input_option: ExcelInputOptions = ExcelInputOptions(
+            self.ui.excel_option.currentText()
+        )
         if excel_input_option == ExcelInputOptions.EXISTING:
             filepath: Path = Path(self.ui.drop_raw_excel_file.text())
             data = {
@@ -346,7 +406,7 @@ class MainWindow(QMainWindow):
                 "name": filepath.name,
                 "folder": filepath.parent,
                 "video_columns": [],  # use default value instead?
-                "picture_columns": []
+                "picture_columns": [],
             }
         elif excel_input_option == ExcelInputOptions.MANUAL:
             data = {
@@ -354,7 +414,7 @@ class MainWindow(QMainWindow):
                 "name": self.ui.le_excel_file_name.text(),
                 "folder": Path(self.ui.drop_excel_folder.text()),
                 "video_columns": self.get_PlainTextEdit_parts(self.ui.vid_columns),
-                "picture_columns": self.get_PlainTextEdit_parts(self.ui.pic_columns)
+                "picture_columns": self.get_PlainTextEdit_parts(self.ui.pic_columns),
             }
         else:
             data = {
@@ -389,8 +449,10 @@ class MainWindow(QMainWindow):
         self.run_action(function=function, slot=self.write_process_util, input_=data)
 
     def get_util_input(self) -> UtilTabInput:
-        if self.ui.drop_util_rawpath.text() == "" or \
-                self.ui.drop_util_excelfile.text() == "":
+        if (
+            self.ui.drop_util_rawpath.text() == ""
+            or self.ui.drop_util_excelfile.text() == ""
+        ):
             raise ValueError("Bitte fülle die Felder in 'Input' aus")
         data = {
             "raw_material_folder": Path(self.ui.drop_util_rawpath.text()),
@@ -400,12 +462,20 @@ class MainWindow(QMainWindow):
             "do_picture_sections": self.ui.cb_segment_picture.isChecked(),
             "rating_section": self.ui.sb_rating_section.value(),
             "do_selections": self.ui.selection.isChecked(),
-            "videos_columns_selection": self.get_LineEdit_parts(self.ui.le_selection_vid_columns),
-            "picture_columns_selection": self.get_LineEdit_parts(self.ui.le_selection_pic_columns),
+            "videos_columns_selection": self.get_LineEdit_parts(
+                self.ui.le_selection_vid_columns
+            ),
+            "picture_columns_selection": self.get_LineEdit_parts(
+                self.ui.le_selection_pic_columns
+            ),
             "marker": self.ui.marker_selection.text(),
             "do_search": self.ui.search.isChecked(),
-            "videos_columns_search": self.get_LineEdit_parts(self.ui.le_search_vid_columns),
-            "picture_columns_search": self.get_LineEdit_parts(self.ui.le_search_pic_columns),
+            "videos_columns_search": self.get_LineEdit_parts(
+                self.ui.le_search_vid_columns
+            ),
+            "picture_columns_search": self.get_LineEdit_parts(
+                self.ui.le_search_pic_columns
+            ),
             "keywords": self.get_LineEdit_parts(self.ui.marker_search),
             "rating_search": self.ui.sb_rating_search.value(),
             "create_picture_folder": self.ui.pictures_2.isChecked(),
@@ -427,20 +497,28 @@ class MainWindow(QMainWindow):
     # ##### FileDialogs ##### #
     def show_filedialog_harddrive_path(self):
         """Handles selecting the harddrive path/folder through a FileDialog"""
-        directory = QFileDialog.getExistingDirectory(parent=self, caption="Open dir", directory="")
+        directory = QFileDialog.getExistingDirectory(
+            parent=self, caption="Open dir", directory=""
+        )
         if directory:
             self.ui.drop_harddrive.setText(directory)
 
     def show_filedialog_folder(self, line_edit: QLineEdit):
         """Handles selecting the raw material path/folder through a FileDialog"""
-        directory = QFileDialog.getExistingDirectory(parent=self, caption="Open dir", directory="")
+        directory = QFileDialog.getExistingDirectory(
+            parent=self, caption="Open dir", directory=""
+        )
         if directory:
             line_edit.setText(directory)
 
     def show_filedialog_excel_file_path(self, line_edit: QLineEdit):
         """Handles selecting the Excel file through a FileDialog"""
-        directory, _ = QFileDialog.getOpenFileName(parent=self, caption="Open Excel",
-                                                   directory="", filter="Excel-Files (*.xlsx)")
+        directory, _ = QFileDialog.getOpenFileName(
+            parent=self,
+            caption="Open Excel",
+            directory="",
+            filter="Excel-Files (*.xlsx)",
+        )
         if directory:
             line_edit.setText(directory)
 
@@ -464,7 +542,7 @@ class MainWindow(QMainWindow):
     @staticmethod
     def get_LineEdit_parts(element: QLineEdit) -> List[str]:
         cols: List[str] = []
-        for part in element.text().split(','):
+        for part in element.text().split(","):
             if part.strip():
                 cols.append(part.strip())
         return cols
@@ -472,7 +550,7 @@ class MainWindow(QMainWindow):
     @staticmethod
     def get_PlainTextEdit_parts(element: QPlainTextEdit) -> List[str]:
         cols: List[str] = []
-        for part in element.document().toRawText().split(','):
+        for part in element.document().toRawText().split(","):
             if part.strip():
                 cols.append(part.strip())
         return cols
@@ -485,5 +563,5 @@ def main():
     sys.exit(app.exec())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -50,8 +50,7 @@ def test_validate_util_good(testdata_path):
     for file in files:
         excel_path = testdata_path / file
 
-        errors = validation.validate_util_paths(raw_path,
-                                                excel_path)
+        errors = validation.validate_util_paths(raw_path, excel_path)
         assert len(errors) == 0
 
 
@@ -61,14 +60,12 @@ def test_validate_util_bad(testdata_path):
     for file in files:
         excel_path = testdata_path / file
 
-        errors = validation.validate_util_paths(raw_path,
-                                                excel_path)
+        errors = validation.validate_util_paths(raw_path, excel_path)
         assert len(errors) != 0
         if "duplicated" in file:
             assert "07-27-Mi_001.MP4" in errors
 
     good_excel_path = testdata_path / "ok_data.xlsx"
     raw_path = testdata_path / "NichtExistent"
-    errors = validation.validate_util_paths(raw_path,
-                                            good_excel_path)
+    errors = validation.validate_util_paths(raw_path, good_excel_path)
     assert len(errors) != 0

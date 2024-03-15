@@ -1,7 +1,6 @@
-from src.main.runner.runners import run_raw_processes
-
 from assethandling.basemodels import RawTabInput
 from src.main.connectors import raw_connector
+from src.main.runner.runners import run_raw_processes
 
 
 def decor(func):
@@ -24,14 +23,18 @@ def function():
 
 
 def run_create_picture_folder(inputs: RawTabInput, progress_callback, get_data) -> str:
-    result = run_raw_processes(function=raw_connector.handle_create_picture_folder,
-                      titel="Bilderordner erstellen.",
-                      progress_callback=progress_callback,
-                      folder=inputs.picture_folder,
-                      raw_material_folder=inputs.raw_material_folder)
+    result = run_raw_processes(
+        function=raw_connector.handle_create_picture_folder,
+        titel="Bilderordner erstellen.",
+        progress_callback=progress_callback,
+        folder=inputs.picture_folder,
+        raw_material_folder=inputs.raw_material_folder,
+    )
     # result.append("Bilderordner erstellen abgeschlossen.")
     # return result
     return "Bilderordner erstellen abgeschlossen."
+
+
 def raw_process2(titel):
     def decor(func):
         def wrap(*args, **kwargs):
@@ -42,10 +45,14 @@ def raw_process2(titel):
             progress_callback.emit("Inputs validiert")
 
             result = func(*args, **kwargs)
-            pretty_send_problems(titel=titel, list_=result, progress_callback=progress_callback)
+            pretty_send_problems(
+                titel=titel, list_=result, progress_callback=progress_callback
+            )
             return f"{titel} abgeschlossen."
 
         return wrap
 
     return decor
+
+
 print_text2("assd")

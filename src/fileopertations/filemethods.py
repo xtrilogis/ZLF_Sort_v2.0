@@ -1,15 +1,15 @@
 import filecmp
 import shutil
+from datetime import datetime
 from os.path import getmtime
 from pathlib import Path
-from datetime import datetime
-from typing import Optional, List
+from typing import List, Optional
 
 import PIL.Image
-from hachoir.parser import createParser
 from hachoir.metadata import extractMetadata
+from hachoir.parser import createParser
 
-from assethandling.basemodels import FileType, File
+from assethandling.basemodels import File, FileType
 from assets import constants
 
 
@@ -34,7 +34,7 @@ def copy_file(src_file: Path, dst_folder: Path):
     while file_dst.exists():
         if filecmp.cmp(src_file, file_dst):
             return
-        file_dst: Path = dst_folder / f'{src_file.stem}({counter}){src_file.suffix}'
+        file_dst: Path = dst_folder / f"{src_file.stem}({counter}){src_file.suffix}"
         counter += 1
     shutil.copy(src=src_file, dst=file_dst)
 
@@ -43,17 +43,22 @@ def rename_files(folder: Path, all_files: List[File], progress_callback):
     renamed_files_nr: int = 0
     length = 3 if len(all_files) < 999 else 4
 
-    special_folder = ("sonstiges" in folder.parent.name.lower() or
-          "sonstiges" in folder.parent.parent.name.lower())
+    special_folder = (
+        "sonstiges" in folder.parent.name.lower()
+        or "sonstiges" in folder.parent.parent.name.lower()
+    )
     for index, file in enumerate(all_files):
         try:
-            name = "Sonstiges" if special_folder else file.date.strftime('%m_%d_%a')
+            name = "Sonstiges" if special_folder else file.date.strftime("%m_%d_%a")
             new_filepath = file.full_path.with_name(
-                name=f"{name}-{format(index + 1).zfill(length)}{file.full_path.suffix}")
+                name=f"{name}-{format(index + 1).zfill(length)}{file.full_path.suffix}"
+            )
             file.full_path.rename(new_filepath)
             renamed_files_nr += 0
         except (FileNotFoundError, FileExistsError, WindowsError) as e:
-            progress_callback.emit(f"Datei {file.full_path.name} wurde nicht umbenannt\n- Fehler: {type(e).__name__}")
+            progress_callback.emit(
+                f"Datei {file.full_path.name} wurde nicht umbenannt\n- Fehler: {type(e).__name__}"
+            )
     progress_callback.emit(f"{renamed_files_nr} Dateien umbenannt.")
 
 

@@ -1,11 +1,12 @@
 from PyQt5 import QtCore
-from PyQt5.QtGui import QStandardItemModel, QStandardItem
-from PyQt5.QtWidgets import QDialog, QFormLayout, QLabel, QListView, QDialogButtonBox
+from PyQt5.QtGui import QStandardItem, QStandardItemModel
+from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QFormLayout, QLabel, QListView
 
 
 class SelectionDialog(QDialog):
     """Dialog with a checkbox for every given item"""
-    def __init__(self,  title: str, message: str, items: list, parent=None):
+
+    def __init__(self, title: str, message: str, items: list, parent=None):
         """parameter
         :arg title window title
         :arg message text displayed before the item list
@@ -24,7 +25,9 @@ class SelectionDialog(QDialog):
             model.appendRow(standardItem)
         self.listView.setModel(model)
 
-        buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel, QtCore.Qt.Horizontal, self)
+        buttonBox = QDialogButtonBox(
+            QDialogButtonBox.Ok | QDialogButtonBox.Cancel, QtCore.Qt.Horizontal, self
+        )
         form.addRow(buttonBox)
         buttonBox.accepted.connect(self.accept)
         buttonBox.rejected.connect(self.reject)

@@ -1,6 +1,7 @@
-from PyQt5.QtCore import *
-import traceback
 import sys
+import traceback
+
+from PyQt5.QtCore import *
 
 
 class WorkerSignals(QObject):
@@ -16,6 +17,7 @@ class WorkerSignals(QObject):
     request_data str to be displayed on the InputDialog
     data_response str containing the response
     """
+
     finished = pyqtSignal()
     error = pyqtSignal(tuple)
     result = pyqtSignal(object)
@@ -50,9 +52,9 @@ class Worker(QRunnable):
         self.signals = WorkerSignals()
 
         # Add the callback to our kwargs
-        self.kwargs['progress_callback'] = self.signals.progress
+        self.kwargs["progress_callback"] = self.signals.progress
         # Add the get_data function to enable requesting input
-        self.kwargs['get_data'] = self.get_input
+        self.kwargs["get_data"] = self.get_input
         self.signals.data_response.connect(self.set_input)
         self.user_input = None
 

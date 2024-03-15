@@ -1,9 +1,9 @@
 import time
-from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QPushButton, QVBoxLayout, QWidget, QApplication
-from PyQt5 import QtCore
+
+from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import *
 from PyQt5.QtGui import QMovie
+from PyQt5.QtWidgets import QApplication, QPushButton, QVBoxLayout, QWidget
 from qt_worker import Worker
 
 
@@ -16,7 +16,7 @@ class Window(QWidget):
 
     def initUi(self):
         layout = QVBoxLayout()
-        self.button = QPushButton('User input')
+        self.button = QPushButton("User input")
         self.button.setEnabled(True)
 
         self.print_label = QtWidgets.QLabel()

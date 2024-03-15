@@ -1,5 +1,6 @@
 from pathlib import Path
-from typing import List, Dict
+from typing import Dict, List
+
 import pandas as pd
 from pandas import DataFrame
 
@@ -39,7 +40,7 @@ def load_sheets_as_df(path: Path) -> Dict[str, DataFrame]:
 
 def get_columns(excel: Path, sheet: str) -> List[str]:
     """Extracts all columns the given sheet has
-        :param excel fullpath of the Excel file
-        :param sheet to search"""
+    :param excel fullpath of the Excel file
+    :param sheet to search"""
     df = pd.read_excel(excel, sheet_name=sheet)
     return df.columns

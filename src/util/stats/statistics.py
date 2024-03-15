@@ -1,9 +1,10 @@
 """Calculate some basic statistics"""
-from pathlib import Path
-from typing import List, Any, Tuple
-from moviepy.editor import VideoFileClip
 import os
 import time
+from pathlib import Path
+from typing import Any, List, Tuple
+
+from moviepy.editor import VideoFileClip
 
 from assets.constants import video_extensions
 
@@ -16,7 +17,7 @@ def get_raw_material_duration(path: Path) -> Tuple[str, List[str], List[List[Any
     for folder in path.iterdir():
         if folder.is_dir():
             current_day_duration = 0
-            for element in folder.glob('**/*'):
+            for element in folder.glob("**/*"):
                 if element.suffix in video_extensions:
                     try:
                         duration = _get_duration(element)
@@ -25,12 +26,16 @@ def get_raw_material_duration(path: Path) -> Tuple[str, List[str], List[List[Any
                     except AttributeError:
                         problems.append(element.name)
             duration_per_day.append(
-                    [
-                        folder.name,
-                        time.strftime("%H:%M:%S", time.gmtime(current_day_duration)),
-                    ]
-                )
-    return time.strftime("%H:%M:%S", time.gmtime(total_duration)), problems, duration_per_day
+                [
+                    folder.name,
+                    time.strftime("%H:%M:%S", time.gmtime(current_day_duration)),
+                ]
+            )
+    return (
+        time.strftime("%H:%M:%S", time.gmtime(total_duration)),
+        problems,
+        duration_per_day,
+    )
 
 
 def _get_duration(file_fullpath: Path):

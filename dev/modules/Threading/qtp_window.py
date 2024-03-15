@@ -1,8 +1,18 @@
 import time
-from PyQt5.QtWidgets import QPushButton, QVBoxLayout, QWidget, QApplication, QMainWindow, QLabel, QInputDialog, \
-    QLineEdit
+
 from PyQt5.QtCore import *
+from PyQt5.QtWidgets import (
+    QApplication,
+    QInputDialog,
+    QLabel,
+    QLineEdit,
+    QMainWindow,
+    QPushButton,
+    QVBoxLayout,
+    QWidget,
+)
 from qtp_worker import Worker
+
 # for reference https://www.pythonguis.com/tutorials/multithreading-pyqt-applications-qthreadpool/
 
 
@@ -13,7 +23,9 @@ class MainWindow(QMainWindow):
         self.mutex = QMutex()
         self.cond = QWaitCondition()
         self.threadpool = QThreadPool()
-        print("Multithreading with maximum %d threads" % self.threadpool.maxThreadCount())
+        print(
+            "Multithreading with maximum %d threads" % self.threadpool.maxThreadCount()
+        )
 
     def setup_ui(self):
         layout = QVBoxLayout()
@@ -72,7 +84,12 @@ class MainWindow(QMainWindow):
 
     def pushed_button2(self):
         # Any other args, kwargs are passed to the run function
-        worker = Worker(self.function_with_parameter, self.mutex, self.cond, mydict={"hasl": "asdf", "asfes": "sefsa"})
+        worker = Worker(
+            self.function_with_parameter,
+            self.mutex,
+            self.cond,
+            mydict={"hasl": "asdf", "asfes": "sefsa"},
+        )
         worker.signals.result.connect(self.print_output)
         worker.signals.finished.connect(self.thread_complete)
         worker.signals.progress.connect(self.progress_fn)
@@ -105,7 +122,7 @@ class MainWindow(QMainWindow):
     # or even a different file
     def function_no_parameters(self, progress_callback, get_data):
         for n in range(0, 5):
-            progress_callback.emit(str(n*100/4))
+            progress_callback.emit(str(n * 100 / 4))
             time.sleep(1)
         return "Done."
 

@@ -1,4 +1,5 @@
 from os import path
+
 from PyQt5 import QtWidgets
 
 
@@ -24,6 +25,7 @@ class DropLineEditExcel(QtWidgets.QLineEdit):
 
 class DropLineEditFolder(QtWidgets.QLineEdit):
     """Allows to drag and drop a folder, QLineEdit is set to folder url"""
+
     def dragEnterEvent(self, event):
         if event.mimeData().hasUrls():
             event.acceptProposedAction()

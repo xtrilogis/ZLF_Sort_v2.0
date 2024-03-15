@@ -1,7 +1,14 @@
 from unittest import mock
+
 import pandas as pd
-from rawmaterial.raw_material import correct_file_structure, run_rename, \
-    fill_excel, create_picture_folder, _read_structure
+
+from rawmaterial.raw_material import (
+    _read_structure,
+    correct_file_structure,
+    create_picture_folder,
+    fill_excel,
+    run_rename,
+)
 
 
 @mock.patch("rawmaterial.raw_material.copy_file")
@@ -10,17 +17,21 @@ def test_correct_folder_structure(mock_copy, correct_raw):
     # test if _copy_file_strcture is called with the right structure -> len(keys), per key len(images) and len(videos)
     pass
 
+
 def test_read_file_structure(testdata_path):
     # TODO implementation
-    _read_structure(raw_material_folder=testdata_path / "raw/structured1" )
+    _read_structure(raw_material_folder=testdata_path / "raw/structured1")
 
 
 @mock.patch("rawmaterial.raw_material.rename_files")
 def test_rename_files(mock_rename, correct_raw):
     run_rename(correct_raw)
     assert mock_rename.call_count == 4  # 31
-    assert mock_rename.call_args_list[0].kwargs['folder'] == correct_raw / "a 27.07. Mi/Bilder"
-    files = mock_rename.call_args_list[0].kwargs['all_files']
+    assert (
+        mock_rename.call_args_list[0].kwargs["folder"]
+        == correct_raw / "a 27.07. Mi/Bilder"
+    )
+    files = mock_rename.call_args_list[0].kwargs["all_files"]
     assert files[0].date < files[-1].date
 
 
@@ -30,21 +41,25 @@ def test_rename_files(mock_rename, correct_raw):
 def test_fill_excel(mock_save, mock_load, mock_is_folder, testdata_path):
     mock_load.return_value = {
         "Videos": pd.DataFrame(columns=["Datei"]),
-        "Bilder": pd.DataFrame(columns=["Datei"])
+        "Bilder": pd.DataFrame(columns=["Datei"]),
     }
     mock_is_folder.return_value = [testdata_path / "Zeltlagerfilm 2023"]
-    fill_excel(excel=testdata_path, raw_material_folder=testdata_path / "Zeltlagerfilm 2023")
+    fill_excel(
+        excel=testdata_path, raw_material_folder=testdata_path / "Zeltlagerfilm 2023"
+    )
     assert mock_save.called
-    assert len(mock_save.call_args.kwargs['sheets']) == 2
-    assert len(mock_save.call_args.kwargs['sheets']['Videos']) == 3  # Ordner und 2 Videos
-    assert len(mock_save.call_args.kwargs['sheets']['Bilder']) == 4
+    assert len(mock_save.call_args.kwargs["sheets"]) == 2
+    assert (
+        len(mock_save.call_args.kwargs["sheets"]["Videos"]) == 3
+    )  # Ordner und 2 Videos
+    assert len(mock_save.call_args.kwargs["sheets"]["Bilder"]) == 4
 
 
 @mock.patch("rawmaterial.raw_material.copy_file")
 def test_create_picture_folder(mock_copy, testdata_path):
-    create_picture_folder(picture_folder=testdata_path,
-                          raw_material_folder=testdata_path / "Zeltlagerfilm 2023")
+    create_picture_folder(
+        picture_folder=testdata_path,
+        raw_material_folder=testdata_path / "Zeltlagerfilm 2023",
+    )
     assert mock_copy.called
     assert mock_copy.call_count == 3
-
-
