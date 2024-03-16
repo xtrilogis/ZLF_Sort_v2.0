@@ -350,7 +350,7 @@ class Ui_MainWindow(object):
         self.tb_harddrive.setStyleSheet("")
         icon = QtGui.QIcon()
         icon.addPixmap(
-            QtGui.QPixmap("../../assets/folder-icon.png"),
+            QtGui.QPixmap(folde_icon),
             QtGui.QIcon.Normal,
             QtGui.QIcon.Off,
         )

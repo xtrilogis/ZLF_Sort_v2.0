@@ -10,7 +10,7 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from assethandling.asset_manager import window_icon
+from assethandling.asset_manager import window_icon, folder_icon
 from ui.dialogs.drop_line_edit import DropLineEditExcel, DropLineEditFolder
 
 
@@ -350,7 +350,7 @@ class Ui_MainWindow(object):
         self.tb_harddrive.setStyleSheet("")
         icon = QtGui.QIcon()
         icon.addPixmap(
-            QtGui.QPixmap("../../assets/folder-icon.png"),
+            QtGui.QPixmap(folder_icon),
             QtGui.QIcon.Normal,
             QtGui.QIcon.Off,
         )
@@ -577,7 +577,7 @@ class Ui_MainWindow(object):
         self.tb_raw_rawpath.setStyleSheet("")
         icon1 = QtGui.QIcon()
         icon1.addPixmap(
-            QtGui.QPixmap("../../../Zlf_sort/program/graphics/folder.png"),
+            QtGui.QPixmap(folder_icon),
             QtGui.QIcon.Normal,
             QtGui.QIcon.Off,
         )
