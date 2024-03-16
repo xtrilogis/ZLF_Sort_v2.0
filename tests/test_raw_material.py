@@ -2,13 +2,9 @@ from unittest import mock
 
 import pandas as pd
 
-from rawmaterial.raw_material import (
-    _read_structure,
-    correct_file_structure,
-    create_picture_folder,
-    fill_excel,
-    run_rename,
-)
+from rawmaterial.raw_material import (_read_structure, correct_file_structure,
+                                      create_picture_folder, fill_excel,
+                                      run_rename)
 
 
 @mock.patch("rawmaterial.raw_material.copy_file")

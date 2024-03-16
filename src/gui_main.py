@@ -9,26 +9,13 @@ from typing import List
 from pydantic import ValidationError
 from PyQt5 import QtGui
 from PyQt5.QtCore import *
-from PyQt5.QtWidgets import (
-    QApplication,
-    QDialog,
-    QFileDialog,
-    QInputDialog,
-    QLabel,
-    QLineEdit,
-    QMainWindow,
-    QPlainTextEdit,
-)
+from PyQt5.QtWidgets import (QApplication, QDialog, QFileDialog, QInputDialog,
+                             QLabel, QLineEdit, QMainWindow, QPlainTextEdit)
 
 from assethandling.asset_manager import gif, settings
-from assethandling.basemodels import (
-    ExcelInput,
-    ExcelInputOptions,
-    ExcelOption,
-    FolderTabInput,
-    RawTabInput,
-    UtilTabInput,
-)
+from assethandling.basemodels import (ExcelInput, ExcelInputOptions,
+                                      ExcelOption, FolderTabInput, RawTabInput,
+                                      UtilTabInput)
 from excel import excelmethods
 from inputhandling.validation import validate_excel_file
 from runner import runners
@@ -383,7 +370,6 @@ class MainWindow(QMainWindow):
         self.run_action(function=function, slot=self.write_process_setup, input_=data)
 
     def get_raw_input(self) -> RawTabInput:
-
         data = {
             "do_rename": self.ui.cb_rename.isChecked(),
             "fill_excel": self.ui.cb_fill_excel.isChecked(),

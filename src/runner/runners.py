@@ -3,24 +3,14 @@ from typing import Dict, List
 
 from pandas import DataFrame
 
-from assethandling.basemodels import (
-    ExcelConfig,
-    ExcelInput,
-    ExcelOption,
-    FolderTabInput,
-    RawTabInput,
-    SheetConfig,
-    UtilTabInput,
-)
 from assethandling import constants
+from assethandling.basemodels import (ExcelConfig, ExcelInput, ExcelOption,
+                                      FolderTabInput, RawTabInput, SheetConfig,
+                                      UtilTabInput)
 from foldersetup import folder_setup as setup_methods
-from inputhandling.validation import (
-    is_valid_folder,
-    validate_excel_file,
-    validate_raw,
-    validate_setup_path,
-    validate_util_paths,
-)
+from inputhandling.validation import (is_valid_folder, validate_excel_file,
+                                      validate_raw, validate_setup_path,
+                                      validate_util_paths)
 from rawmaterial import raw_material as raw_methods
 from util import util_methods as util_methods
 

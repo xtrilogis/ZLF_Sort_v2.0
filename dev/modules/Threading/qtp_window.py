@@ -1,16 +1,8 @@
 import time
 
 from PyQt5.QtCore import *
-from PyQt5.QtWidgets import (
-    QApplication,
-    QInputDialog,
-    QLabel,
-    QLineEdit,
-    QMainWindow,
-    QPushButton,
-    QVBoxLayout,
-    QWidget,
-)
+from PyQt5.QtWidgets import (QApplication, QInputDialog, QLabel, QLineEdit,
+                             QMainWindow, QPushButton, QVBoxLayout, QWidget)
 from qtp_worker import Worker
 
 # for reference https://www.pythonguis.com/tutorials/multithreading-pyqt-applications-qthreadpool/

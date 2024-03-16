@@ -1,6 +1,6 @@
 from assethandling.basemodels import RawTabInput
-from src.main.connectors import raw_connector
 from runner.runners import run_raw_processes
+from src.main.connectors import raw_connector
 
 
 def decor(func):

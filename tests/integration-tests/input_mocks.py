@@ -1,7 +1,8 @@
 from datetime import datetime
 from pathlib import Path
 
-from assethandling.basemodels import ExcelInput, ExcelOption, RawTabInput, UtilTabInput
+from assethandling.basemodels import (ExcelInput, ExcelOption, RawTabInput,
+                                      UtilTabInput)
 
 TEST_PATH = Path.cwd().joinpath("./testData")
 TEST_DATE = datetime(2023, 10, 5)

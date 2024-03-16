@@ -3,7 +3,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from assethandling.basemodels import FolderTabInput
-from src.main.gui_main import main
+from gui_main import main
 
 
 @patch("src.main.runner.runners.setup_methods.create_folder")

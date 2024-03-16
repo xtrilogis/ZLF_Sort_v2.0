@@ -9,8 +9,8 @@ import PIL.Image
 from hachoir.metadata import extractMetadata
 from hachoir.parser import createParser
 
-from assethandling.basemodels import File, FileType
 from assethandling import constants
+from assethandling.basemodels import File, FileType
 
 
 def create_folder(parent: Path, folder: str) -> Path:

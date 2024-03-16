@@ -5,8 +5,8 @@ from typing import List
 
 import pandas as pd
 
-from assethandling.basemodels import RawTabInput
 from assethandling import constants
+from assethandling.basemodels import RawTabInput
 from excel.excelmethods import load_sheets_as_df
 
 

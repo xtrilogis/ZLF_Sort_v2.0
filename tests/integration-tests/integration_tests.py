@@ -4,12 +4,8 @@ from unittest.mock import patch
 
 import input_mocks
 
-from assethandling.basemodels import (
-    ExcelInput,
-    ExcelOption,
-    FolderTabInput,
-    RawTabInput,
-)
+from assethandling.basemodels import (ExcelInput, ExcelOption, FolderTabInput,
+                                      RawTabInput)
 from src.main.gui_main import main
 
 

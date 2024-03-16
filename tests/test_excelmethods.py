@@ -4,12 +4,8 @@ from unittest import mock
 from pandas import DataFrame
 
 from assethandling.basemodels import ExcelConfig, SheetConfig
-from excel.excelmethods import (
-    create_emtpy_excel,
-    get_columns,
-    load_sheets_as_df,
-    save_sheets_to_excel,
-)
+from excel.excelmethods import (create_emtpy_excel, get_columns,
+                                load_sheets_as_df, save_sheets_to_excel)
 
 
 @mock.patch("excel.excelmethods.save_sheets_to_excel")

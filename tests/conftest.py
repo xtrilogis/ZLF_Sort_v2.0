@@ -4,7 +4,7 @@ from pathlib import Path
 
 from pytest import fixture
 
-from src.assethandling.basemodels import RawTabInput
+from assethandling.basemodels import RawTabInput
 
 ROOT = Path.cwd() / "testData"
 locale.setlocale(locale.LC_TIME, "de_DE.utf8")

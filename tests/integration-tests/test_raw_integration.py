@@ -2,10 +2,11 @@ from datetime import datetime
 from pathlib import Path
 from unittest.mock import patch
 
-from input_mocks import TEST_DATE, TEST_PATH, excel_input_manual, excel_input_standard
+from input_mocks import (TEST_DATE, TEST_PATH, excel_input_manual,
+                         excel_input_standard)
 
 from assethandling.basemodels import ExcelInput, ExcelOption, RawTabInput
-from src.main.gui_main import main
+from gui_main import main
 
 
 @patch("src.main.runner.runners.raw_methods.copy_file")

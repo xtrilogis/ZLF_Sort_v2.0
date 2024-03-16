@@ -1,13 +1,9 @@
 from unittest import mock
 
 from excel.excelmethods import load_sheets_as_df
-from util.util_methods import (
-    copy_pictures_with_rating,
-    copy_section,
-    copy_selections,
-    prepare_dataframes,
-    search_columns,
-)
+from util.util_methods import (copy_pictures_with_rating, copy_section,
+                               copy_selections, prepare_dataframes,
+                               search_columns)
 
 # mock_copy_file assert calls with right argument
 # dummy_df, good and bad

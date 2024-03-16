@@ -10,7 +10,7 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from assethandling.asset_manager import window_icon, folder_icon
+from assethandling.asset_manager import folder_icon, window_icon
 from ui.dialogs.drop_line_edit import DropLineEditExcel, DropLineEditFolder
 
 
