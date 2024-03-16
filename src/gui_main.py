@@ -31,8 +31,8 @@ from assethandling.basemodels import (
 )
 from excel import excelmethods
 from inputhandling.validation import validate_excel_file
-from src.main.runner import runners
-from src.main.threadworker.thread_worker import Worker
+from runner import runners
+from threadworker.thread_worker import Worker
 from ui import SelectionDialog, Ui_MainWindow, messageboxes
 
 print("Imports done")
@@ -376,15 +376,15 @@ class MainWindow(QMainWindow):
     def run_folder_setup(self, function):
         try:
             data: FolderTabInput = self.get_folder_input()
-        except ValidationError as e:
+        except (ValidationError, ValueError) as e:
             traceback.print_exc()
-            self.open_problem_input(msg=str(e))
+            self.open_problem_input(error=str(e))
             return
         self.run_action(function=function, slot=self.write_process_setup, input_=data)
 
     def get_raw_input(self) -> RawTabInput:
+
         data = {
-            "do_structure": self.ui.cb_structure.isChecked(),
             "do_rename": self.ui.cb_rename.isChecked(),
             "fill_excel": self.ui.cb_fill_excel.isChecked(),
             "create_picture_folder": self.ui.cb_diashow.isChecked(),
@@ -392,6 +392,7 @@ class MainWindow(QMainWindow):
             "first_folder_date": self.ui.date_correct_fs.date().toPyDate(),
             "excel": self._get_excel_input(),
         }
+        # todo checken, ob Rohmaterialordner existiert
         data["picture_folder"] = self._get_picture_folder(data["raw_material_folder"])
         return RawTabInput(**data)
 

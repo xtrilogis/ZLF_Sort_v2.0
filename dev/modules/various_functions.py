@@ -13,7 +13,7 @@ from hachoir.metadata import extractMetadata
 from hachoir.parser import createParser
 from pydantic import BaseModel
 
-from assets import constants
+from assethandling import constants
 from excel import excelmethods
 from fileopertations.filemethods import copy_file
 

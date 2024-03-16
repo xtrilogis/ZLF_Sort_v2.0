@@ -10,7 +10,7 @@ from hachoir.metadata import extractMetadata
 from hachoir.parser import createParser
 
 from assethandling.basemodels import File, FileType
-from assets import constants
+from assethandling import constants
 
 
 def create_folder(parent: Path, folder: str) -> Path:

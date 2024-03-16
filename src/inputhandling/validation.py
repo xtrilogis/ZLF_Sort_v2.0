@@ -6,7 +6,7 @@ from typing import List
 import pandas as pd
 
 from assethandling.basemodels import RawTabInput
-from assets import constants
+from assethandling import constants
 from excel.excelmethods import load_sheets_as_df
 
 

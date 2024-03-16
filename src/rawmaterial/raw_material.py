@@ -7,7 +7,7 @@ import pandas as pd
 from pydantic import ValidationError
 
 from assethandling.basemodels import ExcelConfig, File, FileType
-from assets import constants
+from assethandling import constants
 from excel.excelmethods import (
     create_emtpy_excel,
     load_sheets_as_df,

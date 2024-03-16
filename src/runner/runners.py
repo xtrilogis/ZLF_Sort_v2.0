@@ -12,7 +12,7 @@ from assethandling.basemodels import (
     SheetConfig,
     UtilTabInput,
 )
-from assets import constants
+from assethandling import constants
 from foldersetup import folder_setup as setup_methods
 from inputhandling.validation import (
     is_valid_folder,

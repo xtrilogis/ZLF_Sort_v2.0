@@ -6,7 +6,7 @@ from typing import Any, List, Tuple
 
 from moviepy.editor import VideoFileClip
 
-from assets.constants import video_extensions
+from assethandling.constants import video_extensions
 
 
 def get_raw_material_duration(path: Path) -> Tuple[str, List[str], List[List[Any]]]:
