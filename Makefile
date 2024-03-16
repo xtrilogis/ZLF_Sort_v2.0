@@ -13,3 +13,5 @@ print-dir-tree: ## display only the directories
 	tree
 
 ##@ Installer
+exe: ## Run pyinstaller
+	pyinstaller --name ZLF-sort --onefile --windowed --icon assests/Icon.ico
