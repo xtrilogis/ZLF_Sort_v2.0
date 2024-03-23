@@ -43,6 +43,9 @@ def _validate_sheet(df: pd.DataFrame) -> List[str]:
     for column in constants.minimal_columns:
         if column not in df.columns:
             errors.append(f"Spalte {column} fehlt.")
+    if errors:
+        return errors
+
     if True in set(df["Datei"].duplicated()):
         errors.append("Folgende Datei Namen sind doppelt, bitte ändere das manuell")
         errors.extend(df[df["Datei"].duplicated()]["Datei"].tolist())
