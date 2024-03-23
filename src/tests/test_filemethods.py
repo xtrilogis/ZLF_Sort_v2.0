@@ -4,9 +4,13 @@ from unittest import mock
 
 from assethandling import constants
 from assethandling.basemodels import File, FileType
-from fileopertations.filemethods import (copy_file, create_folder,
-                                         get_file_captured_date, get_file_type,
-                                         rename_files)
+from fileopertations.filemethods import (
+    copy_file,
+    create_folder,
+    get_file_captured_date,
+    get_file_type,
+    rename_files,
+)
 
 
 @mock.patch("pathlib.Path.mkdir")
@@ -37,22 +41,19 @@ def test_rename_files(mock_rename, pyqt_signal_dummy, testdata_path):
     errors = []
     files = [
         File(
-            full_path=testdata_path
-            / "Rohmaterial/a 27.07. Mi/Videos/07-27-Mi_001.MP4",
+            full_path=testdata_path / "Rohmaterial/a 27.07. Mi/Videos/07-27-Mi_001.MP4",
             date=datetime(2022, 7, 27, 12, 30),
             dst_folder=None,
             type=FileType.VIDEO,
         ),
         File(
-            full_path=testdata_path
-            / "Rohmaterial/a 27.07. Mi/Videos/07-27-Mi_002.AVI",
+            full_path=testdata_path / "Rohmaterial/a 27.07. Mi/Videos/07-27-Mi_002.AVI",
             date=datetime(2022, 7, 27, 12, 31),
             dst_folder=None,
             type=FileType.VIDEO,
         ),
         File(
-            full_path=testdata_path
-            / "Rohmaterial/a 27.07. Mi/Videos/07-27-Mi_003.AVI",
+            full_path=testdata_path / "Rohmaterial/a 27.07. Mi/Videos/07-27-Mi_003.AVI",
             date=datetime(2022, 7, 27, 12, 31),
             dst_folder=None,
             type=FileType.VIDEO,

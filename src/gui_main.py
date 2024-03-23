@@ -9,13 +9,26 @@ from typing import List
 from pydantic import ValidationError
 from PyQt5 import QtGui
 from PyQt5.QtCore import QDate, QMutex, QThreadPool, QWaitCondition, pyqtSlot
-from PyQt5.QtWidgets import (QApplication, QDialog, QFileDialog, QInputDialog,
-                             QLabel, QLineEdit, QMainWindow, QPlainTextEdit)
+from PyQt5.QtWidgets import (
+    QApplication,
+    QDialog,
+    QFileDialog,
+    QInputDialog,
+    QLabel,
+    QLineEdit,
+    QMainWindow,
+    QPlainTextEdit,
+)
 
 from assethandling.asset_manager import gif, settings
-from assethandling.basemodels import (ExcelInput, ExcelInputOptions,
-                                      ExcelOption, FolderTabInput, RawTabInput,
-                                      UtilTabInput)
+from assethandling.basemodels import (
+    ExcelInput,
+    ExcelInputOptions,
+    ExcelOption,
+    FolderTabInput,
+    RawTabInput,
+    UtilTabInput,
+)
 from excel import excelmethods
 from inputhandling.validation import validate_excel_file
 from runner import runners

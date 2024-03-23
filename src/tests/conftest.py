@@ -4,9 +4,9 @@ from pathlib import Path
 
 from pytest import fixture
 
-from assethandling.basemodels import RawTabInput, ExcelInput, ExcelOption
+from assethandling.basemodels import ExcelInput, ExcelOption, RawTabInput
 
-ROOT = Path.cwd() / "testData"
+ROOT = Path(__file__).parent / "testData"
 locale.setlocale(locale.LC_TIME, "de_DE.utf8")
 
 
@@ -32,6 +32,7 @@ def correct_raw():
 
 class Signals:
     called: int = 0
+
     def emit(self, text):
         self.called += 1
         print(text)
@@ -60,8 +61,10 @@ def get_raw_input():
 
 @fixture()
 def get_raw_input_non_valid():
-    mock_excel = ExcelInput(option=ExcelOption.EXISTING,
-                            folder=ROOT / f"Zeltlagerfilm {datetime.now().date().year}.xlsx")
+    mock_excel = ExcelInput(
+        option=ExcelOption.EXISTING,
+        folder=ROOT / f"Zeltlagerfilm {datetime.now().date().year}.xlsx",
+    )
     data1 = {
         "do_structure": True,
         "do_rename": False,

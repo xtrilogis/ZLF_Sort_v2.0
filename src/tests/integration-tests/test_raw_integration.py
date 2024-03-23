@@ -2,8 +2,7 @@ from datetime import datetime
 from pathlib import Path
 from unittest.mock import patch
 
-from input_mocks import (TEST_DATE, TEST_PATH, excel_input_manual,
-                         excel_input_standard)
+from input_mocks import TEST_DATE, TEST_PATH, excel_input_manual, excel_input_standard
 
 from assethandling.basemodels import ExcelInput, ExcelOption, RawTabInput
 from gui_main import main

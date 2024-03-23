@@ -61,7 +61,6 @@ def test_validate_util_bad(testdata_path):
         with pytest.raises(ValueError) as e:
             validation.validate_util_paths(raw_path_good, excel_path_bad)
 
-
         if "duplicated" in file:
             assert "07-27-Mi_001.MP4" in e.value.args[0]
 

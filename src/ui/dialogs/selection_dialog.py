@@ -1,7 +1,6 @@
 from PyQt5 import QtCore
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
-from PyQt5.QtWidgets import (QDialog, QDialogButtonBox, QFormLayout, QLabel,
-                             QListView)
+from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QFormLayout, QLabel, QListView
 
 
 class SelectionDialog(QDialog):

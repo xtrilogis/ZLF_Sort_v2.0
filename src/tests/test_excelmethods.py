@@ -5,8 +5,12 @@ import pandas as pd
 from pandas import DataFrame
 
 from assethandling.basemodels import ExcelConfig, SheetConfig
-from excel.excelmethods import (create_emtpy_excel, get_columns,
-                                load_sheets_as_df, save_sheets_to_excel)
+from excel.excelmethods import (
+    create_emtpy_excel,
+    get_columns,
+    load_sheets_as_df,
+    save_sheets_to_excel,
+)
 
 
 @mock.patch("excel.excelmethods.save_sheets_to_excel")
@@ -25,11 +29,11 @@ def test_create_empty_excel(mock_save, testdata_path):
 
 
 def test_save_sheets(testdata_path):
-    sheets = {'Sheet1': pd.DataFrame({'A': [1, 2, 3], 'B': [4, 5, 6]}),
-              'Sheet2': pd.DataFrame({'X': [7, 8, 9], 'Y': [10, 11, 12]})
-              }
+    sheets = {
+        "Sheet1": pd.DataFrame({"A": [1, 2, 3], "B": [4, 5, 6]}),
+        "Sheet2": pd.DataFrame({"X": [7, 8, 9], "Y": [10, 11, 12]}),
+    }
     test_path = testdata_path / "test_excel.xlsx"
-
 
     save_sheets_to_excel(sheets, test_path)
 
@@ -42,7 +46,6 @@ def test_save_sheets(testdata_path):
 
     # Clean up: Remove the test Excel file
     test_path.unlink()
-
 
 
 def test_load_sheets(testdata_path):

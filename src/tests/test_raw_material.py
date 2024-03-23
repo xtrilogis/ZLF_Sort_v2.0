@@ -1,27 +1,36 @@
+from datetime import datetime
 from pathlib import Path
 from unittest import mock
 from unittest.mock import MagicMock
 
 import pandas as pd
-from datetime import datetime
 
-from rawmaterial.raw_material import (correct_file_structure,
-                                      create_picture_folder, fill_excel,
-                                      run_rename, create_excel)
 from assethandling.basemodels import ExcelConfig, SheetConfig
+from rawmaterial.raw_material import (
+    correct_file_structure,
+    create_excel,
+    create_picture_folder,
+    fill_excel,
+    run_rename,
+)
 
 
 @mock.patch("rawmaterial.raw_material.copy_file")
 def test_correct_folder_structure(mock_copy, correct_raw, testdata_path):
     mock_callback = MagicMock()
     mock_get_data = MagicMock(return_value="Nein")
-    correct_file_structure(correct_raw, datetime(2023, 7, 27),
-                           mock_callback, mock_get_data)
+    correct_file_structure(
+        correct_raw, datetime(2023, 7, 27), mock_callback, mock_get_data
+    )
     assert mock_copy.call_count == 29
     f = str(testdata_path)
-    assert "a 27.07.-Do\\Bilder\\07-27-Do_001.jpg" in str(mock_copy.call_args_list[0].args[0])
-    assert "New\\a-27.07-Donnerstag\\Bilder" in  str(mock_copy.call_args_list[0].args[1])
-    assert "Sonstiges\\Bilder\\08-05-Sa_003.JPG" in str(mock_copy.call_args_list[22].args[0])
+    assert "a 27.07.-Do\\Bilder\\07-27-Do_001.jpg" in str(
+        mock_copy.call_args_list[0].args[0]
+    )
+    assert "New\\a-27.07-Donnerstag\\Bilder" in str(mock_copy.call_args_list[0].args[1])
+    assert "Sonstiges\\Bilder\\08-05-Sa_003.JPG" in str(
+        mock_copy.call_args_list[22].args[0]
+    )
     assert "New\\j-05.08-Samstag\\Bilder" in str(mock_copy.call_args_list[22].args[1])
 
 
@@ -29,12 +38,20 @@ def test_correct_folder_structure(mock_copy, correct_raw, testdata_path):
 def test_correct_folder_structure2(mock_copy, correct_raw, testdata_path):
     mock_callback = MagicMock()
     mock_get_data = MagicMock(return_value="Nein")
-    result = correct_file_structure(testdata_path / "raw/unstructured/Rohmaterial", datetime(2023, 7, 27),
-                           mock_callback, mock_get_data)
+    result = correct_file_structure(
+        testdata_path / "raw/unstructured/Rohmaterial",
+        datetime(2023, 7, 27),
+        mock_callback,
+        mock_get_data,
+    )
     assert result
 
-    correct_file_structure(testdata_path / "raw/structured2", datetime(2023, 7, 27),
-                           mock_callback, mock_get_data)
+    correct_file_structure(
+        testdata_path / "raw/structured2",
+        datetime(2023, 7, 27),
+        mock_callback,
+        mock_get_data,
+    )
     assert mock_copy.call_count == 29
     f = str(testdata_path)
     assert "a 27.07.-Do\\07-27-Do_001.jpg" in str(mock_copy.call_args_list[0].args[0])
@@ -61,8 +78,7 @@ def test_create_excel(mock_create, testdata_path):
     mock_callback = MagicMock()
     mock_get_data = MagicMock(return_value="Nein")
     s = SheetConfig(name="sdfs", columns=["a", "b", "c", "d"])
-    config = ExcelConfig(excel_folder=testdata_path / "raw",
-                         sheets=[s])
+    config = ExcelConfig(excel_folder=testdata_path / "raw", sheets=[s])
     create_excel(config=config, progress_callback=mock_callback, get_data=mock_get_data)
     assert mock_create.call_count == 1
 
@@ -71,9 +87,11 @@ def test_create_excel(mock_create, testdata_path):
 def test_create_excel_bad(mock_create, testdata_path):
     mock_callback = MagicMock()
     mock_get_data = MagicMock(return_value="Nein")
-    config = ExcelConfig(excel_folder=testdata_path,
-                         excel_file_name="ok_empty.xlsx",
-                         sheets=[SheetConfig(name="name", columns=["Datei"])])
+    config = ExcelConfig(
+        excel_folder=testdata_path,
+        excel_file_name="ok_empty.xlsx",
+        sheets=[SheetConfig(name="name", columns=["Datei"])],
+    )
     create_excel(config=config, progress_callback=mock_callback, get_data=mock_get_data)
     assert mock_create.call_count == 0
 
@@ -93,10 +111,8 @@ def test_fill_excel(mock_save, mock_load, mock_is_folder, correct_raw):
     )
     assert mock_save.called
     assert len(mock_save.call_args.kwargs["sheets"]) == 2
-    assert (
-        len(mock_save.call_args.kwargs["sheets"]["Videos"]) == 0
-    )
-    assert len(mock_save.call_args.kwargs["sheets"]["Bilder"]) == 7 # header + 6 files
+    assert len(mock_save.call_args.kwargs["sheets"]["Videos"]) == 0
+    assert len(mock_save.call_args.kwargs["sheets"]["Bilder"]) == 7  # header + 6 files
 
 
 @mock.patch("rawmaterial.raw_material.copy_file")
@@ -105,7 +121,7 @@ def test_create_picture_folder(mock_copy, correct_raw):
     create_picture_folder(
         picture_folder=correct_raw.parent,
         raw_material_folder=correct_raw,
-        progress_callback=mock_callback
+        progress_callback=mock_callback,
     )
     assert mock_copy.called
     assert mock_copy.call_count == 19

@@ -4,9 +4,13 @@ from unittest.mock import patch
 
 import input_mocks
 
-from assethandling.basemodels import (ExcelInput, ExcelOption, FolderTabInput,
-                                      RawTabInput)
-from src.main.gui_main import main
+from assethandling.basemodels import (
+    ExcelInput,
+    ExcelOption,
+    FolderTabInput,
+    RawTabInput,
+)
+from gui_main import main
 
 
 # this is a sample how to test the gui without actually doing the core work like copying
