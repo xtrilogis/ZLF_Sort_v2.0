@@ -74,18 +74,21 @@ class MainWindow(QMainWindow):
             self.ui.manuel_columns.hide()
             self.ui.frame_8.show()
             self.ui.pb_create_excel.show()
+            self.ui.pb_fill_excel.setText("Excel erstellen und Dateien eintragen")
         elif text == ExcelInputOptions.EXISTING.value:
             self.ui.help_standard_excel.hide()
             self.ui.excel_path.show()
             self.ui.manuel_columns.hide()
             self.ui.frame_8.hide()
             self.ui.pb_create_excel.hide()
+            self.ui.pb_fill_excel.setText("Dateien eintragen")
         else:
             self.ui.excel_path.hide()
             self.ui.manuel_columns.show()
             self.ui.help_standard_excel.hide()
             self.ui.frame_8.show()
             self.ui.pb_create_excel.show()
+            self.ui.pb_fill_excel.setText("Excel erstellen und Dateien eintragen")
 
     def setup_responsive_styles(self):
         self.ui.drop_util_excelfile.setStyleSheet("QLineEdit { color: 'red';}")
