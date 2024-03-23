@@ -19,7 +19,6 @@ locale.setlocale(locale.LC_TIME, "de_DE.utf8")
 
 def correct_file_structure(
     raw_material_folder: Path,
-    # dst_folder: Path,
     start: datetime,
     progress_callback,
     get_data,
@@ -50,47 +49,6 @@ def correct_file_structure(
     _copy_file_structure(
         structure=structure, dst_folder=dst_folder, progress_callback=progress_callback
     )
-
-
-def _check_if_right_structure(structure, raw_material_folder: Path, progress_callback):
-    # Todo
-    # adapt test
-    # if errors len < z.B. 10 User Fragen, ob das imm Rahmen ist oder ob verändert werden soll
-    read_structure, errors = _read_structure(
-        raw_material_folder=raw_material_folder, progress_callback=progress_callback
-    )
-    for key, value in read_structure.items():
-        pass
-    # structure == read_structure compare keys().length, compare if same amount of images and videos per Day
-    pass
-
-
-def _read_structure(raw_material_folder: Path, progress_callback):
-    errors = []
-    structure = {}
-    for a in raw_material_folder.iterdir():
-        if a.is_dir():  # Tage
-            structure[a.name] = {"Bilder": [], "Videos": []}
-            for b in a.iterdir():
-                if b.is_file():  # Videos | Bilder
-                    errors.append(
-                        f"Datei {b.parent}/{b.name} außerhalb der richtigen Struktur."
-                    )
-                    pass  # Fehler
-                if b.is_dir():
-                    for c in b.iterdir():
-                        if c.is_file():  # tatsächliche files
-                            _add_file_object(
-                                file=c,
-                                all_files=structure[a.name][b.name],
-                                progress_callback=progress_callback,
-                            )
-                        if c.is_dir():
-                            errors.append(
-                                f"Ordner {c.parent.parent}/{c.parent}/{c.name} außerhalb der richtigen Struktur."
-                            )
-
-    return structure, errors
 
 
 def _get_all_files(raw_material_folder: Path, progress_callback) -> List[File]:
@@ -163,11 +121,12 @@ def _copy_file_structure(
             folder = dst_folder / f'{chr(letter)}-{"Sonstiges"}'
 
         copied_files_nr += _copy_files(
-            value[FileType.VIDEO.value], folder / "Videos", progress_callback
-        )
-        copied_files_nr += _copy_files(
             value[FileType.IMAGE.value], folder / "Bilder", progress_callback
         )
+        copied_files_nr += _copy_files(
+            value[FileType.VIDEO.value], folder / "Videos", progress_callback
+        )
+
         letter += 1
     progress_callback.emit(f"{copied_files_nr} Dateien kopiert.")
 
