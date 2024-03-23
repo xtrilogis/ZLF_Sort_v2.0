@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from src.inputhandling import validation
+from inputhandling import validation
 
 
 def test_validate_folder(testdata_path):
