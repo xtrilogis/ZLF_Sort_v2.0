@@ -11,18 +11,20 @@ from assethandling.basemodels import ExcelConfig, File, FileType
 from excel.excelmethods import (create_emtpy_excel, load_sheets_as_df,
                                 save_sheets_to_excel)
 from fileopertations.filemethods import (copy_file, get_file_captured_date,
-                                         get_file_type, rename_files)
+                                         get_file_type, rename_files, create_folder)
 
 locale.setlocale(locale.LC_TIME, "de_DE.utf8")
 
 
 def correct_file_structure(
     raw_material_folder: Path,
-    dst_folder: Path,
+    # dst_folder: Path,
     start: datetime,
     progress_callback,
     get_data,
 ):
+    dst_folder = create_folder(raw_material_folder.parent, "New")
+
     if [x for x in dst_folder.iterdir()]:
         response = get_data(
             text=f"Im Zielordner {dst_folder.parent}/{dst_folder.name}\n"
