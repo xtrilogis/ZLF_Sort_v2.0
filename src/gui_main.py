@@ -1,5 +1,5 @@
 """Start der App"""
-# print("Python Code Starting")
+print("Python Code Starting")
 import sys
 import traceback
 from datetime import datetime
@@ -8,7 +8,7 @@ from typing import List
 
 from pydantic import ValidationError
 from PyQt5 import QtGui
-from PyQt5.QtCore import *
+from PyQt5.QtCore import QDate, QMutex, QThreadPool, QWaitCondition, pyqtSlot
 from PyQt5.QtWidgets import (QApplication, QDialog, QFileDialog, QInputDialog,
                              QLabel, QLineEdit, QMainWindow, QPlainTextEdit)
 
@@ -543,12 +543,13 @@ class MainWindow(QMainWindow):
         return cols
 
 
-def main():
-    app = QApplication(sys.argv)
+def main(app=QApplication(sys.argv)):
     window = MainWindow()
+    print(7)
     window.show()
     sys.exit(app.exec())
 
 
 if __name__ == "__main__":
     main()
+    print(5)
