@@ -35,12 +35,19 @@ def save_sheets_to_excel(sheets: Dict[str, DataFrame], path: Path):
 
 
 def load_sheets_as_df(path: Path) -> Dict[str, DataFrame]:
+    """
+    Get all sheets from the given Excel and return them in a dictionary
+    with the sheet name as key and the DataFrame as value
+    :param path: path to the Excel file
+    :return: dictionary with all sheets as keys and the DataFrame as value
+    """
     return pd.read_excel(path, sheet_name=None)
 
 
 def get_columns(excel: Path, sheet: str) -> List[str]:
     """Extracts all columns the given sheet has
     :param excel fullpath of the Excel file
-    :param sheet to search"""
+    :param sheet to search
+    :returns list of column names the given sheet has"""
     df = pd.read_excel(excel, sheet_name=sheet)
     return df.columns
