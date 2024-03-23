@@ -20,16 +20,18 @@ exe: ## Run pyinstaller
 # todo fix python path
 .PHONY: unit-tests
 unit-tests: ## run unit-tests with pytest
-	@pytest
+	python -m pytest
+	# @pytest
 
 .PHONY: unit-tests-cov
 unit-tests-cov: ## run unit-tests with pytest and show coverage (terminal + html)
-	@pytest --cov=. --cov-report term-missing --cov-report=html
+	@python -m pytest --cov=. --cov-report term-missing --cov-report=html
+	# @pytest --cov=. --cov-report term-missing --cov-report=html
 
 .PHONY: unit-tests-cov-fail
 unit-tests-cov-fail: ## run unit tests with pytest and show coverage (terminal + html) & fail if coverage too low & create files for CI
-	@pytest --cov=. --cov-report term-missing --cov-report=html --cov-fail-under=80 --junitxml=pytest.xml | tee pytest-coverage.txt
-
+	@python -m pytest --cov=. --cov-report term-missing --cov-report=html --cov-fail-under=80 --junitxml=pytest.xml | tee pytest-coverage.txt
+	# pytest --cov=. --cov-report term-missing --cov-report=html --cov-fail-under=80 --junitxml=pytest.xml | tee pytest-coverage.txt
 check-cov:
 	@python3 -m coverage report --fail-under 70
 	@count=$$(grep -o 'FAILED' pytest-coverage.txt | wc -l) && [ $$count -gt 0 ] && echo -e "\nFailed tests found: $$count \n" && exit 1 || true
@@ -37,11 +39,11 @@ check-cov:
 ##@ Clean-up
 
 clean-cov: ## remove output files from pytest & coverage
-	@rm -rf .coverage
-	@rm -rf htmlcov
-	@rm -rf pytest.xml
-	@rm -rf pytest-coverage.txt
-	@rm -rf dist
+	@rm -r .coverage
+	@rm -r htmlcov
+	@rm -r pytest.xml
+	@rm -r pytest-coverage.txt
+	# @rm -r dist
 
 ##@ Formatting
 
