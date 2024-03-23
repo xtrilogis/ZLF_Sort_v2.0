@@ -38,21 +38,21 @@ def test_rename_files(mock_rename, pyqt_signal_dummy, testdata_path):
     files = [
         File(
             full_path=testdata_path
-            / "/Rohmaterial/a 27.07. Mi/Videos/07-27-Mi_001.MP4",
+            / "Rohmaterial/a 27.07. Mi/Videos/07-27-Mi_001.MP4",
             date=datetime(2022, 7, 27, 12, 30),
             dst_folder=None,
             type=FileType.VIDEO,
         ),
         File(
             full_path=testdata_path
-            / "/Rohmaterial/a 27.07. Mi/Videos/07-27-Mi_002.AVI",
+            / "Rohmaterial/a 27.07. Mi/Videos/07-27-Mi_002.AVI",
             date=datetime(2022, 7, 27, 12, 31),
             dst_folder=None,
             type=FileType.VIDEO,
         ),
         File(
             full_path=testdata_path
-            / "/Rohmaterial/a 27.07. Mi/Videos/07-27-Mi_003.AVI",
+            / "Rohmaterial/a 27.07. Mi/Videos/07-27-Mi_003.AVI",
             date=datetime(2022, 7, 27, 12, 31),
             dst_folder=None,
             type=FileType.VIDEO,
@@ -70,13 +70,12 @@ def test_rename_files(mock_rename, pyqt_signal_dummy, testdata_path):
 
 
 def test_rename_files_bad(testdata_path, pyqt_signal_dummy):
-    errors = []
     rename_files(
         folder=testdata_path,
         all_files=[
             File(
                 full_path=testdata_path
-                / "/Rohmaterial/a 27.07. Mi/Videos/07_27_Mi-001.AVI",
+                / "Rohmaterial/a 27.07. Mi/Videos/07_27_Mi-001.AVI",
                 date=datetime(2022, 7, 27, 12, 30),
                 dst_folder=None,
                 type=FileType.VIDEO,
@@ -84,14 +83,14 @@ def test_rename_files_bad(testdata_path, pyqt_signal_dummy):
         ],
         progress_callback=pyqt_signal_dummy,
     )
-    assert len(errors) == 1
+    assert pyqt_signal_dummy.called == 2
 
     rename_files(
         folder=testdata_path,
         all_files=[
             File(
                 full_path=testdata_path
-                / "/Rohmaterial/a 27.07. Mi/Videos/07_2_Mi-001.AVI",
+                / "Rohmaterial/a 27.07. Mi/Videos/07_2_Mi-001.AVI",
                 date=datetime(2022, 7, 27, 12, 30),
                 dst_folder=None,
                 type=FileType.VIDEO,
@@ -99,7 +98,7 @@ def test_rename_files_bad(testdata_path, pyqt_signal_dummy):
         ],
         progress_callback=pyqt_signal_dummy,
     )
-    assert len(errors) == 2
+    assert pyqt_signal_dummy.called == 4
 
 
 def test_get_file_type():
@@ -113,13 +112,13 @@ def test_get_file_type():
 
 
 def test_get_captured_date(testdata_path):
-    path = testdata_path / "Zeltlagerfilm 2023"
+    path = testdata_path / "raw/unstructured/Rohmaterial"
     assert get_file_captured_date(
         path / "07-28-Fr_003.MOV", FileType.VIDEO
     ) == datetime(2023, 7, 28, 12, 36, 38)
     assert get_file_captured_date(
-        path / "Sonstiges_028.MOV", FileType.VIDEO
-    ) == datetime(2023, 8, 5, 15, 15, 22)
+        path / "07-27-Do_003.MP4", FileType.VIDEO
+    ) == datetime(2023, 7, 27, 8, 16, 56)
     assert get_file_captured_date(
         path / "07-28-Fr_229.JPG", FileType.IMAGE
     ) == datetime(2023, 7, 28, 21, 22, 36)

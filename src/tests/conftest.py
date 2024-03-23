@@ -31,7 +31,9 @@ def correct_raw():
 
 
 class Signals:
+    called: int = 0
     def emit(self, text):
+        self.called += 1
         print(text)
 
 
