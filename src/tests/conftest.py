@@ -4,7 +4,7 @@ from pathlib import Path
 
 from pytest import fixture
 
-from assethandling.basemodels import RawTabInput
+from assethandling.basemodels import RawTabInput, ExcelInput, ExcelOption
 
 ROOT = Path.cwd() / "testData"
 locale.setlocale(locale.LC_TIME, "de_DE.utf8")
@@ -44,6 +44,7 @@ def pyqt_signal_dummy():
 
 @fixture()
 def get_raw_input():
+    mock_excel = ExcelInput(option=ExcelOption.EXISTING, folder=ROOT / "ok_data.xlsx")
     data = {
         "do_structure": True,
         "do_rename": False,
@@ -51,14 +52,16 @@ def get_raw_input():
         "create_picture_folder": False,
         "raw_material_folder": ROOT / "Rohmaterial",
         "first_folder_date": datetime(2023, 7, 26),
-        "excel_file_fullpath": ROOT / "ok_data.xlsx",
+        "excel": mock_excel,
         "picture_folder": ROOT,
     }
     return RawTabInput(**data)
 
 
 @fixture()
-def get_raw_input_non_valids():
+def get_raw_input_non_valid():
+    mock_excel = ExcelInput(option=ExcelOption.EXISTING,
+                            folder=ROOT / f"Zeltlagerfilm {datetime.now().date().year}.xlsx")
     data1 = {
         "do_structure": True,
         "do_rename": False,
@@ -66,10 +69,10 @@ def get_raw_input_non_valids():
         "create_picture_folder": False,
         "raw_material_folder": ROOT / "Non existing",
         "first_folder_date": datetime(2023, 7, 26),
-        "excel_file_fullpath": ROOT
-        / f"Zeltlagerfilm {datetime.now().date().year}.xlsx",
+        "excel": mock_excel,
         "picture_folder": ROOT,
     }
+
     data2 = {
         "do_structure": True,
         "do_rename": False,
@@ -77,8 +80,7 @@ def get_raw_input_non_valids():
         "create_picture_folder": False,
         "raw_material_folder": ROOT / "Non existing",
         "first_folder_date": datetime(2023, 7, 26),
-        "excel_file_fullpath": ROOT
-        / f"Zeltlagerfilm {datetime.now().date().year}.xlsx",
+        "excel": mock_excel,
         "picture_folder": ROOT / "non-existing",
     }
     return [RawTabInput(**data1), RawTabInput(**data2)]
