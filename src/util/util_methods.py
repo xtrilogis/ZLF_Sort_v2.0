@@ -46,13 +46,13 @@ def copy_section(df: pd.DataFrame, rating_limit: int, progress_callback):
     :arg rating_limit only file with a rating equal or higher will be copied"""
     copied_files_nr: int = 0
     for count, value in enumerate(df["Abschnitt"]):
-        rating: int = int(df.loc[count, "Bewertung"])
+        rating = df.loc[count, "Bewertung"]
         if pd.isnull(value) and pd.isnull(rating):
             continue
         if pd.isnull(value):
             value = "Sonstiges"
         try:
-            if rating >= rating_limit:
+            if int(rating) >= rating_limit:
                 if pd.isnull(df.loc[count, "Dateipfad"]):
                     progress_callback.emit(
                         f"Datei konnte nicht kopiert werden: {df.loc[count, 'Datei']}"
