@@ -50,7 +50,6 @@ def run_correct_structure(
 ) -> str:
     raw_methods.correct_file_structure(
         raw_material_folder=inputs.raw_material_folder,
-        # dst_folder=inputs.raw_material_folder.parent / "New",
         start=inputs.first_folder_date,
         progress_callback=progress_callback,
         get_data=get_data,
