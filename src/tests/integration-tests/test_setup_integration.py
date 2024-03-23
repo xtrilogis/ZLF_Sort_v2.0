@@ -6,9 +6,9 @@ from assethandling.basemodels import FolderTabInput
 from gui_main import main
 
 
-@patch("src.main.runner.runners.setup_methods.create_folder")
+@patch("src.runner.runners.setup_methods.create_folder")
 @patch("sys.exit")
-@patch("src.main.gui_main.MainWindow.get_folder_input")
+@patch("src.gui_main.MainWindow.get_folder_input")
 def test_folder_setup(mock_input, _, mock_fn):
     mock_input.return_value = FolderTabInput(
         folder=Path.cwd(), date=datetime(2023, 10, 5)
@@ -25,9 +25,9 @@ def test_folder_setup(mock_input, _, mock_fn):
 TEST_PATH = Path.cwd() / "testData"
 
 
-@patch("src.main.runner.runners.setup_methods.create_folder")
+@patch("src.runner.runners.setup_methods.create_folder")
 @patch("sys.exit")
-@patch("src.main.gui_main.MainWindow.get_folder_input")
+@patch("src.gui_MainWindow.get_folder_input")
 def test_folder_setup_errors(mock_input, sys, mock_fn):
     mock_input.side_effect = [
         FolderTabInput(folder="Path.cwd()", date=datetime(2023, 10, 5)),

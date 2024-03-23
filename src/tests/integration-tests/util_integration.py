@@ -3,7 +3,7 @@ from unittest.mock import patch
 from input_mocks import TEST_PATH
 
 from assethandling.basemodels import UtilTabInput
-from src.main.gui_main import main
+from gui_main import main
 
 
 # this is a sample how to test the gui without actually doing the core work like copying
