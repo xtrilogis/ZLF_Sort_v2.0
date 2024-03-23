@@ -1,22 +1,37 @@
 from unittest import mock
+from unittest.mock import MagicMock
 
 import pandas as pd
+from datetime import datetime
 
-from rawmaterial.raw_material import (_read_structure, correct_file_structure,
+from rawmaterial.raw_material import (correct_file_structure,
                                       create_picture_folder, fill_excel,
                                       run_rename)
 
 
 @mock.patch("rawmaterial.raw_material.copy_file")
-def test_correct_folder_structure(mock_copy, correct_raw):
+def test_correct_folder_structure(mock_copy, correct_raw, testdata_path):
+    mock_callback = MagicMock()
+    mock_get_data = MagicMock(return_value="Ja")
+    correct_file_structure(correct_raw, datetime(2023, 7, 27),
+                           mock_callback, mock_get_data)
+    assert mock_copy.call_count == 29
+    f = str(testdata_path)
+    assert "a 27.07.-Do\\Bilder\\07-27-Do_001.jpg" in str(mock_copy.call_args_list[0].args[0])
+    assert "New\\a-27.07-Donnerstag\\Bilder" in  str(mock_copy.call_args_list[0].args[1])
+    assert "Sonstiges\\Bilder\\08-05-Sa_003.JPG" in str(mock_copy.call_args_list[22].args[0])
+    assert "New\\j-05.08-Samstag\\Bilder" in str(mock_copy.call_args_list[22].args[1])
+
     # TODO implementation
     # test if _copy_file_strcture is called with the right structure -> len(keys), per key len(images) and len(videos)
+    #test_path.unlink() für folder New
+    # test with full folder -> question called
+    # text mock_copy is called the right number of times and
+    # ceck the first and last element
+
+    # test for different base structures
+
     pass
-
-
-def test_read_file_structure(testdata_path):
-    # TODO implementation
-    _read_structure(raw_material_folder=testdata_path / "raw/structured1")
 
 
 @mock.patch("rawmaterial.raw_material.rename_files")

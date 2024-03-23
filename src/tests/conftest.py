@@ -27,7 +27,7 @@ def correct_excel():
 
 @fixture()
 def correct_raw():
-    return ROOT / "Rohmaterial"
+    return ROOT / "raw/structured1"
 
 
 class Signals:
