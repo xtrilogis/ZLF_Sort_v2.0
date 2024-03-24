@@ -1,4 +1,4 @@
-SHELL=/bin/bash # Interpreter
+# SHELL=/bin/bash # Interpreter
 
 .DEFAULT_GOAL := help
 .PHONY: help
@@ -24,11 +24,11 @@ unit-tests: ## run unit-tests with pytest
 
 .PHONY: unit-tests-cov
 unit-tests-cov: ## run unit-tests with pytest and show coverage (terminal + html)
-	@python -m pytest --cov=. --cov-report term-missing --cov-report=html ----ignore=tests/integration-tests
+	@python -m pytest --cov=. --cov-report term-missing --cov-report=html --ignore=tests/integration-tests
 
 .PHONY: unit-tests-cov-fail
 unit-tests-cov-fail: ## run unit tests with pytest and show coverage (terminal + html) & fail if coverage too low & create files for CI
-	@python -m pytest --cov=. --cov-report term-missing --cov-report=html --cov-fail-under=80 --junitxml=pytest.xml --ignore=tests/integration-tests | tee pytest-coverage.txt
+	@python -m pytest --cov=. --cov-report term-missing --cov-report=html --cov-fail-under=80 --junitxml=pytest.xml --ignore=tests/integration-tests
 
 check-cov:
 	@python3 -m coverage report --fail-under 70
@@ -36,11 +36,15 @@ check-cov:
 
 ##@ Clean-up
 
+clean-unit-tests-cov:
+	@del /q .coverage
+	@rmdir /s /q htmlcov
+
 clean-cov: ## remove output files from pytest & coverage
-	@rm -r .coverage
-	@rm -r htmlcov
-	@rm -r pytest.xml
-	@rm -r pytest-coverage.txt
+	@del /q .coverage
+	@rmdir /s /q htmlcov
+	@del /q pytest.xml
+	@del /q pytest-coverage.txt
 	# @rm -r dist
 
 ##@ Formatting
