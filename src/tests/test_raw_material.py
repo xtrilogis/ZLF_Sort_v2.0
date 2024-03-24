@@ -1,3 +1,4 @@
+import shutil
 from datetime import datetime
 from pathlib import Path
 from unittest import mock
@@ -32,6 +33,7 @@ def test_correct_folder_structure(mock_copy, correct_raw, testdata_path):
         mock_copy.call_args_list[22].args[0]
     )
     assert "New\\j-05.08-Samstag\\Bilder" in str(mock_copy.call_args_list[22].args[1])
+    shutil.rmtree(testdata_path / "raw/New")
 
 
 @mock.patch("rawmaterial.raw_material.copy_file")
@@ -58,6 +60,7 @@ def test_correct_folder_structure2(mock_copy, correct_raw, testdata_path):
     assert "New\\a-27.07-Donnerstag\\Bilder" in str(mock_copy.call_args_list[0].args[1])
     assert "Sonstiges\\08-05-Sa_003.JPG" in str(mock_copy.call_args_list[22].args[0])
     assert "New\\j-05.08-Samstag\\Bilder" in str(mock_copy.call_args_list[22].args[1])
+    shutil.rmtree(testdata_path / "raw/New")
 
 
 @mock.patch("rawmaterial.raw_material.rename_files")
