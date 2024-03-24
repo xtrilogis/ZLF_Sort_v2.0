@@ -30,6 +30,16 @@ def correct_raw():
     return ROOT / "raw/structured1"
 
 
+@fixture()
+def util_material_path():
+    return ROOT / "util/Rohmaterial"
+
+
+@fixture()
+def util_excel_path():
+    return ROOT / "util/Zeltlagerfilm 2023.xlsx"
+
+
 class Signals:
     called: int = 0
 
