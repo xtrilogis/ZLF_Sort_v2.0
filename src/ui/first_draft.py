@@ -452,7 +452,7 @@ class Ui_MainWindow(object):
             self.process_scrollArea_3.sizePolicy().hasHeightForWidth()
         )
         self.process_scrollArea_3.setSizePolicy(sizePolicy)
-        self.process_scrollArea_3.setMinimumSize(QtCore.QSize(300, 41))
+        self.process_scrollArea_3.setMinimumSize(QtCore.QSize(300, 100))
         self.process_scrollArea_3.setStyleSheet("")
         self.process_scrollArea_3.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.process_scrollArea_3.setFrameShadow(QtWidgets.QFrame.Plain)
@@ -476,6 +476,11 @@ class Ui_MainWindow(object):
         self.print_label_setup.setText("")
         self.print_label_setup.setAlignment(
             QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop
+        )
+        self.print_label_setup.setTextInteractionFlags(
+            QtCore.Qt.LinksAccessibleByMouse
+            | QtCore.Qt.TextSelectableByKeyboard
+            | QtCore.Qt.TextSelectableByMouse
         )
         self.print_label_setup.setObjectName("print_label_setup")
         self.verticalLayout_7.addWidget(self.print_label_setup)
@@ -1345,6 +1350,11 @@ class Ui_MainWindow(object):
         self.print_labelraw.setText("")
         self.print_labelraw.setAlignment(
             QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop
+        )
+        self.print_labelraw.setTextInteractionFlags(
+            QtCore.Qt.LinksAccessibleByMouse
+            | QtCore.Qt.TextSelectableByKeyboard
+            | QtCore.Qt.TextSelectableByMouse
         )
         self.print_labelraw.setObjectName("print_labelraw")
         self.verticalLayout.addWidget(self.print_labelraw)
@@ -2231,6 +2241,11 @@ class Ui_MainWindow(object):
         self.print_label_util.setText("")
         self.print_label_util.setAlignment(
             QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop
+        )
+        self.print_label_util.setTextInteractionFlags(
+            QtCore.Qt.LinksAccessibleByMouse
+            | QtCore.Qt.TextSelectableByKeyboard
+            | QtCore.Qt.TextSelectableByMouse
         )
         self.print_label_util.setObjectName("print_label_util")
         self.verticalLayout_18.addWidget(self.print_label_util)

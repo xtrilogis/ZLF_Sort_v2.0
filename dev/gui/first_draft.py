@@ -449,7 +449,7 @@ class Ui_MainWindow(object):
             self.process_scrollArea_3.sizePolicy().hasHeightForWidth()
         )
         self.process_scrollArea_3.setSizePolicy(sizePolicy)
-        self.process_scrollArea_3.setMinimumSize(QtCore.QSize(300, 41))
+        self.process_scrollArea_3.setMinimumSize(QtCore.QSize(300, 100))
         self.process_scrollArea_3.setStyleSheet("")
         self.process_scrollArea_3.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.process_scrollArea_3.setFrameShadow(QtWidgets.QFrame.Plain)
@@ -457,7 +457,7 @@ class Ui_MainWindow(object):
         self.process_scrollArea_3.setWidgetResizable(True)
         self.process_scrollArea_3.setObjectName("process_scrollArea_3")
         self.scrollAreaWidgetContents_3 = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents_3.setGeometry(QtCore.QRect(0, 0, 453, 62))
+        self.scrollAreaWidgetContents_3.setGeometry(QtCore.QRect(0, 0, 453, 98))
         self.scrollAreaWidgetContents_3.setObjectName("scrollAreaWidgetContents_3")
         self.verticalLayout_7 = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents_3)
         self.verticalLayout_7.setObjectName("verticalLayout_7")
@@ -473,6 +473,11 @@ class Ui_MainWindow(object):
         self.print_label_setup.setText("")
         self.print_label_setup.setAlignment(
             QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop
+        )
+        self.print_label_setup.setTextInteractionFlags(
+            QtCore.Qt.LinksAccessibleByMouse
+            | QtCore.Qt.TextSelectableByKeyboard
+            | QtCore.Qt.TextSelectableByMouse
         )
         self.print_label_setup.setObjectName("print_label_setup")
         self.verticalLayout_7.addWidget(self.print_label_setup)
@@ -746,7 +751,7 @@ class Ui_MainWindow(object):
         self.scrollArea_3.setWidgetResizable(True)
         self.scrollArea_3.setObjectName("scrollArea_3")
         self.scrollAreaWidgetContents_5 = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents_5.setGeometry(QtCore.QRect(0, 0, 698, 1038))
+        self.scrollAreaWidgetContents_5.setGeometry(QtCore.QRect(0, 0, 418, 1008))
         self.scrollAreaWidgetContents_5.setObjectName("scrollAreaWidgetContents_5")
         self.verticalLayout_19 = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents_5)
         self.verticalLayout_19.setObjectName("verticalLayout_19")
@@ -1184,7 +1189,7 @@ class Ui_MainWindow(object):
         )
         self.horizontalLayout_13.addItem(spacerItem38)
         self.pb_create_picture_folder = QtWidgets.QPushButton(self.frame_7)
-        self.pb_create_picture_folder.setMinimumSize(QtCore.QSize(175, 30))
+        self.pb_create_picture_folder.setMinimumSize(QtCore.QSize(151, 22))
         self.pb_create_picture_folder.setObjectName("pb_create_picture_folder")
         self.horizontalLayout_13.addWidget(self.pb_create_picture_folder)
         spacerItem39 = QtWidgets.QSpacerItem(
@@ -2249,8 +2254,8 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(1)
-        self.tabWidget_raw.setCurrentIndex(2)
+        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget_raw.setCurrentIndex(3)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):

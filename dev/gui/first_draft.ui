@@ -187,7 +187,7 @@ QScrollBar:horizontal
 </string>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="Start">
        <attribute name="title">
@@ -915,7 +915,7 @@ p, li { white-space: pre-wrap; }
                        <property name="minimumSize">
                         <size>
                          <width>300</width>
-                         <height>41</height>
+                         <height>100</height>
                         </size>
                        </property>
                        <property name="styleSheet">
@@ -939,7 +939,7 @@ p, li { white-space: pre-wrap; }
                           <x>0</x>
                           <y>0</y>
                           <width>453</width>
-                          <height>62</height>
+                          <height>98</height>
                          </rect>
                         </property>
                         <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -965,6 +965,9 @@ p, li { white-space: pre-wrap; }
                            </property>
                            <property name="alignment">
                             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                           </property>
+                           <property name="textInteractionFlags">
+                            <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
                            </property>
                           </widget>
                          </item>
@@ -1656,8 +1659,8 @@ Vielleicht kommt hier mal noch eine Möglichkeit die Benennung anzupassen.</stri
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>698</width>
-                       <height>1038</height>
+                       <width>418</width>
+                       <height>1008</height>
                       </rect>
                      </property>
                      <layout class="QVBoxLayout" name="verticalLayout_19">
