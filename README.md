@@ -9,6 +9,7 @@
 - [ ] Check open todos
 - [x] fix tests
 - [ ] Check dynamic Links
+- [ ] better word for inputs
 - [ ] fix integration tests
   - [ ] Test all Buttons front to end
 - [ ] Clean up unnecessary data -> only test data and programm

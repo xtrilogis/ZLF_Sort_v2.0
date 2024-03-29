@@ -1,16 +1,11 @@
 from datetime import datetime
-from pathlib import Path
 from unittest.mock import patch
 
 import input_mocks
 
-from assethandling.basemodels import (
-    ExcelInput,
-    ExcelOption,
-    FolderTabInput,
-    RawTabInput,
-)
+from assethandling.basemodels import FolderTabInput
 from gui_main import main
+
 
 # SAMPLE
 # this is a sample how to test the gui without actually doing the core work like copying
@@ -32,10 +27,11 @@ def test_main(mock_input, sys, mock_fn):
 # Though you need to fill in the inputs, button clicks shouldn't
 # result in a real creation or change in the given test data
 # This test is for clicking around the app for manual testing
+# Note that due to mocking some functions don't work properly
+# (those which create a file or folder and than use that)
 
 
 @patch("excel.excelmethods.save_sheets_to_excel")
-# @patch("runner.runners.raw_methods.create_emtpy_excel") # ersetzen
 @patch("runner.runners.raw_methods.save_sheets_to_excel")
 @patch("pathlib.Path.rename")
 @patch("pathlib.Path.mkdir")

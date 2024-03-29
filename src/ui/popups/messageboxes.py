@@ -5,7 +5,6 @@ from assethandling.asset_manager import window_icon
 from ui.stylesheets import msg_box_style
 
 
-
 def basic_messagebox(title, message):
     """Creates a basic Messagebox with Information Icon and one "ok" button
     :arg title is set as the window title
@@ -19,6 +18,7 @@ def basic_messagebox(title, message):
     msg.setStandardButtons(QMessageBox.Ok)
     msg.setDefaultButton(QMessageBox.Ok)
     return msg
+
 
 # todo clean unnecessary code
 def help_folder_creation():
