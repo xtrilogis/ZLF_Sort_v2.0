@@ -8,7 +8,7 @@ from typing import List
 
 from pydantic import ValidationError
 from PyQt5 import QtGui
-from PyQt5.QtCore import QDate, QMutex, QThreadPool, QWaitCondition, pyqtSlot
+from PyQt5.QtCore import QDate, QMutex, QThreadPool, QWaitCondition, pyqtSlot, Qt
 from PyQt5.QtWidgets import (
     QApplication,
     QDialog,
@@ -353,6 +353,7 @@ class MainWindow(QMainWindow):
     def open_problem_input(self, error: str):
         """Opens a message box displaying a given error"""
         msg = messageboxes.problem_with_input(error)
+        msg.setTextInteractionFlags(Qt.TextSelectableByMouse)
         msg.exec()
 
     @pyqtSlot(str)

@@ -1,4 +1,4 @@
-from PyQt5 import QtGui, QtWidgets, QtCore
+from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtWidgets import QMessageBox
 
 from assethandling.asset_manager import window_icon
@@ -13,11 +13,6 @@ def basic_messagebox(title, message):
     msg = QMessageBox()
     msg.setWindowTitle(title)
     msg.setText(message)
-    msg.setTextInteractionFlags(
-            QtCore.Qt.LinksAccessibleByMouse
-            | QtCore.Qt.TextSelectableByKeyboard
-            | QtCore.Qt.TextSelectableByMouse
-        )
     msg.setIcon(QMessageBox.Information)
     msg.setWindowIcon(QtGui.QIcon(str(window_icon)))
     msg.setStyleSheet(msg_box_style)
@@ -25,7 +20,7 @@ def basic_messagebox(title, message):
     msg.setDefaultButton(QMessageBox.Ok)
     return msg
 
-
+# todo clean unnecessary code
 def help_folder_creation():
     """Messagebox with ok Button and explanatory text"""
     message = (
