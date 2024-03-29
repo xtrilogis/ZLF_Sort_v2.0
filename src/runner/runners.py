@@ -78,10 +78,12 @@ def run_rename_files(inputs: RawTabInput, progress_callback, **kwargs) -> str:
 
 def run_create_excel(inputs: RawTabInput, progress_callback, get_data, **kwargs):
     if inputs.excel.option != ExcelOption.CREATE:
-        raise AttributeError("Can't call create Excel for existing Excel.")
+        raise AttributeError("Interner Fehler: Mit der Einstellung 'Existierende Excel' sollte diese Funktion nicht aufrufbar sein.")
 
     if not is_valid_folder(inputs.excel.folder):
-        raise AttributeError("The given folder is not a valid folder.")
+        raise AttributeError("Bitte gib einen gültigen Ordner zum erstellen der Excel an.\n"
+                             "Standard: Gib einen Rohmaterialordner an\n"
+                             "Manuell: Gib einen existierenden Ordner an")
 
     progress_callback.emit("Starte Excel erstellen.")
     config: ExcelConfig = _get_excel_config(excel=inputs.excel)
