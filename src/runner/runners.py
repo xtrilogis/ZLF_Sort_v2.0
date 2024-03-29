@@ -16,6 +16,7 @@ from assethandling.basemodels import (
 from foldersetup import folder_setup as setup_methods
 from inputhandling.validation import (
     is_valid_folder,
+    validate_excel_creation_settings,
     validate_excel_file,
     validate_raw,
     validate_setup_path,
@@ -77,13 +78,7 @@ def run_rename_files(inputs: RawTabInput, progress_callback, **kwargs) -> str:
 
 
 def run_create_excel(inputs: RawTabInput, progress_callback, get_data, **kwargs):
-    if inputs.excel.option != ExcelOption.CREATE:
-        raise AttributeError("Interner Fehler: Mit der Einstellung 'Existierende Excel' sollte diese Funktion nicht aufrufbar sein.")
-
-    if not is_valid_folder(inputs.excel.folder):
-        raise AttributeError("Bitte gib einen gültigen Ordner zum erstellen der Excel an.\n"
-                             "Standard: Gib einen Rohmaterialordner an\n"
-                             "Manuell: Gib einen existierenden Ordner an")
+    validate_excel_creation_settings(inputs.excel)
 
     progress_callback.emit("Starte Excel erstellen.")
     config: ExcelConfig = _get_excel_config(excel=inputs.excel)
@@ -146,7 +141,7 @@ def run_create_picture_folder(inputs: RawTabInput, progress_callback, **kwargs) 
 def run_process_raw_full(inputs: RawTabInput, progress_callback, get_data) -> str:
     validate_raw(inputs)
     mapping = {
-        "Korrekte Ordnerstruktur": [inputs.do_structure, run_correct_structure],
+        # "Korrekte Ordnerstruktur": [inputs.do_structure, run_correct_structure],
         "Umbenennen": [inputs.do_rename, run_rename_files],
         "Dateien in Excel schreiben": [inputs.fill_excel, run_fill_excel],
         "Bilderordner erstellen": [

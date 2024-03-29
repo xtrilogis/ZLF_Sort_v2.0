@@ -6,7 +6,7 @@ from typing import List
 import pandas as pd
 
 from assethandling import constants
-from assethandling.basemodels import RawTabInput
+from assethandling.basemodels import ExcelInput, ExcelOption, RawTabInput
 from excel.excelmethods import load_sheets_as_df
 
 
@@ -16,7 +16,7 @@ def is_valid_folder(element: Path) -> bool:
 
 def validate_excel_file(excel_file: Path):
     """Raises a ValueError, if there is a problem with the excel-file"""
-    if not excel_file.exists():
+    if not excel_file.exists() and not excel_file.is_file():
         raise ValueError("Bitte gültige Excel angeben.")
     errors: List[str] = []
     sheets = load_sheets_as_df(excel_file)
@@ -67,22 +67,37 @@ def validate_setup_path(path: Path):
         )
 
 
+def validate_excel_creation_settings(excel: ExcelInput):
+    if excel.option != ExcelOption.CREATE:
+        raise AttributeError(
+            "Interner Fehler: Mit der Einstellung 'Existierende Excel' sollte diese Funktion nicht aufrufbar sein."
+        )
+
+    if not is_valid_folder(excel.folder):
+        raise AttributeError(
+            "Bitte gib einen gültigen Ordner zum erstellen der Excel an.\n"
+            "Standard: Gib einen Rohmaterialordner an\n"
+            "Manuell: Gib einen existierenden Ordner an"
+        )
+
+
 def validate_raw(inputs: RawTabInput):
-    errors = []
     if not is_valid_folder(inputs.raw_material_folder):
-        errors.append("Bitte einen gültigen Rohmaterialordner angeben.")
+        raise ValueError("Bitte einen gültigen Rohmaterialordner angeben.")
     if inputs.do_structure and not isinstance(
         inputs.first_folder_date, datetime
     ):  # isinstance übernimmt pydantic
-        errors.append(
+        raise ValueError(
             "Bitte ein gültiges Datum angeben, ab dem die Ordner erstellt werden."
         )
     if inputs.fill_excel:
-        validate_excel_file(inputs.excel.full_path)
+        if inputs.excel.option == ExcelOption.EXISTING:
+            validate_excel_file(inputs.excel.full_path)
+        else:
+            validate_excel_creation_settings(inputs.excel)
+
     if inputs.create_picture_folder and inputs.picture_folder.drive == "":
-        errors.append("Bitte eine gültigen Pfad für die Bilder angeben.")
-    if errors:
-        raise ValueError("\n".join(errors))
+        raise ValueError("Bitte eine gültigen Pfad für die Bilder angeben.")
 
 
 def validate_util_paths(raw_material_folder: Path, excel_full_filepath: Path):
