@@ -463,6 +463,7 @@ class Ui_MainWindow(object):
         self.scrollAreaWidgetContents_3.setGeometry(QtCore.QRect(0, 0, 453, 62))
         self.scrollAreaWidgetContents_3.setObjectName("scrollAreaWidgetContents_3")
         self.verticalLayout_7 = QtWidgets.QVBoxLayout(self.scrollAreaWidgetContents_3)
+        self.verticalLayout_7.setContentsMargins(9,4,9,9)
         self.verticalLayout_7.setObjectName("verticalLayout_7")
         self.print_label_setup = QtWidgets.QLabel(self.scrollAreaWidgetContents_3)
         font = QtGui.QFont()

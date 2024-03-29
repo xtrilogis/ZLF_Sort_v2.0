@@ -333,7 +333,7 @@ class MainWindow(QMainWindow):
     @staticmethod
     def add_label_text(msg, label: QLabel):
         text = label.text()
-        label.setText(f"{text}\n{msg}")
+        label.setText(f"{text}\n{msg}".strip())
 
     # ##### PyQt Slots ##### #
     @pyqtSlot(str)
