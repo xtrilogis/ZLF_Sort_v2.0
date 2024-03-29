@@ -58,7 +58,7 @@ format-isort: ## isort (import formatter)
 	@isort .
 
 .PHONY: format
-format: format-black format-isort ## run all formatters
+format: format-isort format-black ## run all formatters
 
 ##@ Linting
 
