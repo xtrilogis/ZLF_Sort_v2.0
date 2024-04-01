@@ -141,21 +141,21 @@ def test_fill_excel_creation(mock_input, _, mock_create, mock_save):
     assert mock_save.call_count == 1
 
 
-@patch("PyQt5.QtWidgets.QInputDialog.getText")
-@patch("src.main.runner.runners.raw_methods.save_sheets_to_excel")
+@patch("PyQt5.QtWidgets.QInputDialog.getItem")
+@patch("runner.runners.raw_methods.save_sheets_to_excel")
 @patch("excel.excelmethods.save_sheets_to_excel")
 @patch("sys.exit")
-@patch("src.main.gui_main.MainWindow.get_raw_input")
+@patch("gui_main.MainWindow.get_raw_input")
 def test_fill_excel_creation_override(
     mock_input, _, mock_fn1, mock_fn, mock_input_dialog
 ):
-    mock_input_dialog.return_value = "j", True
+    mock_input_dialog.return_value = "Ja", True
     mock_input.return_value = RawTabInput(
-        raw_material_folder=TEST_PATH,
+        raw_material_folder=TEST_PATH / "raw/structured1",
         first_folder_date=TEST_DATE,
         excel=ExcelInput(
             option=ExcelOption.CREATE,
-            name="ok_empty.xlsx",
+            name="Zeltlagerfilm custom.xlsx",
             folder=TEST_PATH,
         ),
         picture_folder=TEST_PATH,
@@ -168,12 +168,12 @@ def test_fill_excel_creation_override(
     assert "Bilder" in mock_fn.call_args_list[0].kwargs["sheets"].keys()
 
 
-@patch("src.main.runner.runners.raw_methods.save_sheets_to_excel")
+@patch("runner.runners.raw_methods.save_sheets_to_excel")
 @patch("sys.exit")
-@patch("src.main.gui_main.MainWindow.get_raw_input")
+@patch("gui_main.MainWindow.get_raw_input")
 def test_fill_excel(mock_input, _, mock_fn):
     mock_input.return_value = RawTabInput(
-        raw_material_folder=TEST_PATH,
+        raw_material_folder=TEST_PATH / "raw/structured1",
         first_folder_date=TEST_DATE,
         excel=ExcelInput(
             option=ExcelOption.EXISTING,
@@ -184,12 +184,15 @@ def test_fill_excel(mock_input, _, mock_fn):
     )
     main()
     assert mock_fn.call_count == 1
+    assert mock_fn.call_args_list[0][1]["path"] == TEST_PATH / "ok_empty.xlsx"
+    assert mock_fn.call_args_list[0][1]["sheets"]["Videos"].shape[0] == 13
 
 
-@patch("src.main.runner.runners.raw_methods.save_sheets_to_excel")
+@patch("runner.runners.raw_methods.save_sheets_to_excel")
 @patch("sys.exit")
-@patch("src.main.gui_main.MainWindow.get_raw_input")
+@patch("gui_main.MainWindow.get_raw_input")
 def test_fill_excel_errors(mock_input, _, mock_fn):
+    # How to use: click the button for every side effect
     mock_input.side_effect = [
         RawTabInput(
             raw_material_folder=TEST_PATH,
