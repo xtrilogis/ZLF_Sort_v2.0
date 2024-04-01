@@ -231,9 +231,9 @@ def test_fill_excel_errors(mock_input, _, mock_fn):
 
 
 @patch("pathlib.Path.mkdir")
-@patch("src.main.runner.runners.raw_methods.copy_file")
+@patch("runner.runners.raw_methods.copy_file")
 @patch("sys.exit")
-@patch("src.main.gui_main.MainWindow.get_raw_input")
+@patch("gui_main.MainWindow.get_raw_input")
 def test_run_create_picture_folder(mock_input, _, mock_fn, __):
     mock_input.return_value = RawTabInput(
         raw_material_folder=TEST_PATH / "raw/structured1",
@@ -242,13 +242,13 @@ def test_run_create_picture_folder(mock_input, _, mock_fn, __):
         picture_folder=TEST_PATH,
     )
     main()
-    assert mock_fn.call_count == 18
+    assert mock_fn.call_count == 19
 
 
 @patch("pathlib.Path.mkdir")
-@patch("src.main.runner.runners.raw_methods.copy_file")
+@patch("runner.runners.raw_methods.copy_file")
 @patch("sys.exit")
-@patch("src.main.gui_main.MainWindow.get_raw_input")
+@patch("gui_main.MainWindow.get_raw_input")
 def test_run_create_picture_folder_errors(mock_input, _, mock_fn, __):
     mock_input.return_value = RawTabInput(
         raw_material_folder=TEST_PATH / "non existent",
@@ -256,6 +256,20 @@ def test_run_create_picture_folder_errors(mock_input, _, mock_fn, __):
         excel=excel_input_standard,
         picture_folder=TEST_PATH,
     )
+    mock_input.side_effect = [
+        RawTabInput(
+            raw_material_folder=TEST_PATH / "non existent",
+            first_folder_date=datetime(2023, 7, 27),
+            excel=excel_input_standard,
+            picture_folder=TEST_PATH,
+        ),
+        RawTabInput(
+            raw_material_folder=TEST_PATH / "raw/structured1",
+            first_folder_date=datetime(2023, 7, 27),
+            excel=excel_input_standard,
+            picture_folder=TEST_PATH / "non existent",
+        )
+    ]
     main()
     assert mock_fn.call_count == 0
 

@@ -8,7 +8,7 @@ from typing import List
 
 from pydantic import ValidationError
 from PyQt5 import QtGui
-from PyQt5.QtCore import QDate, QMutex, Qt, QThreadPool, QWaitCondition, pyqtSlot, QSize
+from PyQt5.QtCore import QDate, QMutex, Qt, QThreadPool, QWaitCondition, pyqtSlot
 from PyQt5.QtWidgets import (
     QApplication,
     QDialog,
@@ -399,7 +399,6 @@ class MainWindow(QMainWindow):
             "first_folder_date": self.ui.date_correct_fs.date().toPyDate(),
             "excel": self._get_excel_input(),
         }
-        # todo checken, ob Rohmaterialordner existiert
         data["picture_folder"] = self._get_picture_folder(data["raw_material_folder"])
         return RawTabInput(**data)
 
