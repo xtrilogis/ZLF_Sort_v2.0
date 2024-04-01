@@ -14,6 +14,9 @@ locale.setlocale(locale.LC_TIME, "de_DE.utf8")
 def testdata_path():
     return ROOT
 
+@fixture()
+def dummy_folder():
+    return ROOT / "dummy folder"
 
 @fixture()
 def dummy_file():
