@@ -61,10 +61,10 @@ def test_run_copy_sections_errors(mock_input, _, mock_fn, __):
     assert mock_fn.call_count == 0
 
 
-@patch("src.main.gui_main.MainWindow.util_buttons_status")
-@patch("src.main.runner.runners.util_methods.filemethods.copy_file")
+@patch("gui_main.MainWindow.util_buttons_status")
+@patch("runner.runners.util_methods.filemethods.copy_file")
 @patch("sys.exit")
-@patch("src.main.gui_main.MainWindow.get_util_input")
+@patch("gui_main.MainWindow.get_util_input")
 def test_run_copy_selection(mock_input, _, mock_fn, __):
     mock_input.return_value = UtilTabInput(
         raw_material_folder=TEST_PATH / "util/Rohmaterial",
@@ -78,10 +78,10 @@ def test_run_copy_selection(mock_input, _, mock_fn, __):
     assert mock_fn.call_count == 13
 
 
-@patch("src.main.gui_main.MainWindow.util_buttons_status")
-@patch("src.main.runner.runners.util_methods.filemethods.copy_file")
+@patch("gui_main.MainWindow.util_buttons_status")
+@patch("runner.runners.util_methods.filemethods.copy_file")
 @patch("sys.exit")
-@patch("src.main.gui_main.MainWindow.get_util_input")
+@patch("gui_main.MainWindow.get_util_input")
 def test_run_copy_selection_errors(mock_input, _, mock_fn, __):
     mock_input.side_effect = [
         UtilTabInput(
@@ -96,8 +96,8 @@ def test_run_copy_selection_errors(mock_input, _, mock_fn, __):
             raw_material_folder=TEST_PATH / "util/Rohmaterial",
             excel_full_filepath=TEST_PATH / "util/Zeltlagerfilm 2023.xlsx",
             do_selections=True,
-            videos_columns_selection=["Outtakes"],
-            picture_columns_selection=["Outtakes"],
+            videos_columns_selection=["Outtakes (x)"],
+            picture_columns_selection=["Outtakes (x)"],
             marker="marker",
         ),
         UtilTabInput(
@@ -121,10 +121,10 @@ def test_run_copy_selection_errors(mock_input, _, mock_fn, __):
     assert mock_fn.call_count == 0
 
 
-@patch("src.main.gui_main.MainWindow.util_buttons_status")
-@patch("src.main.runner.runners.util_methods.filemethods.copy_file")
+@patch("gui_main.MainWindow.util_buttons_status")
+@patch("runner.runners.util_methods.filemethods.copy_file")
 @patch("sys.exit")
-@patch("src.main.gui_main.MainWindow.get_util_input")
+@patch("gui_main.MainWindow.get_util_input")
 def test_run_search(mock_input, _, mock_fn, __):
     mock_input.return_value = UtilTabInput(
         raw_material_folder=TEST_PATH / "util/Rohmaterial",
@@ -139,10 +139,10 @@ def test_run_search(mock_input, _, mock_fn, __):
     assert mock_fn.call_count == 8
 
 
-@patch("src.main.gui_main.MainWindow.util_buttons_status")
-@patch("src.main.runner.runners.util_methods.filemethods.copy_file")
+@patch("gui_main.MainWindow.util_buttons_status")
+@patch("runner.runners.util_methods.filemethods.copy_file")
 @patch("sys.exit")
-@patch("src.main.gui_main.MainWindow.get_util_input")
+@patch("gui_main.MainWindow.get_util_input")
 def test_run_search_errors(mock_input, _, mock_fn, __):
     mock_input.side_effect = [
         UtilTabInput(
@@ -168,7 +168,7 @@ def test_run_search_errors(mock_input, _, mock_fn, __):
             excel_full_filepath=TEST_PATH / "util/Zeltlagerfilm 2023.xlsx",
             do_search=True,
             videos_columns_search=["Not-existing"],  # 4 (2)
-            picture_columns_search=["Bemerkung"],  # 4 (2), 6 (4)
+            picture_columns_search=[""],  # 4 (2), 6 (4)
             keywords=["name", "Name", "Test"],
             rating_search=4,
         ),
@@ -186,10 +186,10 @@ def test_run_search_errors(mock_input, _, mock_fn, __):
     assert mock_fn.call_count == 0
 
 
-@patch("src.main.gui_main.MainWindow.util_buttons_status")
-@patch("src.main.runner.runners.util_methods.filemethods.copy_file")
+@patch("gui_main.MainWindow.util_buttons_status")
+@patch("runner.runners.util_methods.filemethods.copy_file")
 @patch("sys.exit")
-@patch("src.main.gui_main.MainWindow.get_util_input")
+@patch("gui_main.MainWindow.get_util_input")
 def test_run_create_rated_picture_folder(mock_input, _, mock_fn, __):
     mock_input.return_value = UtilTabInput(
         raw_material_folder=TEST_PATH / "util/Rohmaterial",
@@ -201,10 +201,10 @@ def test_run_create_rated_picture_folder(mock_input, _, mock_fn, __):
     assert mock_fn.call_count == 10
 
 
-@patch("src.main.gui_main.MainWindow.util_buttons_status")
-@patch("src.main.runner.runners.util_methods.filemethods.copy_file")
+@patch("gui_main.MainWindow.util_buttons_status")
+@patch("runner.runners.util_methods.filemethods.copy_file")
 @patch("sys.exit")
-@patch("src.main.gui_main.MainWindow.get_util_input")
+@patch("gui_main.MainWindow.get_util_input")
 def test_run_create_rated_picture_folder_errors(mock_input, _, mock_fn, __):
     mock_input.side_effect = [
         UtilTabInput(
@@ -241,11 +241,11 @@ def test_run_statistics(mock_input, _, __):
     main()
 
 
-@patch("src.main.gui_main.MainWindow.util_buttons_status")
+@patch("gui_main.MainWindow.util_buttons_status")
 @patch("pathlib.Path.mkdir")
-@patch("src.main.runner.runners.util_methods.filemethods.copy_file")
+@patch("runner.runners.util_methods.filemethods.copy_file")
 @patch("sys.exit")
-@patch("src.main.gui_main.MainWindow.get_util_input")
+@patch("gui_main.MainWindow.get_util_input")
 def test_run_process_util_full(mock_input, _, mock_fn, __, ___):
     mock_input.return_value = UtilTabInput(
         raw_material_folder=TEST_PATH / "util/Rohmaterial",
