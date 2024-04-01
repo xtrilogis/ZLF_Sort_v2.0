@@ -107,7 +107,7 @@ def validate_util_paths(raw_material_folder: Path, excel_full_filepath: Path):
 
 
 def validate_rating(input_: UtilTabInput):
-    if 2 > input_.rating_search or 7 < input_.rating_search or \
-        2 > input_.rating_pictures or 7 < input_.rating_pictures or \
-        2 > input_.rating_section or 7 < input_.rating_section:
-        raise ValueError("Bitte gib ein Rating zwischen 2 und 7 an.")
+    ratings: List[int] = [input_.rating_search, input_.rating_pictures, input_.rating_section]
+    for value in ratings:
+        if value != -1 and (value < 2 or value > 7):
+            raise ValueError("Bitte gib ein Rating zwischen 2 und 7 an.")
