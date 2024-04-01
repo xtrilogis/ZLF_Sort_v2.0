@@ -194,9 +194,10 @@ def create_excel(config: ExcelConfig, progress_callback, get_data):
         return path
     except FileExistsError:
         response: str = get_data(
-            text="Excel existiert bereits. Soll sie überschrieben werden? j/n"
+            text="Excel existiert bereits. Soll sie überschrieben werden? Ja/Nein"
         )
         if response == "Ja":
+            progress_callback.emit("Excel-Datei wird überschrieben.")
             path = create_emtpy_excel(config=config, override=True)
             progress_callback.emit("Excel-Datei erfolgreich erstellt.")
             return path
