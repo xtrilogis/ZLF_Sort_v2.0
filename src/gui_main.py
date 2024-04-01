@@ -8,7 +8,7 @@ from typing import List
 
 from pydantic import ValidationError
 from PyQt5 import QtGui
-from PyQt5.QtCore import QDate, QMutex, Qt, QThreadPool, QWaitCondition, pyqtSlot
+from PyQt5.QtCore import QDate, QMutex, Qt, QThreadPool, QWaitCondition, pyqtSlot, QSize
 from PyQt5.QtWidgets import (
     QApplication,
     QDialog,
@@ -72,8 +72,12 @@ class MainWindow(QMainWindow):
         )
 
         self.setup_responsive_styles()
+        self.setup_gif()
 
+    def setup_gif(self):
         self.movie = QtGui.QMovie(gif)
+        self.ui.process_gif_label.setMaximumSize(55, 26)
+        self.ui.process_gif_label_2.setMaximumSize(55, 26)
         self.ui.process_gif_label.setMovie(self.movie)
         self.ui.process_gif_label_2.setMovie(self.movie)
         self.movie.start()
