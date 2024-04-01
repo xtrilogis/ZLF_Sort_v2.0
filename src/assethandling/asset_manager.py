@@ -30,5 +30,5 @@ def load_settings() -> dict:
 settings: dict = load_settings()
 window_icon = str(resource_path("window_icon.png"))
 folder_icon = str(resource_path("folder-icon.png"))
-gif = str(resource_path("output-onlinegiftools.gif"))
+gif = str(resource_path("loading (1).gif")) #"output-onlinegiftools.gif"))
 splash_gif = str(resource_path("splash.gif"))
