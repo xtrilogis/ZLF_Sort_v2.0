@@ -39,7 +39,8 @@ def correct_file_structure(
             f"Sollen diese Überschrieben werden? j/n"
         )
         if response != "Ja":
-            return ["Abbruch. Zielordner nicht leer"]
+            progress_callback.emit("Abbruch. Zielordner nicht leer")
+            return
 
     all_files: List[File] = _get_all_files(
         raw_material_folder=raw_material_folder, progress_callback=progress_callback
