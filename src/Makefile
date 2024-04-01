@@ -26,6 +26,10 @@ unit-tests: ## run unit-tests with pytest
 unit-tests-cov: ## run unit-tests with pytest and show coverage (terminal + html)
 	@python -m pytest --cov=. --cov-report term-missing --cov-report=html --ignore=tests/integration-tests
 
+.PHONY: unit-integr-tests-cov
+unit-integr-tests-cov: ## run unit-tests with pytest and show coverage (terminal + html)
+	@python -m pytest --cov=. --cov-report term-missing --cov-report=html
+
 .PHONY: unit-tests-cov-fail
 unit-tests-cov-fail: ## run unit tests with pytest and show coverage (terminal + html) & fail if coverage too low & create files for CI
 	@python -m pytest --cov=. --cov-report term-missing --cov-report=html --cov-fail-under=80 --junitxml=pytest.xml --ignore=tests/integration-tests
