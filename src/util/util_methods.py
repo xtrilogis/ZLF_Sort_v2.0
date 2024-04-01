@@ -60,7 +60,7 @@ def copy_section(df: pd.DataFrame, rating_limit: int, progress_callback):
                     continue
 
                 file_fullpath = Path(df.loc[count, "Dateipfad"])
-                section = value.strip()
+                section = str(value).strip()
                 destination_folder = _get_section_dst_folder(
                     file_fullpath=file_fullpath, section=section
                 )
@@ -70,7 +70,7 @@ def copy_section(df: pd.DataFrame, rating_limit: int, progress_callback):
                 copied_files_nr += 1
         except (AttributeError, ValueError) as e:
             progress_callback.emit(str(e))
-        except FileNotFoundError as e:
+        except FileNotFoundError:
             progress_callback.emit(f"Datei nicht gefunden: {df.loc[count, 'Datei']}")
     progress_callback.emit(f"{copied_files_nr} Dateien kopiert.")
 
@@ -90,7 +90,6 @@ def _get_section_dst_folder(file_fullpath: Path, section: str) -> Path:
 def copy_selections(
     df: pd.DataFrame, raw_path: Path, columns: List[str], marker: str, progress_callback
 ):
-    problems = []
     dst_folder = raw_path.parent / "Schnittmaterial" / "Selektionen"
     for column in columns:
         if column in df.columns:
@@ -143,7 +142,7 @@ def _copy_marked_files(
     for count, value in enumerate(df[column]):
         if pd.isnull(value):
             pass
-        elif marker in value and df.loc[count, "Bewertung"] >= rating:
+        elif marker in str(value) and df.loc[count, "Bewertung"] >= rating:
             if pd.isnull(df.loc[count, "Dateipfad"]):
                 progress_callback.emit(
                     f"Datei konnte nicht kopiert werden: {df.loc[count, 'Datei']}"
@@ -155,7 +154,7 @@ def _copy_marked_files(
             copied_files_nr += 1
 
     progress_callback.emit(
-        f"{copied_files_nr} Dateien kopiert. \n für Spalte {column}, Marker: {marker}"
+        f"{copied_files_nr} Dateien kopiert. \n- für Spalte {column}, Marker: {marker}"
     )
 
 
