@@ -56,7 +56,7 @@ def test_run_correct_structure_errors(mock_input, _, mock_fn, mock_dialog):
 
 @patch("pathlib.Path.rename")
 @patch("sys.exit")
-@patch("src.main.gui_main.MainWindow.get_raw_input")
+@patch("gui_main.MainWindow.get_raw_input")
 def test_run_rename(mock_input, _, mock_fn):
     mock_input.return_value = RawTabInput(
         raw_material_folder=TEST_PATH / "raw/structured1",
@@ -65,13 +65,13 @@ def test_run_rename(mock_input, _, mock_fn):
         picture_folder=TEST_PATH,
     )
     main()
-    assert mock_fn.call_count == 28
+    assert mock_fn.call_count == 29
     assert Path(mock_fn.call_args_list[0].args[0]).name == "07_27_Do-001.jpg"
 
 
 @patch("pathlib.Path.rename")
 @patch("sys.exit")
-@patch("src.main.gui_main.MainWindow.get_raw_input")
+@patch("gui_main.MainWindow.get_raw_input")
 def test_run_rename_errors(mock_input, _, mock_fn):
     mock_input.return_value = RawTabInput(
         raw_material_folder=TEST_PATH / "non existent",
