@@ -20,7 +20,7 @@ from inputhandling.validation import (
     validate_excel_file,
     validate_raw,
     validate_setup_path,
-    validate_util_paths,
+    validate_util_paths, validate_rating,
 )
 from rawmaterial import raw_material as raw_methods
 from util import util_methods as util_methods
@@ -172,6 +172,7 @@ def util_process():
                 raw_material_folder=inputs.raw_material_folder,
                 excel_full_filepath=inputs.excel_full_filepath,
             )
+            validate_rating(inputs)
             progress_callback.emit("Inputs validiert und Excel eingelesen.")
 
             msg = func(

@@ -6,7 +6,7 @@ from typing import List
 import pandas as pd
 
 from assethandling import constants
-from assethandling.basemodels import ExcelInput, ExcelOption, RawTabInput
+from assethandling.basemodels import ExcelInput, ExcelOption, RawTabInput, UtilTabInput
 from excel.excelmethods import load_sheets_as_df
 
 
@@ -104,3 +104,10 @@ def validate_util_paths(raw_material_folder: Path, excel_full_filepath: Path):
     if not is_valid_folder(raw_material_folder):
         raise ValueError("Bitte gib einen gültigen Rohmaterialordner an.")
     validate_excel_file(excel_full_filepath)
+
+
+def validate_rating(input_: UtilTabInput):
+    if 2 > input_.rating_search or 7 < input_.rating_search or \
+        2 > input_.rating_pictures or 7 < input_.rating_pictures or \
+        2 > input_.rating_section or 7 < input_.rating_section:
+        raise ValueError("Bitte gib ein Rating zwischen 2 und 7 an.")
