@@ -2683,7 +2683,7 @@ class Ui_MainWindow(object):
                 "MainWindow", "Zeichen, dass zur Markierung der Dateien benutzt wurde."
             )
         )
-        self.marker_label_2.setText(_translate("MainWindow", "Suchbegriff(e):"))
+        self.marker_label_2.setText(_translate("MainWindow", "Suchbegriff(e) (getrennt durch ','):"))
         self.marker_search.setToolTip(_translate("MainWindow", "Standard: x"))
         self.marker_search.setPlaceholderText(
             _translate("MainWindow", "Suchbegriff(e)")
