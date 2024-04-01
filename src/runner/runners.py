@@ -110,12 +110,11 @@ def _get_excel_config(excel: ExcelInput) -> ExcelConfig:
 @raw_process()
 def run_fill_excel(inputs: RawTabInput, progress_callback, get_data, **kwargs) -> str:
     if inputs.excel.option == ExcelOption.CREATE:
+        progress_callback.emit("Excel-Datei wird erstellt.")
         run_create_excel(inputs, progress_callback, get_data)
 
-    errors = validate_excel_file(inputs.excel.full_path)
-    if errors:
-        errors.insert(0, "Dateien in Excel schreiben.")
-        raise ValueError("\n".join(errors))
+    validate_excel_file(inputs.excel.full_path)
+
     raw_methods.fill_excel(
         excel=inputs.excel.full_path,
         raw_material_folder=inputs.raw_material_folder,
