@@ -187,7 +187,7 @@ QScrollBar:horizontal
 </string>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="Start">
        <attribute name="title">
@@ -943,6 +943,9 @@ p, li { white-space: pre-wrap; }
                          </rect>
                         </property>
                         <layout class="QVBoxLayout" name="verticalLayout_7">
+                         <property name="topMargin">
+                          <number>4</number>
+                         </property>
                          <item>
                           <widget class="QLabel" name="print_label_setup">
                            <property name="font">
@@ -961,7 +964,7 @@ p, li { white-space: pre-wrap; }
                             <string notr="true"/>
                            </property>
                            <property name="text">
-                            <string/>
+                            <string>asdfasdfTT</string>
                            </property>
                            <property name="alignment">
                             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -1292,7 +1295,7 @@ p, li { white-space: pre-wrap; }
                  <enum>QTabWidget::North</enum>
                 </property>
                 <property name="currentIndex">
-                 <number>3</number>
+                 <number>2</number>
                 </property>
                 <property name="elideMode">
                  <enum>Qt::ElideNone</enum>
@@ -1659,8 +1662,8 @@ Vielleicht kommt hier mal noch eine Möglichkeit die Benennung anzupassen.</stri
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>418</width>
-                       <height>1008</height>
+                       <width>698</width>
+                       <height>1038</height>
                       </rect>
                      </property>
                      <layout class="QVBoxLayout" name="verticalLayout_19">
@@ -3068,7 +3071,7 @@ p, li { white-space: pre-wrap; }
                       <x>0</x>
                       <y>0</y>
                       <width>361</width>
-                      <height>285</height>
+                      <height>281</height>
                      </rect>
                     </property>
                     <layout class="QVBoxLayout" name="verticalLayout">
@@ -3103,6 +3106,12 @@ p, li { white-space: pre-wrap; }
                  </item>
                  <item>
                   <widget class="QLabel" name="process_gif_label">
+                   <property name="minimumSize">
+                    <size>
+                     <width>0</width>
+                     <height>25</height>
+                    </size>
+                   </property>
                    <property name="maximumSize">
                     <size>
                      <width>90</width>
@@ -3110,7 +3119,7 @@ p, li { white-space: pre-wrap; }
                     </size>
                    </property>
                    <property name="text">
-                    <string/>
+                    <string>asdfasdsaasgT</string>
                    </property>
                    <property name="scaledContents">
                     <bool>true</bool>
