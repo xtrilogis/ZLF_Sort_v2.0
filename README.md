@@ -12,6 +12,7 @@
 - [ ] better word for inputs
 - [ ] fix integration tests
   - [ ] Test all Buttons front to end
+  - [x] refactor so that every test is ui start, button, close; no side effects?
 - [ ] Clean up unnecessary data -> only test data and programm
 - [ ] Create installer
   - [ ] document in Obsidian
@@ -20,6 +21,7 @@
   - [ ] 
 - [ ] Fill in Read Me
 - [ ] Make commands von job visulisier 
+- 
 
 ui.textEdit->verticalScrollBar()->setValue(ui.textEdit->verticalScrollBar()->maximum());
 x = self.scrollArea.verticalScrollBar().maximum()

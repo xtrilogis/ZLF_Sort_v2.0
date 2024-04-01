@@ -1,6 +1,7 @@
 import shutil
 from datetime import datetime
 from pathlib import Path
+from typing import List
 from unittest.mock import patch
 
 from input_mocks import TEST_DATE, TEST_PATH, excel_input_manual, excel_input_standard
@@ -193,7 +194,7 @@ def test_fill_excel(mock_input, _, mock_fn):
 @patch("gui_main.MainWindow.get_raw_input")
 def test_fill_excel_errors(mock_input, _, mock_fn):
     # How to use: click the button for every side effect
-    mock_input.side_effect = [
+    mocks: List[RawTabInput] = [
         RawTabInput(
             raw_material_folder=TEST_PATH,
             first_folder_date=TEST_DATE,
@@ -225,9 +226,10 @@ def test_fill_excel_errors(mock_input, _, mock_fn):
             picture_folder=TEST_PATH,
         ),
     ]
-
-    main()
-    assert mock_fn.call_count == 0
+    for mock in mocks:
+        mock_input.return_value = mock
+        main()
+        assert mock_fn.call_count == 0
 
 
 @patch("pathlib.Path.mkdir")
@@ -256,7 +258,7 @@ def test_run_create_picture_folder_errors(mock_input, _, mock_fn, __):
         excel=excel_input_standard,
         picture_folder=TEST_PATH,
     )
-    mock_input.side_effect = [
+    mocks = [
         RawTabInput(
             raw_material_folder=TEST_PATH / "non existent",
             first_folder_date=datetime(2023, 7, 27),
@@ -270,8 +272,10 @@ def test_run_create_picture_folder_errors(mock_input, _, mock_fn, __):
             picture_folder=TEST_PATH / "non existent",
         )
     ]
-    main()
-    assert mock_fn.call_count == 0
+    for mock in mocks:
+        mock_input.return_value = mock
+        main()
+        assert mock_fn.call_count == 0
 
 
 @patch("runner.runners.raw_methods.create_emtpy_excel")
