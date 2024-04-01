@@ -1,17 +1,16 @@
 from unittest.mock import patch
 
 from input_mocks import TEST_PATH
-
 from assethandling.basemodels import UtilTabInput
 from gui_main import main
 
 
 # this is a sample how to test the gui without actually doing the core work like copying
-@patch("src.main.gui_main.MainWindow.util_buttons_status")
+@patch("gui_main.MainWindow.util_buttons_status")
 @patch("pathlib.Path.mkdir")
-@patch("src.main.runner.runners.util_methods.filemethods.copy_file")
+@patch("runner.runners.util_methods.filemethods.copy_file")
 @patch("sys.exit")
-@patch("src.main.gui_main.MainWindow.get_util_input")
+@patch("gui_main.MainWindow.get_util_input")
 def test_run_copy_sections(mock_input, _, mock_fn, __, ___):
     mock_input.return_value = UtilTabInput(
         raw_material_folder=TEST_PATH / "util/Rohmaterial",
@@ -22,20 +21,15 @@ def test_run_copy_sections(mock_input, _, mock_fn, __, ___):
         rating_section=4,
     )
     main()
-    assert (
-        mock_fn.call_count == 17
-    )  # first call dest folder contains Schnittmaterial, parent == raw.parent
-    # assert  mock_fn.call_count == 7 # nur Videos
+    assert (mock_fn.call_count == 17)
+    assert "Schnittmaterial" in str(mock_fn.call_args_list[0].kwargs["dst_folder"])
     assert mock_fn.call_args_list[0].kwargs["src_file"].name == "07_27_Do-002.MP4"
-    # assert mock_fn.call_count == 10 # nur Bilder
-    # assert mock_fn.call_args_list[0].kwargs["src_file"].name == "07_27_Do-001.jpg"
-    assert "Schnittmaterial" in mock_fn.call_args_list[0].kwargs["dst_folder"].parts
 
 
-@patch("src.main.gui_main.MainWindow.util_buttons_status")
-@patch("src.main.runner.runners.util_methods.filemethods.copy_file")
+@patch("gui_main.MainWindow.util_buttons_status")
+@patch("runner.runners.util_methods.filemethods.copy_file")
 @patch("sys.exit")
-@patch("src.main.gui_main.MainWindow.get_util_input")
+@patch("gui_main.MainWindow.get_util_input")
 def test_run_copy_sections_errors(mock_input, _, mock_fn, __):
     mock_input.side_effect = [
         UtilTabInput(
@@ -52,7 +46,7 @@ def test_run_copy_sections_errors(mock_input, _, mock_fn, __):
             do_sections=True,
             do_video_sections=True,
             do_picture_sections=True,
-            rating_section=8,
+            rating_section=8, # invalid rating
         ),
         UtilTabInput(
             raw_material_folder=TEST_PATH / "util/Rohmaterial",
@@ -236,9 +230,9 @@ def test_run_create_rated_picture_folder_errors(mock_input, _, mock_fn, __):
     assert mock_fn.call_count == 0
 
 
-@patch("src.main.gui_main.MainWindow.util_buttons_status")
+@patch("gui_main.MainWindow.util_buttons_status")
 @patch("sys.exit")
-@patch("src.main.gui_main.MainWindow.get_util_input")
+@patch("gui_main.MainWindow.get_util_input")
 def test_run_statistics(mock_input, _, __):
     mock_input.return_value = UtilTabInput(
         raw_material_folder=TEST_PATH / "util/Rohmaterial",
