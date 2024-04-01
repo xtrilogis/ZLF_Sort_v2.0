@@ -1,3 +1,4 @@
+import shutil
 from datetime import datetime
 from pathlib import Path
 from unittest.mock import patch
@@ -8,13 +9,17 @@ from assethandling.basemodels import ExcelInput, ExcelOption, RawTabInput
 from gui_main import main
 
 
-@patch("src.main.runner.runners.raw_methods.copy_file")
+@patch("src.runner.runners.raw_methods.copy_file")
 @patch("sys.exit")
-@patch("src.main.gui_main.MainWindow.get_raw_input")
+@patch("gui_main.MainWindow.get_raw_input")
 def test_run_correct_structure(mock_input, _, mock_fn):
+    """How to use: this test will start the UI for every test path
+    - push "Richtige Struktur"
+    - wait till its finished
+    - close the window"""
     paths = ["raw/unstructured/Rohmaterial", "raw/structured1", "raw/structured2"]
-    expectation = [28, 56, 84]  # eig aber check structure fehlt [28, 28, 56]
-    for num, value in enumerate(paths):
+    expectation = [29, 58, 87]
+    for index, value in enumerate(paths):
         mock_input.return_value = RawTabInput(
             raw_material_folder=TEST_PATH / value,
             first_folder_date=datetime(2023, 7, 27),
@@ -22,21 +27,31 @@ def test_run_correct_structure(mock_input, _, mock_fn):
             picture_folder=TEST_PATH,
         )
         main()
-        assert mock_fn.call_count == expectation[num]
+        assert mock_fn.call_count == expectation[index]
+        shutil.rmtree((TEST_PATH / value).parent / "New")
 
 
-@patch("src.main.runner.runners.raw_methods.copy_file")
+@patch("PyQt5.QtWidgets.QInputDialog.getItem")
+@patch("src.runner.runners.raw_methods.copy_file")
 @patch("sys.exit")
-@patch("src.main.gui_main.MainWindow.get_raw_input")
-def test_run_correct_structure_errors(mock_input, _, mock_fn):
-    mock_input.return_value = RawTabInput(
-        raw_material_folder=TEST_PATH / "non existent",
-        first_folder_date=datetime(2023, 7, 27),
-        excel=excel_input_standard,
-        picture_folder=TEST_PATH,
-    )
-    main()
-    assert mock_fn.call_count == 0
+@patch("gui_main.MainWindow.get_raw_input")
+def test_run_correct_structure_errors(mock_input, _, mock_fn, mock_dialog):
+    """How to use: this test will start the UI for every test path
+        - push "Richtige Struktur"
+        - wait for the error message and close it
+        - wait till the process is finished
+        - close the window"""
+    mock_dialog.return_value = "Nein", True
+    paths = ["Non existent", "dummy/Rohmaterial"]
+    for index, value in enumerate(paths):
+        mock_input.return_value = RawTabInput(
+            raw_material_folder=TEST_PATH / value,
+            first_folder_date=datetime(2023, 7, 27),
+            excel=excel_input_standard,
+            picture_folder=TEST_PATH,
+        )
+        main()
+        assert mock_fn.call_count == 0
 
 
 @patch("pathlib.Path.rename")
@@ -72,8 +87,8 @@ def test_run_rename_errors(mock_input, _, mock_fn):
 @patch("excel.excelmethods.save_sheets_to_excel")
 @patch("sys.exit")
 @patch("src.main.gui_main.MainWindow.get_raw_input")
-def test_excel_creation_override(mock_input, _, mock_fn, mock_input_dialog):
-    mock_input_dialog.return_value = "j", True
+def test_excel_creation_override(mock_input, _, mock_fn, mock_dialog):
+    mock_dialog.return_value = "j", True
     mock_input.return_value = RawTabInput(
         raw_material_folder=TEST_PATH,
         first_folder_date=TEST_DATE,
