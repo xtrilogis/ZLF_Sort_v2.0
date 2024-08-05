@@ -4,7 +4,7 @@ from pathlib import Path
 
 from pytest import fixture
 
-from assethandling.basemodels import ExcelInput, ExcelOption, RawTabInput
+from src.assethandling.basemodels import ExcelInput, ExcelOption, RawTabInput
 
 ROOT = Path(__file__).parent / "testData"
 locale.setlocale(locale.LC_TIME, "de_DE.utf8")

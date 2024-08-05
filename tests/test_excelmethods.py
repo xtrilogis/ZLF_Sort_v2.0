@@ -4,8 +4,8 @@ from unittest import mock
 import pandas as pd
 from pandas import DataFrame
 
-from assethandling.basemodels import ExcelConfig, SheetConfig
-from excel.excelmethods import (
+from src.assethandling.basemodels import ExcelConfig, SheetConfig
+from src.excel.excelmethods import (
     create_emtpy_excel,
     get_columns,
     load_sheets_as_df,
