@@ -173,6 +173,7 @@ def test_fill_excel_creation_override(
 @patch("sys.exit")
 @patch("gui_main.MainWindow.get_raw_input")
 def test_fill_excel(mock_input, _, mock_fn):
+    print("Click the 'fill excel' button")
     mock_input.return_value = RawTabInput(
         raw_material_folder=TEST_PATH / "raw/structured1",
         first_folder_date=TEST_DATE,
@@ -194,6 +195,7 @@ def test_fill_excel(mock_input, _, mock_fn):
 @patch("gui_main.MainWindow.get_raw_input")
 def test_fill_excel_errors(mock_input, _, mock_fn):
     # How to use: click the button for every side effect
+    print("Click the 'fill excel' button 3 times")
     mocks: List[RawTabInput] = [
         RawTabInput(
             raw_material_folder=TEST_PATH,
@@ -237,6 +239,7 @@ def test_fill_excel_errors(mock_input, _, mock_fn):
 @patch("sys.exit")
 @patch("gui_main.MainWindow.get_raw_input")
 def test_run_create_picture_folder(mock_input, _, mock_fn, __):
+    print("Click the 'create picture folder' button")
     mock_input.return_value = RawTabInput(
         raw_material_folder=TEST_PATH / "raw/structured1",
         first_folder_date=datetime(2023, 7, 27),
@@ -252,6 +255,7 @@ def test_run_create_picture_folder(mock_input, _, mock_fn, __):
 @patch("sys.exit")
 @patch("gui_main.MainWindow.get_raw_input")
 def test_run_create_picture_folder_errors(mock_input, _, mock_fn, __):
+    print("Click the 'create picture folder' button 2 times")
     mock_input.return_value = RawTabInput(
         raw_material_folder=TEST_PATH / "non existent",
         first_folder_date=datetime(2023, 7, 27),
@@ -288,6 +292,7 @@ def test_run_create_picture_folder_errors(mock_input, _, mock_fn, __):
 def test_process_raw_full(
     mock_input, _, mock_copy, __, mock_rename, mock_save, mock_create
 ):
+    print("Click the 'raw full' button")
     mock_input.return_value = RawTabInput(
         do_rename=True,
         fill_excel=True,

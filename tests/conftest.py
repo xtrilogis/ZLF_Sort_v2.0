@@ -62,9 +62,9 @@ def get_raw_input():
     data = {
         "do_structure": True,
         "do_rename": False,
-        "fill_excel": True,
+        "fill_excel": False,
         "create_picture_folder": False,
-        "raw_material_folder": ROOT / "Rohmaterial",
+        "raw_material_folder": ROOT / "dummy" / "Rohmaterial",
         "first_folder_date": datetime(2023, 7, 26),
         "excel": mock_excel,
         "picture_folder": ROOT,

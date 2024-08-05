@@ -3,6 +3,7 @@ from pathlib import Path
 import pytest
 
 from inputhandling import validation
+from assethandling.basemodels import ExcelInput, ExcelOption
 
 
 def test_validate_folder(testdata_path):
@@ -35,9 +36,24 @@ def test_validate_setup(testdata_path):
         validation.validate_setup_path(bad_path)
 
 
+def test_validate_excel_creation_settings():
+    with pytest.raises(AttributeError):
+        input_ = ExcelInput(
+            option=ExcelOption.EXISTING,
+            folder=Path.cwd(),
+        )
+        validation.validate_excel_creation_settings(input_)
+    with pytest.raises(AttributeError):
+        input_ = ExcelInput(
+            option=ExcelOption.CREATE,
+            folder=Path.cwd() / "blabla",
+        )
+        validation.validate_excel_creation_settings(input_)
+
+
 def test_validate_raw(get_raw_input, get_raw_input_non_valid):
-    with pytest.raises(ValueError):
-        validation.validate_raw(get_raw_input)
+    validation.validate_raw(get_raw_input)
+
     for input_ in get_raw_input_non_valid:
         with pytest.raises(ValueError):
             validation.validate_raw(input_)
