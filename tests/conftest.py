@@ -4,7 +4,7 @@ from pathlib import Path
 
 from pytest import fixture
 
-from src.assethandling.basemodels import ExcelInput, ExcelOption, RawTabInput
+from src.assethandling.basemodels import ExcelInput, ExcelOption, RawTabInput, RenameType
 
 ROOT = Path(__file__).parent / "testData"
 locale.setlocale(locale.LC_TIME, "de_DE.utf8")
@@ -68,6 +68,7 @@ def get_raw_input():
         "first_folder_date": datetime(2023, 7, 26),
         "excel": mock_excel,
         "picture_folder": ROOT,
+        "rename_type": RenameType.FILE
     }
     return RawTabInput(**data)
 
@@ -86,7 +87,7 @@ def get_raw_input_non_valid():
         "raw_material_folder": ROOT / "Non existing",
         "first_folder_date": datetime(2023, 7, 26),
         "excel": mock_excel,
-        "picture_folder": ROOT,
+        "picture_folder": ROOT
     }
 
     data2 = {
@@ -97,6 +98,6 @@ def get_raw_input_non_valid():
         "raw_material_folder": ROOT / "Non existing",
         "first_folder_date": datetime(2023, 7, 26),
         "excel": mock_excel,
-        "picture_folder": ROOT / "non-existing",
+        "picture_folder": ROOT / "non-existing"
     }
     return [RawTabInput(**data1), RawTabInput(**data2)]

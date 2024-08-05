@@ -1,13 +1,13 @@
 import locale
-from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Dict, List
+from datetime import datetime
 
 import pandas as pd
 from pydantic import ValidationError
 
 from assethandling import constants
-from assethandling.basemodels import ExcelConfig, File, FileType
+from assethandling.basemodels import ExcelConfig, File, FileType, RenameType
 from excel.excelmethods import (
     create_emtpy_excel,
     load_sheets_as_df,
@@ -15,7 +15,6 @@ from excel.excelmethods import (
 )
 from fileopertations.filemethods import (
     copy_file,
-    create_folder,
     get_file_captured_date,
     get_file_type,
     rename_files,
@@ -24,59 +23,31 @@ from fileopertations.filemethods import (
 locale.setlocale(locale.LC_TIME, "de_DE.utf8")
 
 
-def correct_file_structure(
-    raw_material_folder: Path,
-    start: datetime,
-    progress_callback,
-    get_data,
-):
-    dst_folder = create_folder(raw_material_folder.parent, "New")
-
-    if [x for x in dst_folder.iterdir()]:
-        response = get_data(
-            text=f"Im Zielordner {dst_folder.parent}/{dst_folder.name}\n"
-            f"existieren bereits Dateien/Ordner.\n"
-            f"Sollen diese Überschrieben werden? j/n"
-        )
-        if response != "Ja":
-            progress_callback.emit("Abbruch. Zielordner nicht leer")
-            return
-
-    all_files: List[File] = _get_all_files(
-        raw_material_folder=raw_material_folder, progress_callback=progress_callback
-    )
-    progress_callback.emit("Dateien eingelesen.")
-
-    structure: Dict[str | date, Dict[str, List[File]]] = _create_structure(
-        start_date=start
-    )
-    _fill_structure(structure=structure, all_files=all_files)
-    progress_callback.emit("Struktur erstellt.")
-
-    # _check_if_right_structure(structure, raw_material_folder, progress_callback)
-    _copy_file_structure(
-        structure=structure, dst_folder=dst_folder, progress_callback=progress_callback
-    )
-
-
-def _get_all_files(raw_material_folder: Path, progress_callback) -> List[File]:
-    all_files: List[File] = []
-    for element in raw_material_folder.glob("**/*"):
-        _add_file_object(
-            file=element, all_files=all_files, progress_callback=progress_callback
-        )
-    return all_files
-
-
-def _add_file_object(file: Path, all_files: List[File], progress_callback):
+def _add_file_object(file: Path, rename_type: RenameType, all_files: List[File], progress_callback):
     if not file.is_file():
         return
 
     file_type = get_file_type(file)
     if file_type != FileType.IMAGE and file_type != FileType.VIDEO:
         return
-    datum = get_file_captured_date(file, file_type)
 
+    datum: datetime = get_file_captured_date(file, file_type)
+    if rename_type.FOLDER:
+        try:
+            try:
+                zlf_folder: str = file.parent.parent.parent.parent.name
+                year: int = int(zlf_folder.split(" ")[1])
+            except Exception:
+                year: int = datetime.now().year
+
+            folder_name: str = file.parent.parent.name
+            date_part: str = folder_name.split('-')[1]
+            folder_date: datetime = datetime.strptime(date_part, "%d.%m")
+
+            datum: datetime = datetime(year, folder_date.month, folder_date.day,
+                             datum.hour, datum.minute, datum.second)
+        except Exception:
+            pass
     try:
         all_files.append(
             File(full_path=file, date=datum, dst_folder=None, type=file_type)
@@ -85,88 +56,21 @@ def _add_file_object(file: Path, all_files: List[File], progress_callback):
         progress_callback.emit(f"Fehler: Datei {file.name} \n {str(e)}")
 
 
-def _create_structure(start_date: datetime) -> Dict[str | date, Dict[str, List[File]]]:
-    structure: Dict[str | date, Dict[str, List[File]]] = {}
-
-    for i in range(10):
-        structure[start_date.date()]: Dict[str, List[File]] = {
-            FileType.VIDEO.value: [],
-            FileType.IMAGE.value: [],
-        }
-        start_date += timedelta(days=1)
-    structure["Sonstiges"]: Dict[str, List[File]] = {
-        FileType.VIDEO.value: [],
-        FileType.IMAGE.value: [],
-    }
-
-    return structure
-
-
-def _fill_structure(
-    structure: Dict[str | date, Dict[str, List[File]]], all_files: List[File]
-):
-    for file in all_files:
-        if file.date.date() in structure.keys():
-            structure[file.date.date()][file.type.value].append(file)
-        else:
-            structure["Sonstiges"][file.type.value].append(file)
-
-
-def _copy_file_structure(
-    structure: Dict[str | date, Dict[str, List[File]]],
-    dst_folder: Path,
-    progress_callback,
-):
-    letter = 97
-    copied_files_nr: int = 0
-    for key, value in structure.items():
-        if isinstance(key, date):
-            folder = (
-                dst_folder
-                / f'{chr(letter)}-{key.strftime("%d.%m")}-{key.strftime("%A")}'
-            )
-        else:
-            folder = dst_folder / f'{chr(letter)}-{"Sonstiges"}'
-
-        copied_files_nr += _copy_files(
-            value[FileType.IMAGE.value], folder / "Bilder", progress_callback
-        )
-        copied_files_nr += _copy_files(
-            value[FileType.VIDEO.value], folder / "Videos", progress_callback
-        )
-
-        letter += 1
-    progress_callback.emit(f"{copied_files_nr} Dateien kopiert.")
-
-
-def _copy_files(elements: List[File], folder_name: Path, progress_callback) -> int:
-    copied_files_nr: int = 0
-    for element in elements:
-        try:
-            copy_file(element.full_path, folder_name)
-            copied_files_nr += 1
-        except Exception as e:
-            progress_callback.emit(
-                f"Fehler: Datei {element.full_path.name} konnte nicht kopiert werden."
-            )
-    return copied_files_nr
-
-
-def run_rename(raw_material_folder: Path, progress_callback):
+def run_rename(raw_material_folder: Path, rename_type: RenameType, progress_callback):
     _rename_files_in_folder(
-        folder=raw_material_folder, progress_callback=progress_callback
+        folder=raw_material_folder, rename_type=rename_type, progress_callback=progress_callback
     )
 
     for element in raw_material_folder.glob("**/*"):
-        _rename_files_in_folder(folder=element, progress_callback=progress_callback)
+        _rename_files_in_folder(folder=element, rename_type=rename_type, progress_callback=progress_callback)
 
 
-def _rename_files_in_folder(folder: Path, progress_callback):
+def _rename_files_in_folder(folder: Path, rename_type: RenameType, progress_callback):
     if _is_folder_with_material(folder):
         all_files: List[File] = []
         for child in folder.iterdir():
             _add_file_object(
-                file=child, all_files=all_files, progress_callback=progress_callback
+                file=child, all_files=all_files, rename_type=rename_type, progress_callback=progress_callback
             )
         all_files.sort(key=lambda x: x.date, reverse=False)
 

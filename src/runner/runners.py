@@ -72,6 +72,7 @@ def run_correct_structure(
 def run_rename_files(inputs: RawTabInput, progress_callback, **kwargs) -> str:
     raw_methods.run_rename(
         raw_material_folder=inputs.raw_material_folder,
+        rename_type=inputs.rename_type,
         progress_callback=progress_callback,
     )
     return "Dateien umbenennen abgeschlossen"

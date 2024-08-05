@@ -48,6 +48,11 @@ class ExcelConfig(BaseModel):
     sheets: List[SheetConfig]
 
 
+class RenameType(Enum):
+    FOLDER = "folder date"
+    FILE = "file date"
+
+
 class RawTabInput(BaseModel):
     do_structure: bool = False
     do_rename: bool = False
@@ -57,6 +62,7 @@ class RawTabInput(BaseModel):
     first_folder_date: datetime
     excel: ExcelInput
     picture_folder: Path
+    rename_type: RenameType = RenameType.FILE
 
 
 class UtilTabInput(BaseModel):

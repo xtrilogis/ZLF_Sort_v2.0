@@ -26,6 +26,7 @@ from assethandling.basemodels import (
     ExcelInputOptions,
     ExcelOption,
     FolderTabInput,
+    RenameType,
     RawTabInput,
     UtilTabInput,
 )
@@ -56,6 +57,7 @@ class MainWindow(QMainWindow):
 
     def setup_ui(self):
         self.ui.tabWidget.setCurrentIndex(0)
+        self.ui.tabWidget_raw.removeTab(0)
         # Setup Start
         self.ui.date_lkw.setDate(QDate.currentDate())
         self.ui.date_correct_fs.setDate(QDate.currentDate())
@@ -400,6 +402,12 @@ class MainWindow(QMainWindow):
             "excel": self._get_excel_input(),
         }
         data["picture_folder"] = self._get_picture_folder(data["raw_material_folder"])
+        if self.ui.radioButton.isChecked() and self.ui.radioButton_2.isChecked():
+            raise RuntimeError("Es sollten nicht beide Radiobutton ausgewählt sein.")
+        if self.ui.radioButton.isChecked():
+            data["rename_type"] = RenameType.FILE
+        else:
+            data["rename_type"] = RenameType.FOLDER
         return RawTabInput(**data)
 
     def _get_excel_input(self) -> ExcelInput:

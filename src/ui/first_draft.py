@@ -718,6 +718,14 @@ class Ui_MainWindow(object):
         self.plainTextEdit.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.plainTextEdit.setObjectName("plainTextEdit")
         self.verticalLayout_5.addWidget(self.plainTextEdit)
+        self.radioButton = QtWidgets.QRadioButton(self.rename)
+        self.radioButton.setEnabled(True)
+        self.radioButton.setChecked(True)
+        self.radioButton.setObjectName("radioButton")
+        self.verticalLayout_5.addWidget(self.radioButton)
+        self.radioButton_2 = QtWidgets.QRadioButton(self.rename)
+        self.radioButton_2.setObjectName("radioButton_2")
+        self.verticalLayout_5.addWidget(self.radioButton_2)
         self.frame_31 = QtWidgets.QFrame(self.rename)
         self.frame_31.setMinimumSize(QtCore.QSize(0, 20))
         self.frame_31.setFrameShape(QtWidgets.QFrame.StyledPanel)
@@ -2378,18 +2386,18 @@ class Ui_MainWindow(object):
             self.tabWidget_raw.indexOf(self.folder_structure),
             _translate("MainWindow", "Ordnerstruktur"),
         )
-        self.plainTextEdit.setPlainText(
-            _translate(
-                "MainWindow",
-                "Aktuell werden Dateien wie folgt benannt:\n"
-                "\n"
-                "08-03-Do_001.JPG\n"
-                "Also:\n"
-                "Monat-Tag-Wochentag_[Nr im Ordner].[Dateiendung]\n"
-                "\n"
-                "Vielleicht kommt hier mal noch eine Möglichkeit die Benennung anzupassen.",
-            )
-        )
+        self.plainTextEdit.setPlainText(_translate("MainWindow", "Dateien werden nach folgendem Schema benannt:\n"
+                                                                 "\n"
+                                                                 "Monat-Tag-Wochentag_[Nr im Ordner].[Dateiendung]\n"
+                                                                 "Also z.B.: 08-03-Do_001.JPG\n"
+                                                                 "\n"
+                                                                 "Unten kannst du auswählen, welches Datum hierfür verwendet wird.\n"
+                                                                 "\n"
+                                                                 "a. das Aufnahme Datum der Datei\n"
+                                                                 "b. bei richtiger Struktur siehe \"Start\" kann auch das Datum des Ordners verwendet werden\n"
+                                                                 ""))
+        self.radioButton.setText(_translate("MainWindow", "Nach Datum der Datei"))
+        self.radioButton_2.setText(_translate("MainWindow", "Nach Datum im Ordnernamen"))
         self.pb_rename.setText(_translate("MainWindow", "Dateien benennen"))
         self.tabWidget_raw.setTabText(
             self.tabWidget_raw.indexOf(self.rename),

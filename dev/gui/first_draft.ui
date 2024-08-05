@@ -1295,7 +1295,7 @@ p, li { white-space: pre-wrap; }
                  <enum>QTabWidget::North</enum>
                 </property>
                 <property name="currentIndex">
-                 <number>2</number>
+                 <number>1</number>
                 </property>
                 <property name="elideMode">
                  <enum>Qt::ElideNone</enum>
@@ -1544,13 +1544,36 @@ QCalendarWidget QToolButton#qt_calendar_nextmonth
                      <enum>QFrame::Sunken</enum>
                     </property>
                     <property name="plainText">
-                     <string>Aktuell werden Dateien wie folgt benannt:
+                     <string>Dateien werden nach folgendem Schema benannt:
 
-08-03-Do_001.JPG
-Also:
 Monat-Tag-Wochentag_[Nr im Ordner].[Dateiendung]
+Also z.B.: 08-03-Do_001.JPG
 
-Vielleicht kommt hier mal noch eine Möglichkeit die Benennung anzupassen.</string>
+Unten kannst du auswählen, welches Datum hierfür verwendet wird.
+
+a. das Aufnahme Datum der Datei
+b. bei richtiger Struktur siehe &quot;Start&quot; kann auch das Datum des Ordners verwendet werden
+</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QRadioButton" name="radioButton">
+                    <property name="enabled">
+                     <bool>true</bool>
+                    </property>
+                    <property name="text">
+                     <string>Nach Datum der Datei</string>
+                    </property>
+                    <property name="checked">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QRadioButton" name="radioButton_2">
+                    <property name="text">
+                     <string>Nach Datum im Ordnernamen</string>
                     </property>
                    </widget>
                   </item>
