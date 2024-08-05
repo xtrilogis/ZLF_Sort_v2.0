@@ -11,7 +11,7 @@ def test_folder_creation(mock_create_folder, testdata_path):
 
     create_folder_structure(testdata_path, date)
     assert mock_create_folder.called
-    assert mock_create_folder.call_count == 31  # wegen 31 Ordnern
+    assert mock_create_folder.call_count == 41  # wegen 41 Ordnern
     assert mock_create_folder.call_args_list[0].kwargs["parent"] == testdata_path
     assert (
         mock_create_folder.call_args_list[0].kwargs["folder"]

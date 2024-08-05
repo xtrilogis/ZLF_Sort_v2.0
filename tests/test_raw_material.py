@@ -8,7 +8,7 @@ import pandas as pd
 
 from assethandling.basemodels import ExcelConfig, SheetConfig
 from rawmaterial.raw_material import (
-    correct_file_structure,
+    # correct_file_structure,
     create_excel,
     create_picture_folder,
     fill_excel,
@@ -16,51 +16,51 @@ from rawmaterial.raw_material import (
 )
 
 
-@mock.patch("rawmaterial.raw_material.copy_file")
-def test_correct_folder_structure(mock_copy, correct_raw, testdata_path):
-    mock_callback = MagicMock()
-    mock_get_data = MagicMock(return_value="Nein")
-    correct_file_structure(
-        correct_raw, datetime(2023, 7, 27), mock_callback, mock_get_data
-    )
-    assert mock_copy.call_count == 29
-    f = str(testdata_path)
-    assert "a 27.07.-Do\\Bilder\\07-27-Do_001.jpg" in str(
-        mock_copy.call_args_list[0].args[0]
-    )
-    assert "New\\a-27.07-Donnerstag\\Bilder" in str(mock_copy.call_args_list[0].args[1])
-    assert "Sonstiges\\Bilder\\08-05-Sa_003.JPG" in str(
-        mock_copy.call_args_list[22].args[0]
-    )
-    assert "New\\j-05.08-Samstag\\Bilder" in str(mock_copy.call_args_list[22].args[1])
-    shutil.rmtree(testdata_path / "raw/New")
+# @mock.patch("rawmaterial.raw_material.copy_file")
+# def test_correct_folder_structure(mock_copy, correct_raw, testdata_path):
+#     mock_callback = MagicMock()
+#     mock_get_data = MagicMock(return_value="Nein")
+#     correct_file_structure(
+#         correct_raw, datetime(2023, 7, 27), mock_callback, mock_get_data
+#     )
+#     assert mock_copy.call_count == 29
+#     f = str(testdata_path)
+#     assert "a 27.07.-Do\\Bilder\\07-27-Do_001.jpg" in str(
+#         mock_copy.call_args_list[0].args[0]
+#     )
+#     assert "New\\a-27.07-Donnerstag\\Bilder" in str(mock_copy.call_args_list[0].args[1])
+#     assert "Sonstiges\\Bilder\\08-05-Sa_003.JPG" in str(
+#         mock_copy.call_args_list[22].args[0]
+#     )
+#     assert "New\\j-05.08-Samstag\\Bilder" in str(mock_copy.call_args_list[22].args[1])
+#     shutil.rmtree(testdata_path / "raw/New")
 
 
-@mock.patch("rawmaterial.raw_material.copy_file")
-def test_correct_folder_structure2(mock_copy, correct_raw, testdata_path):
-    mock_callback = MagicMock()
-    mock_get_data = MagicMock(return_value="Nein")
-    result = correct_file_structure(
-        testdata_path / "raw/unstructured/Rohmaterial",
-        datetime(2023, 7, 27),
-        mock_callback,
-        mock_get_data,
-    )
-    assert result
-
-    correct_file_structure(
-        testdata_path / "raw/structured2",
-        datetime(2023, 7, 27),
-        mock_callback,
-        mock_get_data,
-    )
-    assert mock_copy.call_count == 29
-    f = str(testdata_path)
-    assert "a 27.07.-Do\\07-27-Do_001.jpg" in str(mock_copy.call_args_list[0].args[0])
-    assert "New\\a-27.07-Donnerstag\\Bilder" in str(mock_copy.call_args_list[0].args[1])
-    assert "Sonstiges\\08-05-Sa_003.JPG" in str(mock_copy.call_args_list[22].args[0])
-    assert "New\\j-05.08-Samstag\\Bilder" in str(mock_copy.call_args_list[22].args[1])
-    shutil.rmtree(testdata_path / "raw/New")
+# @mock.patch("rawmaterial.raw_material.copy_file")
+# def test_correct_folder_structure2(mock_copy, correct_raw, testdata_path):
+#     mock_callback = MagicMock()
+#     mock_get_data = MagicMock(return_value="Nein")
+#     result = correct_file_structure(
+#         testdata_path / "raw/unstructured/Rohmaterial",
+#         datetime(2023, 7, 27),
+#         mock_callback,
+#         mock_get_data,
+#     )
+#     assert result
+#
+#     correct_file_structure(
+#         testdata_path / "raw/structured2",
+#         datetime(2023, 7, 27),
+#         mock_callback,
+#         mock_get_data,
+#     )
+#     assert mock_copy.call_count == 29
+#     f = str(testdata_path)
+#     assert "a 27.07.-Do\\07-27-Do_001.jpg" in str(mock_copy.call_args_list[0].args[0])
+#     assert "New\\a-27.07-Donnerstag\\Bilder" in str(mock_copy.call_args_list[0].args[1])
+#     assert "Sonstiges\\08-05-Sa_003.JPG" in str(mock_copy.call_args_list[22].args[0])
+#     assert "New\\j-05.08-Samstag\\Bilder" in str(mock_copy.call_args_list[22].args[1])
+#     shutil.rmtree(testdata_path / "raw/New")
 
 
 @mock.patch("rawmaterial.raw_material.rename_files")

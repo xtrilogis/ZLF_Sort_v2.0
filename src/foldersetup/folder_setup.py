@@ -54,6 +54,9 @@ def _day_folder(date: datetime) -> List[str]:
         day_folders.append(
             f'{chr(letter + i)}-{date.strftime("%d.%m")}-{date.strftime("%A")}/Videos'
         )
+        day_folders.append(
+            f'{chr(letter + i)}-{date.strftime("%d.%m")}-{date.strftime("%A")}/Audios'
+        )
         date = date + timedelta(days=1)
     day_folders.append(f"{chr(letter + 11)}-Sonstiges/Bilder")
     day_folders.append(f"{chr(letter + 11)}-Sonstiges/Videos")

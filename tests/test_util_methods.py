@@ -25,7 +25,7 @@ def test_prepare_df(util_excel_path, util_material_path, testdata_path):
     assert "Dateipfad" in result["Bilder"].columns
     assert "Dateipfad" in result["Videos"].columns
     expected = (
-        "src\\tests\\testData\\util\\Rohmaterial\\b 27.07.-Do\\Bilder\\07_27_Do-001.jpg"
+        "tests\\testData\\util\\Rohmaterial\\b 27.07.-Do\\Bilder\\07_27_Do-001.jpg"
     )
     assert expected in str(result["Bilder"].loc[1, "Dateipfad"])
     with pytest.raises(ValueError):

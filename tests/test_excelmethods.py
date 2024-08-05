@@ -13,7 +13,7 @@ from src.excel.excelmethods import (
 )
 
 
-@mock.patch("excel.excelmethods.save_sheets_to_excel")
+@mock.patch("src.excel.excelmethods.save_sheets_to_excel")
 def test_create_empty_excel(mock_save, testdata_path):
     config = ExcelConfig(
         excel_folder=testdata_path,
